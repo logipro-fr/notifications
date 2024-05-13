@@ -1,0 +1,46 @@
+{
+    "name": "logipro/notifications",
+    "type": "app",
+    "description": "start a new PHP project with a simple base structure",
+    "keywords": ["php", "DDT"],
+    "homepage": "https://github.com/logipro-fr/notifications",
+    "license": "Copyrighted",
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Nathan Ravel",
+            "email": "nathan.ravel@logipro.com",
+            "homepage": "https://fr.linkedin.com/in/ravelnathan",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.3",
+        "minishlink/web-push": "^8.0",
+        "symfony/http-client": "^7.0"
+    },
+    "require-dev": {
+        "infection/extension-installer": "0.1.2",
+        "infection/infection": "^0.28",
+        "phpstan/phpdoc-parser": "^1.28",
+        "phpstan/phpstan": "1.10",
+        "phpunit/phpunit": "^11",
+        "squizlabs/php_codesniffer": "3.*",
+        "behat/behat": "^3.14"
+    },
+    "autoload": {
+        "psr-4" : {
+            "Notifications\\" : "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4" : {
+            "Notifications\\Tests\\" : "tests/unit"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    }
+}

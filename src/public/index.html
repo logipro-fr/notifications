@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Push Test</title>
+</head>
+<body>
+    <h1>test Notification Push</h1>
+    <script>
+        navigator.serviceWorker.register("sw.js");
+
+        function enableNotif(){
+            Notification.requestPermission().then((permission)=>{
+                if(permission === 'granted'){
+                    navigator.serviceWorker.ready.then((sw)=>{
+                        //subscribe
+                        sw.pushManager.subscribe({
+                            userVisibleOnly:true,
+                            applicationServerKey: "BO71HBUxeIRbjm7m8Ed3mC_11XRv2OIpzEykqHLCIOc2Ol1H_R9zzIwCt69wkwPbGqbqbytdvikVAa0QKFqeyiM"
+                        }).then((subscription)=>{
+                            console.log(JSON.stringify(subscription));
+                        });
+                    });
+                }
+            })
+        }
+    </script>
+    <button onclick="enableNotif()">Enable Notif</button>
+    <script src="script.js"></script>
+</body>
+</html>
