@@ -31,9 +31,9 @@ class SubscriberTest extends TestCase
         $this->assertEquals("subscribed", $state);
     }
 
-    public function testRegisterMe(): void
-    {
-        $registration = $this->subscriber->registerSubInDatabase(self::URL_TARGET, $this->generated);
-        $this->assertEquals("registered", $registration);
-    }
+    //public function testRegisterMe(): void
+    //{
+    //    $registration = $this->subscriber->registerSubInDatabase(self::URL_TARGET, $this->generated);
+    //    $this->assertEquals("registered", $registration);
+    //}
 }

@@ -23,7 +23,7 @@ class ObtainData
 
         $data = json_decode($fileContents, true);
 
-        if ($data === null && json_last_error() !== JSON_ERROR_NONE || !is_array($data)) {
+        if (($data === null && json_last_error() !== JSON_ERROR_NONE) || !is_array($data)) {
             throw new BadDataClassException(BadDataClassException::EXCEPTION_DECODING_ERROR . $fileToAnalyze);
         }
         return $data;

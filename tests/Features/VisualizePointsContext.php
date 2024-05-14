@@ -70,7 +70,8 @@ class VisualizePointsContext implements Context
      */
     public function theNavigatorHasATokenThatAllowsToRecogizeIt(): void
     {
-        throw new PendingException();
+        $generator = new VapidGenerator();
+        $generator->generateACoupleOfKey();
     }
 
     /**
