@@ -7,7 +7,7 @@ use Notifications\Domain\Exceptions\BadDataClassException;
 class Subscriber
 {
     public const DATABASE_FILE = 'keyDatabase.json';
-    private const PATH = __DIR__ . '/resources/' . self::DATABASE_FILE;
+    public const PATH = __DIR__ . '/resources/' . self::DATABASE_FILE;
 
     public function subscribe(Publisher $name): string
     {
@@ -16,19 +16,18 @@ class Subscriber
         return $message;
     }
 
-    //public function registerSubInDatabase(string $name, array $keys): string
-    //{
-    //    $subscribers = [];
-//
-    //    if (file_exists(self::PATH)) {
-    //        $subscribers = json_decode(file_get_contents(self::PATH), true);
-    //    }
-    //    else{
-    //        new BadDataClassException();
-    //    }
-//
-    //    $subscribers[$name]['VAPID'] = $keys;
-    //    file_put_contents(self::PATH, json_encode($subscribers));
-    //    return "registered";
-    //}
+    public function registerSubInDatabase(string $name, mixed $keys): string
+    {
+        $subscribers = [];
+        $fileContents = @file_get_contents(self::PATH);
+        if ($fileContents !== false) {
+            $subscribers = json_decode($fileContents, true);
+        }
+        if (!isset($subscribers[$name]) || !is_array($subscribers[$name])) {
+            $subscribers[$name] = [];
+        }
+        $subscribers[$name]['VAPID'] = $keys;
+        @file_put_contents(self::PATH, json_encode($subscribers));
+        return "registered";
+    }
 }

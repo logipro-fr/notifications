@@ -12,7 +12,6 @@ class VapidGenerator implements KeyGeneratorStrategy
      */
     public function generateACoupleOfKey(): array
     {
-        var_dump(VAPID::createVapidKeys());
         return VAPID::createVapidKeys();
     }
 }

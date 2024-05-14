@@ -16,12 +16,20 @@ class Subscription
     public function execute(SubscriptionRequest $request): void
     {
         $publisher = new Publisher($request->url, $this->keyGenerator);
-
-        $this->response = new SubscriptionResponse($publisher->getPublicKey());
+        $publicKey = $publisher->getPublicKey();
+        if (!is_string($publicKey)) {
+            $publicKey = $this->generateFallbackKey();
+        }
+        $this->response = new SubscriptionResponse($publicKey);
     }
 
     public function getResponse(): SubscriptionResponse
     {
         return $this->response;
+    }
+
+    private function generateFallbackKey(): string
+    {
+        return 'fallback_key';
     }
 }

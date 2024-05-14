@@ -4,6 +4,7 @@ namespace Notifications\Tests\Insfrastructure;
 
 use PHPUnit\Framework\TestCase;
 use Minishlink\WebPush\WebPush;
+use Notifications\Domain\Exceptions\BadDataClassException;
 use Notifications\public\Send;
 
 class SendTest extends TestCase
@@ -70,5 +71,16 @@ class SendTest extends TestCase
 
         $dataReaded = $this->send->getOptions();
         $this->assertEquals($optionsWaited, $dataReaded);
+    }
+
+    public function testSendNotificationWithBadJson(): void
+    {
+        $this->expectException(BadDataClassException::class);
+        $this->expectExceptionMessage("Error encoding notification data to JSON");
+
+        $subscriptionData = $this->send->getSubscriptionData(__DIR__, self::SUBSCRIPTION_FILETEST);
+        $notificationDataJson = false; // Simulate a failure in JSON encoding
+
+        $this->send->sendOneNotification($subscriptionData, $notificationDataJson, []);
     }
 }

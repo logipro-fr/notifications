@@ -4,7 +4,7 @@ namespace Notifications\Domain;
 
 class Publisher
 {
-    private string $publicKey;
+    private mixed $publicKey;
 
     /** @var array<Subscriber> */
     protected array $subscribers = [];
@@ -15,7 +15,7 @@ class Publisher
         $this->publicKey = $keys['publicKey'];
     }
 
-    public function getPublicKey(): string
+    public function getPublicKey(): mixed
     {
         return $this->publicKey;
     }

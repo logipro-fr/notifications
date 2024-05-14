@@ -67,6 +67,9 @@ class Send
      */
     public function sendOneNotification(array $subscriptionData, string|false $notificationDataJson, $options): mixed
     {
+        if ($notificationDataJson === false) {
+            throw new BadDataClassException("Error encoding notification data to JSON");
+        }
         $auth = self::AUTHENTIFICATOR_PROFILE;
         $webPush = new WebPush($auth);
         return $webPush->sendOneNotification(

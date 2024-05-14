@@ -35,16 +35,13 @@ class ObtainData
      */
     public function printFakePublicKey(array $jsonContent): string
     {
-        if (!is_array($jsonContent['choices'] ?? null)) {
+        $choices = $jsonContent['choices'] ?? null;
+
+        if (!is_array($choices) || !isset($choices[0]['message']['content'])) {
             throw new BadDataClassException(BadDataClassException::EXCEPTION_FORMAT_ERROR);
         }
 
-        if (!isset($jsonContent['choices'][0]['message']['content'])) {
-            throw new BadDataClassException(BadDataClassException::EXCEPTION_FORMAT_ERROR);
-        }
-
-        $content = $jsonContent['choices'][0]['message']['content'];
-
+        $content = $choices[0]['message']['content'];
         if (!is_string($content)) {
             throw new BadDataClassException(BadDataClassException::EXCEPTION_FORMAT_ERROR);
         }

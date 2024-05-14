@@ -11,6 +11,9 @@ use function Safe\json_decode;
 class Pushlib implements PushLibInterface
 {
     public const RESPONSE = 'responseCreateKey.json';
+    private const METHOD = 'POST';
+    private const URL = 'www.example.com';
+    private const HEADER = ['Content-Type' => 'application/json', 'Authorization' => 'Bearer '];
 
     public function __construct(private HttpClientInterface $client)
     {
@@ -21,20 +24,16 @@ class Pushlib implements PushLibInterface
         $content = <<<EOF
         {
             "model": "web-push",
-            "messages": [
-            ]
+            "messages": []
         }
         EOF;
-
+        $array = $this->getOption($content);
         $response = $this->client->request(
-            'POST',
-            'https://example.com',
-            [
-
-            'headers' => ['Content-Type' => 'application/json', 'Authorization' => 'Bearer '],
-            'body' => $content
-            ]
+            self::METHOD,
+            self::URL,
+            $array
         );
+
         $contentJson = $response->getContent();
         /** @var \stdClass{"choices": array<int,\stdClass>} $content */
         $content = json_decode($contentJson);
@@ -43,5 +42,19 @@ class Pushlib implements PushLibInterface
         //$content['choices'][0]['message']['content'];
         $contentmodel = strval($messageContent);
         return new ResponseLib($contentmodel);
+    }
+
+    /**
+     * @param string $content
+     * @return array<mixed>
+     */
+    public function getOption(string $content): array
+    {
+        $headerTag = 'headers';
+        $bodyTag = 'body';
+        return [
+            $headerTag => self::HEADER,
+            $bodyTag => $content
+        ];
     }
 }

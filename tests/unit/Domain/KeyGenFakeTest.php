@@ -24,10 +24,15 @@ class KeyGenFakeTest extends TestCase
     {
 
         $generatedKey = $this->generatorKey->generateACoupleOfKey();
-        $public = strlen($generatedKey[KeyGeneratorStrategy::PUBLICKEY]);
-        $private = strlen($generatedKey[KeyGeneratorStrategy::PRIVATEKEY]);
+        $public = $generatedKey[KeyGeneratorStrategy::PUBLICKEY];
+        $this->assertIsString($public);
+        $publicLengh = strlen($public);
 
-        $this->assertEquals(KeyGeneratorStrategy::PUBLIC_KEY_LENGTH, $public);
-        $this->assertEquals(KeyGeneratorStrategy::PRIVATE_KEY_LENGTH, $private);
+        $private = $generatedKey[KeyGeneratorStrategy::PRIVATEKEY];
+        $this->assertIsString($private);
+        $privateLengh = strlen($private);
+
+        $this->assertEquals(KeyGeneratorStrategy::PUBLIC_KEY_LENGTH, $publicLengh);
+        $this->assertEquals(KeyGeneratorStrategy::PRIVATE_KEY_LENGTH, $privateLengh);
     }
 }

@@ -11,6 +11,7 @@ class CreateVapidKeysForUser extends TestCase
     private const PUBLIC = 'publicKey';
 
     protected VapidGenerator $generatorKeys;
+    /** @var array<mixed> */
     protected array $generatedKeys;
 
     protected function setUp(): void
@@ -31,13 +32,17 @@ class CreateVapidKeysForUser extends TestCase
 
     public function testContentVapidPublicKeys(): void
     {
-        $this->assertNotEmpty($this->generatorKeys[self::PUBLIC]);
-        $this->assertGreaterThanOrEqual(86, strlen($this->generatorKeys[self::PUBLIC]));
+        $publicKey = $this->generatedKeys[self::PUBLIC];
+        $this->assertIsString($publicKey);
+        $this->assertNotEmpty($publicKey);
+        $this->assertGreaterThanOrEqual(86, strlen($publicKey));
     }
 
     public function testContentVapidPrivateKeys(): void
     {
-        $this->assertNotEmpty($this->generatorKeys[self::PRIVATE]);
-        $this->assertGreaterThanOrEqual(42, strlen($this->generatorKeys[self::PRIVATE]));
+        $privateKey = $this->generatedKeys[self::PRIVATE];
+        $this->assertIsString($privateKey); // Vérifie que la clé est une chaîne
+        $this->assertNotEmpty($privateKey);
+        $this->assertGreaterThanOrEqual(42, strlen($privateKey));
     }
 }

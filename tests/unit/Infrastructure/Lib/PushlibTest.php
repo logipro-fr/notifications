@@ -5,9 +5,11 @@ namespace Notifications\Tests\Infrastructure\Lib;
 use Notifications\Application\Service\FileManager\ObtainData;
 use Notifications\Infrastructure\Lib\Pushlib;
 use Notifications\Infrastructure\Lib\RequestLib;
+use Notifications\Infrastructure\Lib\ResponseLib;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PushlibTest extends TestCase
 {
@@ -44,5 +46,20 @@ class PushlibTest extends TestCase
         } else {
             yield $content;
         }
+    }
+
+    public function testVerifyHeader(): void
+    {
+        $content = <<<EOF
+        {
+            "model": "web-push",
+            "messages": []
+        }
+        EOF;
+        $client = $this->createMockHttpClient(Pushlib::RESPONSE);
+        $pushlibtest = new Pushlib($client);
+        $result = $pushlibtest->getOption($content);
+        $this->assertNotEmpty($result);
+        $this->assertArrayHasKey('headers', $result);
     }
 }
