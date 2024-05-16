@@ -1,9 +1,9 @@
 <?php
 
-namespace Notifications\Infrastructure\Lib;
+namespace Notifications\Infrastructure\PushLib;
 
 use Notifications\Application\Service\RequestInterface;
-use Notifications\Infrastructure\Lib\PushLibInterface;
+use Notifications\Infrastructure\PushLib\PushLibInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Safe\json_decode;

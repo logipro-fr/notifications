@@ -3,28 +3,29 @@
 namespace Notifications\Domain;
 
 use Notifications\Domain\Exceptions\BadDataClassException;
+use Notifications\Domain\Publisher\Publisher;
 
 class Subscriber
 {
-    public const DATABASE_FILE = 'keyDatabase.json';
-    public const PATH = __DIR__ . '/resources/' . self::DATABASE_FILE;
+    /** @var array<mixed> */
+    protected array $subscriberId;
 
-    public function subscribe(Publisher $name): string
+    ///Constructor
+
+
+    /** @param Publisher $name */
+    /** @param array<mixed> $userAddress */
+    /** @return string */
+    public function subscribe(Publisher $name, array $userAddress): string
     {
         $message = "subscribed";
-
+        $this->subscriberId = $userAddress;
         return $message;
     }
 
-    //public function registerSubInDatabase(string $name, mixed $keys): string
-    //{
-    //    $subscribers = [];
-    //    $fileContents = @file_get_contents(self::PATH);
-    //    if ($fileContents !== false) {
-    //        $subscribers = json_decode($fileContents, true);
-    //    }
-    //    $subscribers[$name]['VAPID'] = $keys;
-    //    @file_put_contents(self::PATH, json_encode($subscribers));
-    //    return "registered";
-    //}
+    public function getSubscriberId(): array
+    {
+        return $this->subscriberId;
+    }
+
 }

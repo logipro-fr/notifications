@@ -1,9 +1,10 @@
 <?php
 
-namespace Notifications\Tests\Application\Service\FileManager;
+namespace Notifications\Tests\Infrastructure\FileManager;
+
 
 use Notifications\Domain\Exceptions\BadDataClassException;
-use Notifications\Application\Service\FileManager\ObtainData;
+use Notifications\Infrastructure\FileManager\ObtainData;
 use PHPUnit\Framework\TestCase;
 
 class ObtainDataTest extends TestCase

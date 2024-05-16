@@ -1,15 +1,13 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Lib;
+namespace Notifications\Tests\Infrastructure\PushLib;
 
-use Notifications\Application\Service\FileManager\ObtainData;
-use Notifications\Infrastructure\Lib\Pushlib;
-use Notifications\Infrastructure\Lib\RequestLib;
-use Notifications\Infrastructure\Lib\ResponseLib;
+use Notifications\Infrastructure\FileManager\ObtainData;
+use Notifications\Infrastructure\PushLib\Pushlib;
+use Notifications\Infrastructure\PushLib\RequestLib;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class PushlibTest extends TestCase
 {

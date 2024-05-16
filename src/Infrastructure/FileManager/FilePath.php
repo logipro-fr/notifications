@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Application\Service\FileManager;
+namespace Notifications\Infrastructure\FileManager;
 
 class FilePath
 {

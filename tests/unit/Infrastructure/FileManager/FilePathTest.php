@@ -1,9 +1,9 @@
 <?php
 
-namespace Notifications\Tests\Application\Service\FileManager;
+namespace Notifications\Tests\Infrastructure\FileManager;
 
+use Notifications\Infrastructure\FileManager\FilePath;
 use PHPUnit\Framework\TestCase;
-use Notifications\Application\Service\FileManager\FilePath;
 
 class FilePathTest extends TestCase
 {

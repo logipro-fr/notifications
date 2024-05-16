@@ -2,9 +2,9 @@
 
 namespace Notifications\Tests\Insfrastructure\Lib;
 
-use Notifications\Application\Service\FileManager\ObtainData;
-use Notifications\Infrastructure\Lib\Pushlib;
-use Notifications\Infrastructure\Lib\RequestLib;
+use Notifications\Infrastructure\FileManager\ObtainData;
+use Notifications\Infrastructure\PushLib\Pushlib;
+use Notifications\Infrastructure\PushLib\RequestLib;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;

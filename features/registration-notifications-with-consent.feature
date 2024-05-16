@@ -23,5 +23,3 @@ Feature: Registration for push notifications with consent
         When the user complete an action (for exemple a purchase)
         Then the navigator receives an invitation to subscribe for the publisher
         And if the user accept, the navigator has a token that allows to recogize it
-
-    

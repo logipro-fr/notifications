@@ -4,8 +4,8 @@ namespace Notifications\public;
 
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
-use Notifications\Application\Service\FileManager\ObtainData;
 use Notifications\Domain\Exceptions\BadDataClassException;
+use Notifications\Infrastructure\FileManager\ObtainData;
 
 class Send
 {
@@ -27,14 +27,14 @@ class Send
      */
     public function sendNotification(): void
     {
-        $subscriptionData = $this->getSubscriptionData(__DIR__, "subscription.json");
+        $userAddress = $this->getSubscriptionData(__DIR__, "subscription.json");
         $notificationData = $this->getNotificationData(__DIR__, "notification.json");
         ;
         $notificationDataJson = $this->encodeNotificationData($notificationData);
 
         $options = $this->getOptions();
 
-        $report = $this->sendOneNotification($subscriptionData, $notificationDataJson, $options);
+        $report = $this->sendOneNotification($userAddress, $notificationDataJson, $options);
         print_r($report);
     }
 
@@ -60,12 +60,12 @@ class Send
     }
 
     /**
-     * @param array<mixed> $subscriptionData
+     * @param array<mixed> $userAddress
      * @param string|false $notificationDataJson
      * @param int[] $options
      * @return mixed
      */
-    public function sendOneNotification(array $subscriptionData, string|false $notificationDataJson, $options): mixed
+    public function sendOneNotification(array $userAddress, string|false $notificationDataJson, $options): mixed
     {
         if ($notificationDataJson === false) {
             throw new BadDataClassException("Error encoding notification data to JSON");
@@ -73,7 +73,7 @@ class Send
         $auth = self::AUTHENTIFICATOR_PROFILE;
         $webPush = new WebPush($auth);
         return $webPush->sendOneNotification(
-            Subscription::create($subscriptionData),
+            Subscription::create($userAddress),
             $notificationDataJson,
             $options
         );

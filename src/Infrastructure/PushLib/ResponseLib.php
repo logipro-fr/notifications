@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Infrastructure\Lib;
+namespace Notifications\Infrastructure\PushLib;
 
 use Notifications\Application\Service\ResponseInterface;
 
