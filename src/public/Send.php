@@ -2,6 +2,7 @@
 
 namespace Notifications\public;
 
+use Minishlink\WebPush\MessageSentReport;
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
 use Notifications\Domain\Exceptions\BadDataClassException;
@@ -29,52 +30,60 @@ class Send
     {
         $userAddress = $this->getSubscriptionData(__DIR__, "subscription.json");
         $notificationData = $this->getNotificationData(__DIR__, "notification.json");
-        ;
-        $notificationDataJson = $this->encodeNotificationData($notificationData);
+        $notificationContent = $this->encodeNotificationData($notificationData);
 
         $options = $this->getOptions();
 
-        $report = $this->sendOneNotification($userAddress, $notificationDataJson, $options);
+        $report = $this->sendOneNotification($userAddress, $notificationContent, $options);
         print_r($report);
     }
 
     /**
      * @param string $dir
      * @param string $filename
-     * @return array<mixed>
+     * @return array<string>
      */
     public function getSubscriptionData(string $dir, string $filename): array
     {
         return (new ObtainData())->readJSON($dir, $filename);
     }
 
-    public function getNotificationData(string $dir, string $filename): mixed
+     /**
+     * @param string $dir
+     * @param string $filename
+     * @return array<string>
+     */
+    public function getNotificationData(string $dir, string $filename): array
     {
         return (new ObtainData())->readJSON($dir, $filename);
     }
 
-    public function encodeNotificationData(mixed $data): string|false
+     /**
+     * @param array<string> $data
+     * @return string|false
+     */
+    public function encodeNotificationData(array $data): string|false
     {
-        $notificationDataJson = json_encode($data);
-        return $notificationDataJson;
+        $notificationContent = json_encode($data);
+        return $notificationContent;
     }
 
     /**
-     * @param array<mixed> $userAddress
-     * @param string|false $notificationDataJson
+     * @param array<string> $userAddress
+     * @param string|false $notificationContent
      * @param int[] $options
-     * @return mixed
+     * @return MessageSentReport
      */
-    public function sendOneNotification(array $userAddress, string|false $notificationDataJson, $options): mixed
+    public function sendOneNotification($userAddress, $notificationContent, $options): MessageSentReport
     {
-        if ($notificationDataJson === false) {
+        if ($notificationContent === false) {
             throw new BadDataClassException("Error encoding notification data to JSON");
         }
         $auth = self::AUTHENTIFICATOR_PROFILE;
         $webPush = new WebPush($auth);
         return $webPush->sendOneNotification(
             Subscription::create($userAddress),
-            $notificationDataJson,
+            $notificationContent,
             $options
         );
     }

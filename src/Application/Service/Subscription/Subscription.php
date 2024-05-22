@@ -2,9 +2,9 @@
 
 namespace Notifications\Application\Service\Subscription;
 
-use Notifications\Domain\KeyGeneratorStrategy;
-use Notifications\Domain\Publisher\NotificationAddress;
-use Notifications\Domain\Publisher\Publisher;
+use Notifications\Domain\Entity\Notification\NotificationAddress;
+use Notifications\Domain\Entity\Publisher\Publisher;
+use Notifications\Domain\Services\KeyGeneratorStrategy;
 
 class Subscription
 {
@@ -16,7 +16,7 @@ class Subscription
     public function execute(SubscriptionRequest $request): void
     {
         $notificationAddress = new NotificationAddress($request->url);
-        $publisher = new Publisher($request->url, $this->keyGenerator, $notificationAddress->getAddress());
+        $publisher = new Publisher($request->url["endpoint"], $this->keyGenerator, $notificationAddress->getAddress());
         $publicKey = $publisher->getPublicKey();
         $this->response = new SubscriptionResponse($publicKey);
     }

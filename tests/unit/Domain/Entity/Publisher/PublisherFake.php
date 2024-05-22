@@ -1,8 +1,8 @@
 <?php
 
-namespace Notifications\Tests\Domain\Publisher;
+namespace Notifications\Tests\Domain\Entity\Publisher;
 
-use Notifications\Domain\Publisher\Publisher;
+use Notifications\Domain\Entity\Publisher\Publisher;
 
 class PublisherFake extends Publisher
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace Notifications\Infrastructure;
+namespace Notifications\Infrastructure\Keys;
 
 use Minishlink\WebPush\VAPID;
-use Notifications\Domain\KeyGeneratorStrategy;
+use Notifications\Domain\Services\KeyGeneratorStrategy;
 
 class VapidGenerator implements KeyGeneratorStrategy
 {
     /**
-     * @return array<mixed>
+     * @return array<string>
      */
     public function generateACoupleOfKey(): array
     {

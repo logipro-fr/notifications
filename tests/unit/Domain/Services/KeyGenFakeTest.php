@@ -1,8 +1,8 @@
 <?php
 
-namespace Notifications\Tests\Domain;
+namespace Notifications\Tests\Domain\Services;
 
-use Notifications\Domain\KeyGeneratorStrategy;
+use Notifications\Domain\Services\KeyGeneratorStrategy;
 use PHPUnit\Framework\TestCase;
 
 class KeyGenFakeTest extends TestCase

@@ -2,7 +2,7 @@
 
 namespace Notifications\Infrastructure\PushLib;
 
-use Notifications\Application\Service\ResponseInterface;
+use Notifications\Application\Interface\ResponseInterface;
 
 class ResponseLib implements ResponseInterface
 {

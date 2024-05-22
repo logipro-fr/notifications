@@ -2,7 +2,7 @@
 
 namespace Notifications\Application\Service\Unsubscription;
 
-use Notifications\Domain\KeyGeneratorStrategy;
+use Notifications\Domain\Services\KeyGeneratorStrategy;
 
 class Unsubscription
 {

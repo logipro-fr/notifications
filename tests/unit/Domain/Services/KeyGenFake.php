@@ -1,13 +1,13 @@
 <?php
 
-namespace Notifications\Tests\Domain;
+namespace Notifications\Tests\Domain\Services;
 
-use Notifications\Domain\KeyGeneratorStrategy;
+use Notifications\Domain\Services\KeyGeneratorStrategy;
 
 class KeyGenFake implements KeyGeneratorStrategy
 {
     /**
-     * @return array<mixed>
+     * @return array<string>
      */
     public function generateACoupleOfKey(): array
     {

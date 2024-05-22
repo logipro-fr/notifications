@@ -4,7 +4,10 @@ namespace Notifications\Application\Service\Subscription;
 
 class SubscriptionRequest
 {
-    public function __construct(public readonly string $url)
+    /**
+    * @param array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} $url
+    */
+    public function __construct(public readonly array $url)
     {
     }
 }

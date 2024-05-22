@@ -2,9 +2,9 @@
 
 namespace Notifications\Tests\Insfrastructure;
 
-use Notifications\Domain\KeyGeneratorStrategy;
-use Notifications\Infrastructure\VapidGenerator;
-use Notifications\Tests\Domain\KeyGenFakeTest;
+use Notifications\Domain\Services\KeyGeneratorStrategy;
+use Notifications\Infrastructure\Keys\VapidGenerator;
+use Notifications\Tests\Domain\Services\KeyGenFakeTest;
 
 class VapidGeneratorTest extends KeyGenFakeTest
 {

@@ -2,7 +2,6 @@
 
 namespace Notifications\Tests\Infrastructure\FileManager;
 
-
 use Notifications\Domain\Exceptions\BadDataClassException;
 use Notifications\Infrastructure\FileManager\ObtainData;
 use PHPUnit\Framework\TestCase;

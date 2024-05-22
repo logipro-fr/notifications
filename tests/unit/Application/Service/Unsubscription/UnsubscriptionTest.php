@@ -4,7 +4,7 @@ namespace Notifications\Tests\Application\Service\Subscription;
 
 use Notifications\Application\Service\Unsubscription\Unsubscription;
 use Notifications\Application\Service\Unsubscription\UnsubscriptionRequest;
-use Notifications\Tests\Domain\KeyGenFake;
+use Notifications\Tests\Domain\Services\KeyGenFake;
 use PHPUnit\Framework\TestCase;
 
 class UnsubscriptionTest extends TestCase
@@ -12,9 +12,9 @@ class UnsubscriptionTest extends TestCase
     private const NAME = "https://nextsign.fr";
 
     protected KeyGenFake $generator;
-    /** @var array<mixed> */
+    /** @var array<string> */
     protected array $generated;
-    /** @var array<mixed> */
+     /** @var array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
     protected array $fakeId;
 
     protected function setUp(): void
@@ -33,7 +33,7 @@ class UnsubscriptionTest extends TestCase
     }
     public function testExectute(): void
     {
-        $service = new Unsubscription($this->generator);
+        $service = new Unsubscription();
         $request = new UnsubscriptionRequest(self::NAME, $this->fakeId);
         $service->execute($request);
         $response = $service->getResponse();

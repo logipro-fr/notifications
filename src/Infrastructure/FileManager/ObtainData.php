@@ -9,7 +9,7 @@ class ObtainData
     /**
      * @param string $mainPath
      * @param string $fileToAnalyze
-     * @return array<mixed>
+     * @return array<string>
      * @throws BadDataClassException
      */
     public function readJSON(string $mainPath, string $fileToAnalyze): array
@@ -28,8 +28,8 @@ class ObtainData
         }
         return $data;
     }
-    /**
-     * @param array<mixed> $jsonContent
+     /**
+     * @param array<string, mixed> $jsonContent
      * @return string
      * @throws BadDataClassException
      */

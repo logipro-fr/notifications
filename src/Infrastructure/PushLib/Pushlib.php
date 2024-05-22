@@ -2,7 +2,7 @@
 
 namespace Notifications\Infrastructure\PushLib;
 
-use Notifications\Application\Service\RequestInterface;
+use Notifications\Application\Interface\RequestInterface;
 use Notifications\Infrastructure\PushLib\PushLibInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -46,7 +46,7 @@ class Pushlib implements PushLibInterface
 
     /**
      * @param string $content
-     * @return array<mixed>
+     * @return array<string, mixed>>
      */
     public function getOption(string $content): array
     {

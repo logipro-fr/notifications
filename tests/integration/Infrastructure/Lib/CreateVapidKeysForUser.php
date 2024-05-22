@@ -2,7 +2,7 @@
 
 namespace Notifications\Tests\Integration\Insfrastructure\Lib;
 
-use Notifications\Infrastructure\VapidGenerator;
+use Notifications\Infrastructure\Keys\VapidGenerator;
 use PHPUnit\Framework\TestCase;
 
 class CreateVapidKeysForUser extends TestCase
@@ -11,7 +11,7 @@ class CreateVapidKeysForUser extends TestCase
     private const PUBLIC = 'publicKey';
 
     protected VapidGenerator $generatorKeys;
-    /** @var array<mixed> */
+    /** @var array<string> */
     protected array $generatedKeys;
 
     protected function setUp(): void
@@ -41,7 +41,7 @@ class CreateVapidKeysForUser extends TestCase
     public function testContentVapidPrivateKeys(): void
     {
         $privateKey = $this->generatedKeys[self::PRIVATE];
-        $this->assertIsString($privateKey); // Vérifie que la clé est une chaîne
+        $this->assertIsString($privateKey);
         $this->assertNotEmpty($privateKey);
         $this->assertGreaterThanOrEqual(42, strlen($privateKey));
     }

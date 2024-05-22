@@ -1,20 +1,28 @@
 <?php
 
-namespace Notifications\Domain\Publisher;
+namespace Notifications\Domain\Entity\Publisher;
 
-use Notifications\Domain\KeyGeneratorStrategy;
-use Notifications\Domain\Subscriber;
+use Notifications\Domain\Entity\Notification\NotificationAddress;
+use Notifications\Domain\Services\KeyGeneratorStrategy;
+use Notifications\Domain\Entity\Subscriber\Subscriber;
 
 class Publisher
 {
-    private mixed $publicKey;
+    private string $publicKey;
     private string $name;
-    private NotificationAddress $notificationAddress; 
+    private NotificationAddress $notificationAddress;
 
     /** @var array<Subscriber> */
     protected array $subscribers = [];
 
-    public function __construct(string $name, private KeyGeneratorStrategy $keyGenerator, string $notificationAddress) 
+    /**
+    * @param array{
+    *     endpoint: string,
+    *     expirationTime: ?string,
+    *     keys: array{auth: string, p256dh: string}
+    * } $notificationAddress
+    */
+    public function __construct(string $name, private KeyGeneratorStrategy $keyGenerator, array $notificationAddress)
     {
         $this->name = $name;
         $this->notificationAddress = new NotificationAddress($notificationAddress);
@@ -22,7 +30,7 @@ class Publisher
         $this->publicKey = $keys['publicKey'];
     }
 
-    public function getPublicKey(): mixed
+    public function getPublicKey(): string
     {
         return $this->publicKey;
     }
@@ -36,7 +44,7 @@ class Publisher
     {
         return $this->notificationAddress;
     }
-    
+
     public function subscribe(Subscriber $subscriber): void
     {
         $this->subscribers[] = $subscriber;
@@ -47,13 +55,16 @@ class Publisher
         $index = array_search($subscriber, $this->subscribers, true);
         if ($index !== false) {
             unset($this->subscribers[$index]);
+            $this->removePublicKey();
         }
-        $this->removePublicKey();
     }
 
-    private function removePublicKey(): string
+    public function removePublicKey(): string
     {
-        $this->publicKey = "";
-        return "KeyRemoved";
+        if ($this->publicKey !== "") {
+            $this->publicKey = "";
+            return "KeyRemoved";
+        }
+        return "";
     }
 }

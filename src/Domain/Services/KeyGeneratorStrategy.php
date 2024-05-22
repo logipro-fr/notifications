@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Domain;
+namespace Notifications\Domain\Services;
 
 interface KeyGeneratorStrategy
 {
@@ -11,7 +11,7 @@ interface KeyGeneratorStrategy
 
 
     /**
-     * @return array<mixed>
+     * @return array<string>
      */
     public function generateACoupleOfKey(): array;
 }

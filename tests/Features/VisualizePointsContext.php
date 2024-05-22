@@ -4,14 +4,12 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 use Notifications\Application\Service\Subscription\Subscription;
 use Notifications\Application\Service\Subscription\SubscriptionRequest;
-use Notifications\Domain\Publisher\NotificationAddress;
-use Notifications\Domain\Publisher\Publisher;
-use Notifications\Domain\Subscriber;
-use Notifications\Infrastructure\VapidGenerator;
+use Notifications\Domain\Entity\Notification\NotificationAddress;
+use Notifications\Domain\Entity\Publisher\Publisher;
+use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Infrastructure\Keys\VapidGenerator;
 
 /**
  * Defines application features from the specific context.
@@ -21,7 +19,16 @@ class VisualizePointsContext implements Context
     private ?Publisher $websiteNotificationPublisher;
     private Subscriber $navigatorUserThatWantToSubscribe;
     private NotificationAddress $notificationAddress;
-    private const URL_NOTIFICATION_PUBLISHER = "nextsign.fr";
+    private const URL_PUBLISHER = "nextsign.fr";
+    /** @var array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
+    private const SUB_ID = [
+        "endpoint" => "nextsign.fr",
+        "expirationTime" => null,
+        "keys" => [
+            "auth" => "",
+            "p256dh" => ""
+        ]
+    ];
 
     /**
      * Initializes context.
@@ -41,8 +48,9 @@ class VisualizePointsContext implements Context
     public function aWebsiteNotificationPublisherProposeAUserToSubscribeToReceiveNotification(): void
     {
         $generator = new VapidGenerator();
-        $this->notificationAddress = new NotificationAddress(self::URL_NOTIFICATION_PUBLISHER);
-        $this->websiteNotificationPublisher = new Publisher(self::URL_NOTIFICATION_PUBLISHER, $generator, $this->notificationAddress->getAddress());
+        $this->notificationAddress = new NotificationAddress(self::SUB_ID);
+        $userAdress = $this->notificationAddress->getAddress();
+        $this->websiteNotificationPublisher = new Publisher(self::URL_PUBLISHER, $generator, $userAdress);
         $this->navigatorUserThatWantToSubscribe = new Subscriber();
     }
 
@@ -51,7 +59,7 @@ class VisualizePointsContext implements Context
      */
     public function theUserAcceptsToSubscribe(): void
     {
-        $request = new SubscriptionRequest(self::URL_NOTIFICATION_PUBLISHER);
+        $request = new SubscriptionRequest(self::SUB_ID);
 
         $generator = new VapidGenerator();
         $service = new Subscription($generator);
@@ -64,8 +72,9 @@ class VisualizePointsContext implements Context
     public function theNavigatorOnTheDeviceBecomeANewSubscriberOfThePublisher(): void
     {
         $generator = new VapidGenerator();
-        $this->notificationAddress = new NotificationAddress(self::URL_NOTIFICATION_PUBLISHER);
-        $this->websiteNotificationPublisher = new Publisher(self::URL_NOTIFICATION_PUBLISHER, $generator, $this->notificationAddress->getAddress());
+        $this->notificationAddress = new NotificationAddress(self::SUB_ID);
+        $userAdress = $this->notificationAddress->getAddress();
+        $this->websiteNotificationPublisher = new Publisher(self::URL_PUBLISHER, $generator, $userAdress);
         $this->websiteNotificationPublisher->subscribe($this->navigatorUserThatWantToSubscribe);
     }
 
@@ -87,19 +96,10 @@ class VisualizePointsContext implements Context
     }
 
     /**
-     * @Then the navigator on the device don't become a new subscriber of the publisher
+     * @Then nothing happens
      */
-    public function theNavigatorOnTheDeviceDontBecomeANewSubscriberOfThePublisher(): void
+    public function nothingHappens(): void
     {
-        throw new PendingException();
-    }
-
-    /**
-     * @Then the navigator hasn't a token that allows to recogize it
-     */
-    public function theNavigatorHasntATokenThatAllowsToRecogizeIt(): void
-    {
-        throw new PendingException();
     }
 
     /**
@@ -107,7 +107,7 @@ class VisualizePointsContext implements Context
      */
     public function theUserWantToUnsubscribe(): void
     {
-        $request = new SubscriptionRequest(self::URL_NOTIFICATION_PUBLISHER);
+        $request = new SubscriptionRequest(self::SUB_ID);
 
         $generator = new VapidGenerator();
         $service = new Subscription($generator);
