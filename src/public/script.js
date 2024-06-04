@@ -22,27 +22,18 @@ const requestNotificationPermission = async() => {
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {
         throw new Error("Notification permission not granted")
-    } else {
-        signingSucessfullNotification();
     }
 }
-function signingSucessfullNotification()
-{
-        const notifTitle = "Logipro";
-        const notifBody = `Successful registration to the notification system`;
-        const notifImg = `logipro.png`;
-        const options = {
-            body: notifBody,
-            icon: notifImg,
-    };
-        new Notification(notifTitle, options);
-}
-
 
 const main = async() => {
-    checkPermission();
-    await requestNotificationPermission()
-    const reg = await registerSW()
+    try {
+        checkPermission();
+        await requestNotificationPermission();
+        const reg = await registerSW();
+        console.log("Service Worker registered:", reg);
+    } catch (error) {
+        console.error(error.message);
+    }
 }
 
 main()

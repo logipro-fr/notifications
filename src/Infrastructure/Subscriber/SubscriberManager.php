@@ -36,7 +36,8 @@ class SubscriberManager
 
     public function __toString(): string
     {
-        $subscriberList = array_map(function (Subscriber $subscriber) {
+        $subscriberList = [];
+        foreach ($this->subscriberRepository->getAll() as $subscriber) {
             $subscriberId = $subscriber->getSubscriberId();
             $flattenedIds = [];
             foreach ($subscriberId as $key => $value) {
@@ -48,10 +49,15 @@ class SubscriberManager
                     $flattenedIds[] = $value;
                 }
             }
-            return implode(self::SEPARATOR, $flattenedIds);
-        }, $this->subscriberRepository->getAll());
+            $subscriberList[] = implode(self::SEPARATOR, $flattenedIds);
+        }
 
-        return self::SUB_TITLE_LIST . implode(self::POINT_SEPARATOR, array_filter($subscriberList));
+        $filteredSubscriberList = array_filter($subscriberList);
+        if (empty($filteredSubscriberList)) {
+            return self::SUB_TITLE_LIST; // Return title only if there are no subscribers
+        }
+
+        return self::SUB_TITLE_LIST . implode(self::POINT_SEPARATOR, $filteredSubscriberList);
     }
 
     //public function notifySubscribers(Publisher $publisher): void

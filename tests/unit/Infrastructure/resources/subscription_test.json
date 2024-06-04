@@ -1,5 +1,5 @@
 {
-    "endpoint": "https://fcm.googleapis.com/fcm/send/eOmO_2Z-nHA:APA91bHDoFG8hTpuf11C9t_rVP2IOIOcpDimDLF06DYI9NtRPnQlpRN89KeLP2rl6w8C7WryiEPzkCg3XBwQxmhfL36JNMKGdtNSwd4UegS-7sByuGlYjg6FubHASYrrHVcTfefZaV9W",
+    "endpoint": "https://navigatorname.com/fcm/send/keyaddress",
     "expirationTime": null,
     "keys": {
         "p256dh": "BNBaksmindsZK9u_mghq-Omb1_9bN-hJVP8KjLWB6mlHPf_R3JLmyd-0LwYBGErAjItB2Pex6bAKYFFR_gDdYpo",

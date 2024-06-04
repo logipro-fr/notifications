@@ -2,9 +2,13 @@
 
 namespace Notifications\Tests\Insfrastructure;
 
+use Minishlink\WebPush\MessageSentReport;
 use PHPUnit\Framework\TestCase;
 use Minishlink\WebPush\WebPush;
+use Notifications\Application\Service\Subscription\Subscription;
+use Notifications\Domain\Entity\Subscriber\Subscriber;
 use Notifications\Domain\Exceptions\BadDataClassException;
+use Notifications\Infrastructure\Subscriber\SubscriberManager;
 use Notifications\public\Send;
 
 class SendTest extends TestCase
@@ -13,11 +17,14 @@ class SendTest extends TestCase
     private const SUBSCRIPTION_FILETEST = 'subscription_test.json';
 
     protected Send $send;
+    protected SubscriberManager $subscriberManager;
 
     protected function setUp(): void
     {
-        $this->send = new Send();
+        $this->subscriberManager = $this->createMock(SubscriberManager::class);
+        $this->send = new Send();//$this->subscriberManager);
     }
+
 
     public function testSendNotificationMethod(): void
     {
@@ -27,6 +34,16 @@ class SendTest extends TestCase
         $output = strval(ob_get_clean());
         $this->assertStringContainsString('Request', $output);
         $this->assertStringContainsString('Response', $output);
+    }
+
+    public function testSendNotification(): void
+    {
+        $subscriptionData = $this->send->getSubscriptionData(__DIR__, self::SUBSCRIPTION_FILETEST);
+        $notificationData = $this->send->getNotificationData(__DIR__, self::NOTIFICATION_FILETEST);
+        $notificationDataJson = $this->send->encodeNotificationData($notificationData);
+        $options = ['TTL' => 5000];
+        $report = $this->send->sendOneNotification($subscriptionData, $notificationDataJson, $options);
+        $this->assertNotNull($report);
     }
 
     public function testValidSubscriptionData(): void
@@ -55,20 +72,9 @@ class SendTest extends TestCase
         $this->assertInstanceOf(WebPush::class, $webPush);
     }
 
-    public function testSendNotification(): void
-    {
-        $subscriptionData = $this->send->getSubscriptionData(__DIR__, self::SUBSCRIPTION_FILETEST);
-        $notificationData = $this->send->getNotificationData(__DIR__, self::NOTIFICATION_FILETEST);
-        $notificationDataJson = $this->send->encodeNotificationData($notificationData);
-        $options = ['TTL' => 5000];
-        $report = $this->send->sendOneNotification($subscriptionData, $notificationDataJson, $options);
-        $this->assertNotNull($report);
-    }
-
     public function testGoodOption(): void
     {
         $optionsWaited = ['TTL' => Send::TTL_NUMBER];
-
         $dataReaded = $this->send->getOptions();
         $this->assertEquals($optionsWaited, $dataReaded);
     }
@@ -79,8 +85,7 @@ class SendTest extends TestCase
         $this->expectExceptionMessage("Error encoding notification data to JSON");
 
         $subscriptionData = $this->send->getSubscriptionData(__DIR__, self::SUBSCRIPTION_FILETEST);
-        $notificationDataJson = false; // Simulate a failure in JSON encoding
-
+        $notificationDataJson = false;
         $this->send->sendOneNotification($subscriptionData, $notificationDataJson, []);
     }
 }

@@ -35,12 +35,13 @@ class SubscriberTest extends TestCase
             "endpoint" => "https://fakeoutputadresse",
             "expirationTime" => null,
             "keys" => [
-                "auth" => "",
-                "p256dh" => ""
+                "auth" => "YXJkZnpAZG5mcmtucQ==",
+                "p256dh" => "YXJkZnpAZG5mcmtucQ==",
             ]
         ];
         $this->notificationAddress = new NotificationAddress($this->fakeId);
         $this->publisher = new Publisher(self::URL_TARGET, $this->generator, $this->notificationAddress->getAddress());
+        $this->subscriber->subscribe($this->publisher, $this->fakeId);
     }
 
     public function testCreate(): void
@@ -51,8 +52,43 @@ class SubscriberTest extends TestCase
 
     public function testGetId(): void
     {
-        $this->subscriber->subscribe($this->publisher, $this->fakeId);
         $idObtained = $this->subscriber->getSubscriberId();
         $this->assertEquals($this->fakeId, $idObtained);
+    }
+
+    public function testGetEndpoint(): void
+    {
+        $endpoint = $this->subscriber->getEndpoint();
+        $this->assertEquals($this->fakeId['endpoint'], $endpoint);
+    }
+
+    public function testGetKeys(): void
+    {
+        $keys = $this->subscriber->getKeys();
+        $this->assertEquals($this->fakeId['keys'], $keys);
+    }
+
+    public function testGetExpirationTime(): void
+    {
+        $expirationTime = $this->subscriber->getExpirationTime();
+        $this->assertNull($expirationTime);
+    }
+
+    public function testGetDecodedKeys(): void
+    {
+        $decodedKeys = $this->subscriber->getDecodedKeys();
+        $expectedDecodedKeys = [
+            'auth' => base64_decode(strtr($this->fakeId['keys']['auth'], '-_', '+/')),
+            'p256dh' => base64_decode(strtr($this->fakeId['keys']['p256dh'], '-_', '+/'))
+        ];
+
+        $this->assertEquals($expectedDecodedKeys, $decodedKeys);
+    }
+
+    public function testBase64UrlDecode(): void
+    {
+        $data = "YXJkZnpAZG5mcmtucQ==";
+        $decodedData = $this->subscriber->getDecodedKeys();
+        $this->assertContains(base64_decode($data), $decodedData);
     }
 }

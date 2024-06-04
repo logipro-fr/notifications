@@ -5,8 +5,11 @@ namespace Notifications\public;
 use Minishlink\WebPush\MessageSentReport;
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription;
+use Notifications\Domain\Entity\Subscriber\Subscriber;
 use Notifications\Domain\Exceptions\BadDataClassException;
 use Notifications\Infrastructure\FileManager\ObtainData;
+use Notifications\Infrastructure\Subscriber\InMemorySubscriberRepository;
+use Notifications\Infrastructure\Subscriber\SubscriberManager;
 
 class Send
 {
@@ -14,7 +17,7 @@ class Send
 
     public const PUBLIC_KEY = 'BO71HBUxeIRbjm7m8Ed3mC_11XRv2OIpzEykqHLCIOc2Ol1H_R9zzIwCt69wkwPbGqbqbytdvikVAa0QKFqeyiM';
     public const PRIVATE_KEY = 'GSLEPUwC4hx9G4eY_w_7nx3C3tQSSE-UrQyUOMWCf9s';
-
+    public WebPush $webPush;
     public const AUTHENTIFICATOR_PROFILE = [
         'VAPID' => [
             'subject' => 'mailto:me@website.com',
@@ -23,18 +26,34 @@ class Send
         ],
     ];
 
+    //private SubscriberManager $subscriberManager;
+
+    public function __construct()//SubscriberManager $subscriberManager)
+    {
+        $repository = new InMemorySubscriberRepository();
+        //$this->subscriberManager = new SubscriberManager($repository);
+    }
+
     /**
      * @throws BadDataClassException
      */
     public function sendNotification(): void
     {
-        $userAddress = $this->getSubscriptionData(__DIR__, "subscription.json");
+        $subscription = $this->getSubscriptionData(__DIR__, "subscription.json");
         $notificationData = $this->getNotificationData(__DIR__, "notification.json");
         $notificationContent = $this->encodeNotificationData($notificationData);
 
         $options = $this->getOptions();
+        $auth = self::AUTHENTIFICATOR_PROFILE;
+        $webPush = new WebPush($auth);
 
-        $report = $this->sendOneNotification($userAddress, $notificationContent, $options);
+        //foreach ($subscribers as $subscriber) {
+        //    $subscription = Subscription::create([
+        //        'endpoint' => $subscriber->getEndpoint(),
+        //        'keys' => $subscriber->getDecodedKeys()
+        //    ]);
+
+        $report = $this->sendOneNotification($subscription, $notificationContent, $options);
         print_r($report);
     }
 
