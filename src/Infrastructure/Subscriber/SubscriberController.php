@@ -2,50 +2,57 @@
 
 namespace Notifications\Infrastructure\Subscriber;
 
-use Notifications\Domain\Entity\Publisher\Publisher;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Domain\Services\KeyGeneratorStrategy;
-use Notifications\Tests\Domain\Services\KeyGenFake;
+use Minishlink\WebPush\Subscription;
 
 class SubscriberController
 {
-    private SubscriberManager $subscriberManager;
+    private $subscriptionsFile = '../subscriptions.json';
 
-    public function __construct(SubscriberManager $subscriberManager)
+    public function subscribe()
     {
-        $this->subscriberManager = $subscriberManager;
-    }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
 
-    /**
-     * @param array{endpoint: string, expirationTime: ?string,
-     * keys: array{auth: string, p256dh: string}, notificationAddress: array<string, string>} $data
-     * @return string
-     */
-    public function addSubscriber(array $data): string
-    {
-        $subscriber = new Subscriber();
-        $keyGenerator = new KeyGenFake();
+            if ($this->isValidSubscription($data)) {
+                $subscription = new Subscription(
+                    $data['endpoint'],
+                    $data['keys']['p256dh'],
+                    $data['keys']['auth']
+                );
 
-        // Construire correctement le tableau pour Publisher
-        $notificationAddress = [
-            'endpoint' => $data['endpoint'],
-            'expirationTime' => $data['expirationTime'],
-            'keys' => $data['keys'],
-        ];
+                $this->saveSubscription($subscription);
 
-        $publisher = new Publisher('PublisherName', $keyGenerator, $notificationAddress);
-        $subscriber->subscribe($publisher, $data);
-        $this->subscriberManager->addSubscriber($subscriber);
-        return "Subscriber added";
-    }
-
-    public function getSubscribers(): string
-    {
-        $subscribers = $this->subscriberManager->getSubscribers();
-        $jsonResult = json_encode($subscribers);
-        if ($jsonResult === false) {
-            return "Error encoding JSON";
+                echo json_encode(['success' => true]);
+            } else {
+                echo json_encode(['error' => 'Invalid subscription data']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method Not Allowed']);
         }
-        return $jsonResult;
+    }
+
+    private function isValidSubscription($data)
+    {
+        return isset($data['endpoint'], $data['keys']['p256dh'], $data['keys']['auth']);
+    }
+
+    private function saveSubscription($subscription)
+    {
+        $subscriptions = $this->loadSubscriptions();
+        $subscriptions[] = $subscription;
+
+        file_put_contents($this->subscriptionsFile, json_encode($subscriptions));
+    }
+
+    private function loadSubscriptions()
+    {
+        if (!file_exists($this->subscriptionsFile)) {
+            return [];
+        }
+
+        $content = file_get_contents($this->subscriptionsFile);
+        return json_decode($content, true);
     }
 }

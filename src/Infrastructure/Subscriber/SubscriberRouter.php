@@ -23,7 +23,7 @@ class SubscriberRouter
     public function routeRequest(string $uri, string $method, array $data): string
     {
         if ($uri === '/addSubscriber' && $method === 'POST') {
-            return $this->subscriberController->addSubscriber($data);
+            return $this->subscriberController->subscribe($data);
         }
 
         if ($uri === '/getSubscribers' && $method === 'GET') {

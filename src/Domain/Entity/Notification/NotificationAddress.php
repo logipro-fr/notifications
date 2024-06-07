@@ -4,20 +4,50 @@ namespace Notifications\Domain\Entity\Notification;
 
 class NotificationAddress
 {
-    /** @var array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
-    private array $navigatorAddress;
-
-    /**
-     * @param array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} $address
-     */
-    public function __construct(array $address)
+    public function __construct(
+        private string  $endpoint,
+        private ?string $publicKey = null,
+        private ?string $authToken = null,
+        private ?string $contentEncoding = null) 
     {
-        $this->navigatorAddress = $address;
+        if($publicKey || $authToken || $contentEncoding) {
+            $supportedContentEncodings = ['aesgcm', 'aes128gcm'];
+            if ($contentEncoding && !in_array($contentEncoding, $supportedContentEncodings, true)) {
+                throw new \ErrorException('This content encoding ('.$contentEncoding.') is not supported.');
+            }
+            $this->contentEncoding = $contentEncoding ?: "aesgcm";
+        }
     }
 
-    /** @return array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
-    public function getAddress(): array
+    /**
+     * {@inheritDoc}
+     */
+    public function getEndpoint(): string
     {
-        return $this->navigatorAddress;
+        return $this->endpoint;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPublicKey(): ?string
+    {
+        return $this->publicKey;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAuthToken(): ?string
+    {
+        return $this->authToken;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getContentEncoding(): ?string
+    {
+        return $this->contentEncoding;
     }
 }
