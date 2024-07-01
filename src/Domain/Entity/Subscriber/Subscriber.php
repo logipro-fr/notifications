@@ -2,72 +2,75 @@
 
 namespace Notifications\Domain\Entity\Subscriber;
 
-use Notifications\Domain\Entity\Publisher\Publisher;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * @ORM\Entity
+ */
 class Subscriber
 {
-    /** @var array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
-    protected array $subscriberId;
-    private string $endpoint;
-    /** @var array{auth: string, p256dh: string} */
-    private array $keys;
-    private ?string $expirationTime;
-
+    /**
+     * @ORM\Embedded(class="Endpoint")
+     */
+    private Endpoint $endpoint;
 
     /**
-     * @param Publisher $name
-     * @param array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} $userAddress
-     * @return string
+     * @ORM\Embedded(class="Keys")
      */
-    public function subscribe(Publisher $name, array $userAddress): string
-    {
-        $this->subscriberId = $userAddress;
-        $this->endpoint = $userAddress['endpoint'];
-        $this->keys = $userAddress['keys'];
-        $this->expirationTime = $userAddress['expirationTime'];
+    private Keys $keys;
 
-        return "subscribed";
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private ExpirationTime $expirationTime;
+
+    /**
+     * @ORM\Column(type="string", enumType="Status")
+     */
+    private Status $status;
+
+    public function __construct(
+        Endpoint $endpoint,
+        Keys $keys,
+        ExpirationTime $time,
+    ) {
+        $this->endpoint = $endpoint;
+        $this->keys = $keys;
+        $this->expirationTime = $time;
+        $this->status = Status::SUBSCRIBED;
     }
 
     /**
-     * @return array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}}
+     * {@inheritDoc}
      */
-    public function getSubscriberId(): array
-    {
-        return $this->subscriberId;
-    }
-
-    public function getEndpoint(): string
+    public function getEndpoint(): Endpoint
     {
         return $this->endpoint;
     }
 
     /**
-     * @return array{auth: string, p256dh: string}
+     * {@inheritDoc}
      */
-    public function getKeys(): array
+    public function getKeys(): Keys
     {
         return $this->keys;
     }
 
-    public function getExpirationTime(): ?string
+    /**
+     * {@inheritDoc}
+     */
+    public function getExpirationTime(): ExpirationTime
     {
         return $this->expirationTime;
     }
 
-    /**
-     * @return array{auth: string, p256dh: string}
-     */
-    public function getDecodedKeys(): array
+    public function setStatus(Status $newStatus): void
     {
-        return [
-            'auth' => isset($this->keys['auth']) ? $this->base64UrlDecode($this->keys['auth']) : '',
-            'p256dh' => isset($this->keys['p256dh']) ? $this->base64UrlDecode($this->keys['p256dh']) : '',
-        ];
+        $this->status = $newStatus;
     }
 
-    private function base64UrlDecode(string $data): string
+    public function getStatus(): Status
     {
-        return base64_decode(strtr($data, '-_', '+/'));
+        return $this->status;
     }
 }

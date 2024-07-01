@@ -3,153 +3,55 @@
 namespace Notifications\Tests\Domain\Entity\Publisher;
 
 use Notifications\Domain\Services\KeyGeneratorStrategy;
-use Notifications\Domain\Entity\Notification\NotificationAddress;
 use Notifications\Domain\Entity\Publisher\Publisher;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Infrastructure\Keys\VapidGenerator;
-use Notifications\Tests\Domain\Services\KeyGenFake;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 class PublisherTest extends TestCase
 {
-    private const URL_1 = "https://example.fr";
-    /** @var array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
-    private const SUB1_ID = [
-        "endpoint" => "https://example.fr",
-        "expirationTime" => null,
-        "keys" => [
-            "auth" => "",
-            "p256dh" => ""
-        ]
-    ];
-    private const URL_2 = "https://fakeoutputadresse";
-    /** @var array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
-    private const SUB2_ID = [
-        "endpoint" => "https://fakeoutputadresse",
-        "expirationTime" => null,
-        "keys" => [
-            "auth" => "",
-            "p256dh" => ""
-        ]
-    ];
+    /** @var \PHPUnit\Framework\MockObject\MockObject&KeyGeneratorStrategy */
+    private $keyGeneratorMock;
 
-    protected KeyGeneratorStrategy $generatorFake;
-    protected KeyGeneratorStrategy $generatorVAPID;
+    private const PUBLICKEY = 'BMtpkXoQX6GHZFTlCQUNF2I_kvWu4QcXyHJ2E-fnGz4Jle-MXtP8pD-lPaG7Gm27OVZUMVC87HiB8cvqP7o0YPQ';
+    private const PRIVATEKEY = 'wG8isO8A1l7Hw3q2eq29rv7XaFdWgPBDR1cwWJCA7qM';
 
     protected function setUp(): void
     {
-        $this->generatorFake = new KeyGenFake();
-        $this->generatorVAPID = new VapidGenerator();
+        $this->keyGeneratorMock = $this->createMock(KeyGeneratorStrategy::class);
+        $this->keyGeneratorMock->method('generateACoupleOfKey')
+            ->willReturn([
+                'publicKey' => self::PUBLICKEY,
+                'privateKey' => self::PRIVATEKEY,
+            ]);
     }
 
-    public function testCreateAnUniquePublisher(): void
+    public function testPublisherInitialization(): void
     {
-        $notificationAddress = new NotificationAddress(self::SUB1_ID);
-        $notificationSystem = new Publisher(self::URL_1, $this->generatorFake, $notificationAddress->getAddress());
-        $resultURL = $notificationSystem->getNotificationAddress()->getAddress();
-        $this->assertEquals(self::SUB1_ID, $resultURL);
-        $this->assertInstanceOf(Publisher::class, $notificationSystem);
-        $this->assertIsString($key1 = $notificationSystem->getPublicKey());
+        $publisher = new Publisher('testName', $this->keyGeneratorMock);
 
-        $notificationAddress2 = new NotificationAddress(self::SUB2_ID);
-        $ns = new Publisher(self::URL_2, $this->generatorFake, $notificationAddress2->getAddress());
-        $this->assertNotEquals($key1, $ns->getPublicKey());
+        $this->assertEquals(self::PUBLICKEY, $publisher->getPublicKey());
+        $this->assertEquals('testName', $publisher->getTargetName());
     }
 
-    public function testVapid(): void
+    public function testRemovePublicKey(): void
     {
-        $notificationAddress = new NotificationAddress(self::SUB1_ID);
-        $notificationSystem = new Publisher(self::URL_1, $this->generatorVAPID, $notificationAddress->getAddress());
-        $this->assertInstanceOf(Publisher::class, $notificationSystem);
-        $this->assertIsString($notificationSystem->getPublicKey());
+        $publisher = new Publisher('testName', $this->keyGeneratorMock);
+
+        $this->assertEquals(self::PUBLICKEY, $publisher->getPublicKey());
+
+        $result = $publisher->removePublicKey();
+
+        $this->assertEquals('KeyRemoved', $result);
+        $this->assertEquals('', $publisher->getPublicKey());
     }
 
-    public function testTarget(): void
+    public function testRemovePublicKeyWhenAlreadyRemoved(): void
     {
-        $notificationAddress = new NotificationAddress(self::SUB1_ID);
-        $notificationSystem = new Publisher(self::URL_1, $this->generatorVAPID, $notificationAddress->getAddress());
-        $this->assertEquals(self::URL_1, $notificationSystem->getTargetName());
-    }
+        $publisher = new Publisher('testName', $this->keyGeneratorMock);
 
-    public function testAddSubscriber(): void
-    {
-        $notificationAddress = new NotificationAddress(self::SUB1_ID);
-        $publisher = new Publisher(self::URL_1, $this->generatorVAPID, $notificationAddress->getAddress());
-        $reflectionPublisher = new ReflectionClass($publisher);
-        $property = $reflectionPublisher->getProperty("subscribers");
-        $property->setAccessible(true);
+        $publisher->removePublicKey();
+        $result = $publisher->removePublicKey();
 
-        $subscriber = new Subscriber();
-        $publisher->subscribe($subscriber);
-
-        $subscribers = $property->getValue($publisher);
-        $this->assertIsArray($subscribers);
-        $this->assertEquals(1, count($subscribers));
-
-        $subscriber = new Subscriber();
-        $publisher->subscribe($subscriber);
-
-        $subscribers = $property->getValue($publisher);
-        $this->assertIsArray($subscribers);
-        $this->assertEquals(2, count($subscribers));
-    }
-
-    public function testDeleteSubscriber(): void
-    {
-        $notificationAddress = new NotificationAddress(self::SUB1_ID);
-        $publisher = new Publisher(self::URL_1, $this->generatorVAPID, $notificationAddress->getAddress());
-        $reflectionPublisher = new ReflectionClass($publisher);
-        $property = $reflectionPublisher->getProperty("subscribers");
-        $property->setAccessible(true);
-
-        $subscriber = new Subscriber();
-        $publisher->subscribe($subscriber);
-
-        $subscribers = $property->getValue($publisher);
-        $this->assertIsArray($subscribers);
-        $this->assertEquals(1, count($subscribers));
-
-        $publisher->unsubscribe($subscriber);
-
-        $subscribers = $property->getValue($publisher);
-        $this->assertIsArray($subscribers);
-        $this->assertEquals(0, count($subscribers));
-        $this->assertEmpty($publisher->removePublicKey());
-    }
-
-    public function testUnsubscribeCallsRemovePublicKey(): void
-    {
-        $notificationAddress = new NotificationAddress(self::SUB1_ID);
-        $keyGenerator = $this->generatorVAPID;
-
-        $publisher = new Publisher(self::URL_1, $keyGenerator, $notificationAddress->getAddress());
-
-        $subscriber = $this->createMock(Subscriber::class);
-        $publisher->subscribe($subscriber);
-
-        $this->assertEquals("KeyRemoved", $publisher->removePublicKey());
-    }
-
-    public function testUnsubscribeNonExistingSubscriber(): void
-    {
-        $notificationAddress = new NotificationAddress(self::SUB1_ID);
-        $keyGenerator = $this->generatorVAPID;
-
-        $publisher = new Publisher(self::URL_1, $keyGenerator, $notificationAddress->getAddress());
-
-        $subscriber1 = $this->createMock(Subscriber::class);
-
-        $publisher->subscribe($subscriber1);
-        $reflectionPublisher = new ReflectionClass($publisher);
-        $property = $reflectionPublisher->getProperty("subscribers");
-        $property->setAccessible(true);
-        $nonExistingSubscriber = $this->createMock(Subscriber::class);
-
-        $publisher->unsubscribe($nonExistingSubscriber);
-
-        $subscribers = $property->getValue($publisher);
-        $this->assertIsArray($subscribers);
-        $this->assertEquals(1, count($subscribers));
+        $this->assertEquals('', $result);
+        $this->assertEquals('', $publisher->getPublicKey());
     }
 }

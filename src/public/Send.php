@@ -8,6 +8,7 @@ use Minishlink\WebPush\Subscription;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
 use Notifications\Domain\Exceptions\BadDataClassException;
 use Notifications\Infrastructure\FileManager\ObtainData;
+use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 use Notifications\Infrastructure\Subscriber\InMemorySubscriberRepository;
 use Notifications\Infrastructure\Subscriber\SubscriberManager;
 
@@ -30,8 +31,7 @@ class Send
 
     public function __construct()//SubscriberManager $subscriberManager)
     {
-        $repository = new InMemorySubscriberRepository();
-        //$this->subscriberManager = new SubscriberManager($repository);
+        $repository = new SubscriberRepositoryInMemory();
     }
 
     /**

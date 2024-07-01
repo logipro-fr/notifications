@@ -4,11 +4,12 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-use Notifications\Application\Service\Subscription\Subscription;
-use Notifications\Application\Service\Subscription\SubscriptionRequest;
-use Notifications\Domain\Entity\Notification\NotificationAddress;
-use Notifications\Domain\Entity\Publisher\Publisher;
+use Notifications\Application\Service\Subscription;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Domain\Entity\Publisher\Publisher;
+use Notifications\Domain\Entity\Subscriber\Endpoint;
+use Notifications\Domain\Entity\Subscriber\ExpirationTime;
+use Notifications\Domain\Entity\Subscriber\Keys;
 use Notifications\Infrastructure\Keys\VapidGenerator;
 
 /**
@@ -16,19 +17,7 @@ use Notifications\Infrastructure\Keys\VapidGenerator;
  */
 class VisualizePointsContext implements Context
 {
-    private ?Publisher $websiteNotificationPublisher;
-    private Subscriber $navigatorUserThatWantToSubscribe;
-    private NotificationAddress $notificationAddress;
     private const URL_PUBLISHER = "nextsign.fr";
-    /** @var array{endpoint: string, expirationTime: ?string, keys: array{auth: string, p256dh: string}} */
-    private const SUB_ID = [
-        "endpoint" => "nextsign.fr",
-        "expirationTime" => null,
-        "keys" => [
-            "auth" => "",
-            "p256dh" => ""
-        ]
-    ];
 
     /**
      * Initializes context.
@@ -39,7 +28,7 @@ class VisualizePointsContext implements Context
      */
     public function __construct()
     {
-        $this->websiteNotificationPublisher = null;
+
     }
 
         /**
@@ -47,11 +36,10 @@ class VisualizePointsContext implements Context
      */
     public function aWebsiteNotificationPublisherProposeAUserToSubscribeToReceiveNotification(): void
     {
-        $generator = new VapidGenerator();
-        $this->notificationAddress = new NotificationAddress(self::SUB_ID);
-        $userAdress = $this->notificationAddress->getAddress();
-        $this->websiteNotificationPublisher = new Publisher(self::URL_PUBLISHER, $generator, $userAdress);
-        $this->navigatorUserThatWantToSubscribe = new Subscriber();
+        $endpoint = new Endpoint(self::URL_PUBLISHER);
+        $generator = new Keys();
+        $expirationTime = new ExpirationTime();
+
     }
 
     /**
@@ -59,11 +47,6 @@ class VisualizePointsContext implements Context
      */
     public function theUserAcceptsToSubscribe(): void
     {
-        $request = new SubscriptionRequest(self::SUB_ID);
-
-        $generator = new VapidGenerator();
-        $service = new Subscription($generator);
-        $service->execute($request);
     }
 
     /**
@@ -72,10 +55,6 @@ class VisualizePointsContext implements Context
     public function theNavigatorOnTheDeviceBecomeANewSubscriberOfThePublisher(): void
     {
         $generator = new VapidGenerator();
-        $this->notificationAddress = new NotificationAddress(self::SUB_ID);
-        $userAdress = $this->notificationAddress->getAddress();
-        $this->websiteNotificationPublisher = new Publisher(self::URL_PUBLISHER, $generator, $userAdress);
-        $this->websiteNotificationPublisher->subscribe($this->navigatorUserThatWantToSubscribe);
     }
 
     /**
@@ -107,11 +86,7 @@ class VisualizePointsContext implements Context
      */
     public function theUserWantToUnsubscribe(): void
     {
-        $request = new SubscriptionRequest(self::SUB_ID);
 
-        $generator = new VapidGenerator();
-        $service = new Subscription($generator);
-        $service->execute($request);
     }
 
     /**

@@ -1,0 +1,96 @@
+<?php
+
+namespace Notifications\Infrastructure\Api\V1;
+
+use Doctrine\ORM\EntityManagerInterface;
+use Notifications\Application\Service\ApiInterface;
+use Notifications\Application\Service\Subscription;
+use Notifications\Application\Service\SubscriptionRequest;
+use Notifications\Application\Service\SubscriptionResponse;
+use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Domain\EventFacade\EventFacade;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Throwable;
+
+use function Safe\json_decode;
+
+class PublisherController
+{
+    public function __construct(
+        private ApiInterface $api,
+        private SubscriberRepositoryInterface $repo,
+        private EntityManagerInterface $entityManager
+    ) {
+    }
+
+    #[Route('/api/v1/post/publish', "publish_post", methods: ['POST'])]
+    public function execute(Request $request): JsonResponse
+    {
+        return $this->handleRequest(function () use ($request) {
+            $publishRequest = $this->buildPublishRequest($request);
+            $service = new Subscription($this->api, $this->repo);
+            $service->execute($publishRequest);
+            (new EventFacade())->distribute();
+            $publishResponse = $service->getResponse();
+            $this->entityManager->flush();
+            return $this->writeSuccessfulResponse($publishResponse);
+        });
+    }
+
+    private function handleRequest(callable $function): JsonResponse
+    {
+        try {
+            return $function();
+        } catch (Throwable $e) {
+            return $this->writeUnSuccessFulResponse($e);
+        }
+    }
+
+    private function writeSuccessfulResponse(SubscriptionResponse $publishResponse): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'success' => true,
+                'ErrorCode' => "",
+                'data' => [
+                    'endpoint' => $publishResponse->endpoint
+                ],
+                'message' => "",
+            ],
+            201
+        );
+    }
+
+    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
+    {
+        $className = (new \ReflectionClass($e))->getShortName();
+        return new JsonResponse(
+            [
+                'success' => false,
+                'ErrorCode' => $className,
+                'data' => '',
+                'message' => $e->getMessage(),
+            ],
+            $e->getCode(),
+        );
+    }
+
+    private function buildPublishRequest(Request $request): SubscriptionRequest
+    {
+        /** @var string */
+        $content = $request->getContent();
+        /** @var array<string> */
+        $data = json_decode($content, true);
+   
+        /** @var string */
+        $endpoint = $data['endpoint'];
+        /** @var string */
+        $expirationTime = $data['expirationTime'];
+        /** @var string */
+        $keys = $data['keys'];
+
+        return new SubscriptionRequest($endpoint, $expirationTime, $keys);
+    }
+}

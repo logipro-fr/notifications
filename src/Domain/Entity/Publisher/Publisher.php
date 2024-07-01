@@ -3,7 +3,6 @@
 namespace Notifications\Domain\Entity\Publisher;
 
 use Minishlink\WebPush\WebPush;
-use Notifications\Domain\Entity\Notification\NotificationAddress;
 use Notifications\Domain\Services\KeyGeneratorStrategy;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
 
@@ -12,7 +11,6 @@ class Publisher
     private string $publicKey;
     private string $privateKey;
     private string $name;
-    private NotificationAddress $notificationAddress;
 
     /** @var array<Subscriber> */
     protected array $subscribers = [];
@@ -20,6 +18,7 @@ class Publisher
 
     public function __construct(string $name, private KeyGeneratorStrategy $keyGenerator)
     {
+        $this->name = $name;
         $keys = $this->keyGenerator->generateACoupleOfKey();
         $this->publicKey = $keys['publicKey'];
         $this->privateKey = $keys['privateKey'];
@@ -32,7 +31,7 @@ class Publisher
         ];
 
         $webPush = new WebPush($auth);
-        $webPush->queueNotification(...);
+        //$webPush->queueNotification(...);
     }
 
     public function getPublicKey(): string

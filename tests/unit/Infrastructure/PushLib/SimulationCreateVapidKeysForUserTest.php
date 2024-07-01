@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Insfrastructure\Lib;
+namespace Notifications\Tests\Infrastructure\Lib;
 
 use Notifications\Infrastructure\FileManager\ObtainData;
 use Notifications\Infrastructure\PushLib\Pushlib;

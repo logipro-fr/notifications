@@ -1,0 +1,19 @@
+doctrine:
+    dbal:
+        url: "%env(resolve:DATABASE_URL)%"
+        types:
+            endpoint: Notifications\Infrastructure\Persistence\Doctrine\Types\EndpointType
+            expirationTime: Notifications\Infrastructure\Persistence\Doctrine\Types\ExpirationTimeType
+            keys: Notifications\Infrastructure\Persistence\Doctrine\Types\KeysEncryptType
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        controller_resolver:
+            auto_mapping: true
+        mappings:
+            Notifications:
+                is_bundle: false
+                type: xml
+                dir: "%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping"
+                prefix: 'Notifications\Domain\Entity'

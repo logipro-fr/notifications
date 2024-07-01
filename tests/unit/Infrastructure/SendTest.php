@@ -1,14 +1,10 @@
 <?php
 
-namespace Notifications\Tests\Insfrastructure;
+namespace Notifications\Tests\Infrastructure;
 
-use Minishlink\WebPush\MessageSentReport;
 use PHPUnit\Framework\TestCase;
 use Minishlink\WebPush\WebPush;
-use Notifications\Application\Service\Subscription\Subscription;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
 use Notifications\Domain\Exceptions\BadDataClassException;
-use Notifications\Infrastructure\Subscriber\SubscriberManager;
 use Notifications\public\Send;
 
 class SendTest extends TestCase
@@ -17,12 +13,11 @@ class SendTest extends TestCase
     private const SUBSCRIPTION_FILETEST = 'subscription_test.json';
 
     protected Send $send;
-    protected SubscriberManager $subscriberManager;
 
     protected function setUp(): void
     {
-        $this->subscriberManager = $this->createMock(SubscriberManager::class);
-        $this->send = new Send();//$this->subscriberManager);
+
+        $this->send = new Send();
     }
 
 

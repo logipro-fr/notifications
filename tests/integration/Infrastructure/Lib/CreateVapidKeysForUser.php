@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Integration\Insfrastructure\Lib;
+namespace Notifications\Tests\Integration\Infrastructure\Lib;
 
 use Notifications\Infrastructure\Keys\VapidGenerator;
 use PHPUnit\Framework\TestCase;

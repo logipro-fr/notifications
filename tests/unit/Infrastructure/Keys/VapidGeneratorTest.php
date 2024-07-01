@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Insfrastructure;
+namespace Notifications\Tests\Infrastructure;
 
 use Notifications\Domain\Services\KeyGeneratorStrategy;
 use Notifications\Infrastructure\Keys\VapidGenerator;
