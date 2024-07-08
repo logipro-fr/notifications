@@ -10,8 +10,8 @@ class SubscriptionRequest
 {
     public function __construct(
         public readonly string $endpoint,
-        public readonly string $expirationTime,
-        public readonly string $keys
+        public readonly ?string $expirationTime,
+        public readonly mixed $keys
     ) {
     }
 }

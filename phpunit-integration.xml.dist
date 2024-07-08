@@ -15,14 +15,11 @@
   <php>
     <env name="APP_ENV" value="test" force="true"/>
     <env name="KERNEL_CLASS" value="Notifications\Infrastructure\Shared\Symfony\Kernel"/>
-    <env name="DATABASE_URL" value='mysql://root:logipro@notifications-mariadb:33080/notifications?serverVersion=10.11.5-MariaDB&amp;charset=utf8mb4' force="true" />
+    <env name="DATABASE_URL" value='mysql://root:notifications@notifications-mariadb:33080/notifications?serverVersion=10.11.5-MariaDB&amp;charset=utf8mb4' force="true" />
   </php>
   <source>
     <include>
       <directory suffix=".php">src</directory>
     </include>
-    <exclude>
-      <directory suffix=".php">src/public</directory>
-    </exclude>
   </source>
 </phpunit>

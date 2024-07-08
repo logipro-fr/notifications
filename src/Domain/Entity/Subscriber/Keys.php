@@ -10,6 +10,10 @@ class Keys implements KeyGeneratorStrategy
     /** @var array<string, string> */
     private array $vapid;
 
+    public function __construct()
+    {
+        $this->vapid = [];
+    }
     /**
      * @return array<string, string>
      */
@@ -24,8 +28,12 @@ class Keys implements KeyGeneratorStrategy
      */
     public function getVAPIDKeys(): array
     {
+        if (!isset($this->vapid)) {
+            throw new \RuntimeException("VAPID keys have not been initialized.");
+        }
         return $this->vapid;
     }
+
 
     public function __toString(): string
     {

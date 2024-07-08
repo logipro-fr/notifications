@@ -16,11 +16,13 @@ use Notifications\Domain\Exceptions\SubscriberNotFoundException;
 class SubscriberRepositoryDoctrine extends EntityRepository implements SubscriberRepositoryInterface
 {
     private const ERROR_MSG = "Error can't find the endpoint %s";
+
     public function __construct(EntityManagerInterface $em)
     {
         $class = $em->getClassMetadata(Subscriber::class);
         parent::__construct($em, $class);
     }
+
     public function add(Subscriber $subscriber): void
     {
         $this->getEntityManager()->persist($subscriber);

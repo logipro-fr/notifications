@@ -1,0 +1,136 @@
+openapi: 3.1.0
+info:
+  title: Notifications Documentation
+  version: 1.0.0
+  description: >-
+    Documentation for Notifications
+servers:
+  - url: /api/v1
+    description: API routes
+  - url: http://172.17.0.1:11403/api/v1
+    description: Local Development usage API routes 
+paths:
+  /subscriber/register:
+    post:
+      summary: Subscribe a navigator
+      operationId: subscriber
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Website:
+                  type: string
+                  description: The website to subscribe to
+                  example: SimpleBlog
+                endpoint:
+                  type: string
+                  description: The subscriber's url
+                  example: https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx
+                expirationTime:
+                  type: string
+                  description: The duration of the subscriber entity
+                  example: null
+                keys:
+                  type: string[]
+                  description: Keys to identify the subscriber
+                  example:  {
+                              auth: 8veJjf8tjO1kbYlX3zOoRw,
+                              p256dh: BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL_pEdR9rt1xgJdVCNJYm6_8AJ6wP2AvfjNHKehcqbSveo0c
+                            }
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: true
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: null
+                  data:
+                    type: object
+                    properties:
+                      endpoint:
+                        type: string
+                        description: The endpoint of the subscriber
+                        example: https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx
+                    description: Data returned after the subscription
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: ""
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InvalidRequestException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: UnprocessableEntityException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Unprocessable entity
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InternalServerErrorException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Internal server error

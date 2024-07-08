@@ -3,7 +3,7 @@
 namespace Notifications\Infrastructure\Api\V1;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Notifications\Application\Service\ApiInterface;
+use Notifications\Application\Service\AbstractFactoryPushApi;
 use Notifications\Application\Service\Subscription;
 use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Application\Service\SubscriptionResponse;
@@ -19,18 +19,17 @@ use function Safe\json_decode;
 class PublisherController
 {
     public function __construct(
-        private ApiInterface $api,
         private SubscriberRepositoryInterface $repo,
         private EntityManagerInterface $entityManager
     ) {
     }
 
-    #[Route('/api/v1/post/publish', "publish_post", methods: ['POST'])]
+    #[Route('/api/v1/subscriber/register', "subscription", methods: ['POST'])]
     public function execute(Request $request): JsonResponse
     {
         return $this->handleRequest(function () use ($request) {
             $publishRequest = $this->buildPublishRequest($request);
-            $service = new Subscription($this->api, $this->repo);
+            $service = new Subscription($this->repo);
             $service->execute($publishRequest);
             (new EventFacade())->distribute();
             $publishResponse = $service->getResponse();
@@ -55,9 +54,11 @@ class PublisherController
                 'success' => true,
                 'ErrorCode' => "",
                 'data' => [
-                    'endpoint' => $publishResponse->endpoint
+                    'endpoint' => $publishResponse->endpoint,
+                    'expirationTime' => $publishResponse->expirationTime,
+                    'keys' => $publishResponse->keys
                 ],
-                'message' => "",
+                'message' => "SUCCESS",
             ],
             201
         );
@@ -73,7 +74,7 @@ class PublisherController
                 'data' => '',
                 'message' => $e->getMessage(),
             ],
-            $e->getCode(),
+            500,
         );
     }
 
@@ -83,12 +84,12 @@ class PublisherController
         $content = $request->getContent();
         /** @var array<string> */
         $data = json_decode($content, true);
-   
+
         /** @var string */
         $endpoint = $data['endpoint'];
-        /** @var string */
+        /** @var ?string */
         $expirationTime = $data['expirationTime'];
-        /** @var string */
+        /** @var string[] */
         $keys = $data['keys'];
 
         return new SubscriptionRequest($endpoint, $expirationTime, $keys);

@@ -3,7 +3,6 @@
 namespace Notifications\Application\Service;
 
 use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Infrastructure\Provider\ProviderResponse;
 
 interface ApiInterface
 {

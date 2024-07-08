@@ -9,29 +9,34 @@ use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
 class Subscription
 {
     private SubscriptionResponse $response;
+
     public function __construct(
-        private ApiInterface $api,
         private SubscriberRepositoryInterface $repository,
-        private string $endpoint = ""
     ) {
     }
     public function execute(SubscriptionRequest $request): void
     {
         $subscriber = $this->createSubscriber($request);
-        $apiResponse = $this->api->subscriberApiRequest($subscriber);
+
+
         $this->repository->add($subscriber);
         $subscriber->setStatus(Status::SUBSCRIBED);
 
         $this->response = new SubscriptionResponse(
-            $apiResponse->endpoint,
-            "granted",
+            $subscriber->getEndpoint(),
+            $subscriber->getExpirationTime(),
+            $subscriber->getKeys()->getVAPIDKeys()
         );
     }
 
     private function createSubscriber(SubscriptionRequest $request): Subscriber
     {
         $subscriberFactory = new SubscriberFactory();
-        return $subscriberFactory->buildSubscriberFromRequest($request, $this->endpoint);
+        $subscriber = $subscriberFactory->buildSubscriberFromRequest($request);
+        if (empty($subscriber->getEndpoint())) {
+            throw new \Exception("Subscriber was created without a valid endpoint.");
+        }
+        return $subscriber;
     }
 
     public function getResponse(): SubscriptionResponse

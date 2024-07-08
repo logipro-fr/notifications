@@ -28,7 +28,6 @@ class VisualizePointsContext implements Context
      */
     public function __construct()
     {
-
     }
 
         /**
@@ -39,7 +38,6 @@ class VisualizePointsContext implements Context
         $endpoint = new Endpoint(self::URL_PUBLISHER);
         $generator = new Keys();
         $expirationTime = new ExpirationTime();
-
     }
 
     /**
@@ -86,7 +84,6 @@ class VisualizePointsContext implements Context
      */
     public function theUserWantToUnsubscribe(): void
     {
-
     }
 
     /**

@@ -4,7 +4,7 @@ namespace Notifications\Domain\Entity\Subscriber;
 
 class ExpirationTime
 {
-    public function __construct(private string $id = "")
+    public function __construct(private ?string $id = "")
     {
         if (empty($this->id)) {
             $this->id = uniqid("ExpirationTime");
@@ -20,6 +20,9 @@ class ExpirationTime
     }
     public function __toString(): string
     {
+        if ($this->id == null) {
+            return "";
+        }
         return $this->id;
     }
 }

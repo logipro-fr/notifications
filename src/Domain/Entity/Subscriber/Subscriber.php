@@ -3,12 +3,14 @@
 namespace Notifications\Domain\Entity\Subscriber;
 
 use Doctrine\ORM\Mapping as ORM;
+use Notifications\Domain\Entity\Publisher\Publisher;
 
 /**
  * @ORM\Entity
  */
 class Subscriber
 {
+    private Publisher $publisher;
     /**
      * @ORM\Embedded(class="Endpoint")
      */
@@ -33,11 +35,13 @@ class Subscriber
         Endpoint $endpoint,
         Keys $keys,
         ExpirationTime $time,
+        Publisher $publisher
     ) {
         $this->endpoint = $endpoint;
         $this->keys = $keys;
         $this->expirationTime = $time;
         $this->status = Status::SUBSCRIBED;
+        $this->publisher = $publisher;
     }
 
     /**
@@ -72,5 +76,10 @@ class Subscriber
     public function getStatus(): Status
     {
         return $this->status;
+    }
+
+    public function getPublisher(): Publisher
+    {
+        return $this->publisher;
     }
 }
