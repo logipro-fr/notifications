@@ -4,6 +4,7 @@ namespace Notifications\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Notifications\Domain\Entity\Subscriber\Endpoint;
 
 class EndpointType extends Type
 {
@@ -15,12 +16,16 @@ class EndpointType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
-        return serialize($value);
+        if (!$value instanceof Endpoint) {
+            throw new \InvalidArgumentException('Invalid type for endpoint conversion.');
+        }
+        return $value->__toString();
     }
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return 'text';
+        $length = 255;
+        return "VARCHAR($length)";
     }
 
     /**
@@ -28,6 +33,6 @@ class EndpointType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return unserialize($value);
+        return new Endpoint($value);
     }
 }

@@ -38,8 +38,6 @@ services:
     build:
       context: .
       dockerfile: mariadb/Dockerfile
-      tags:
-        - latest
     restart: always
     volumes:
       - /home/debian/projet/notifications-mariadb/_data:/var/lib/mysql

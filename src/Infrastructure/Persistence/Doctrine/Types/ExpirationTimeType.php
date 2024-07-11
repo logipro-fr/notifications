@@ -4,6 +4,7 @@ namespace Notifications\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 
 class ExpirationTimeType extends Type
 {
@@ -15,12 +16,12 @@ class ExpirationTimeType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
-        return serialize($value);
+        return $value->__toString();
     }
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform)
     {
-        return 'text';
+        return "text";
     }
 
     /**
@@ -28,6 +29,6 @@ class ExpirationTimeType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return unserialize($value);
+        return new ExpirationTime();
     }
 }

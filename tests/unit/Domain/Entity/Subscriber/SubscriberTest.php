@@ -3,6 +3,8 @@
 namespace Notifications\Tests\Domain\Entity\Subscriber;
 
 use Notifications\Domain\Entity\Publisher\Publisher;
+use Notifications\Domain\Entity\Subscriber\AuthKey;
+use Notifications\Domain\Entity\Subscriber\EncryptKey;
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Domain\Entity\Subscriber\Keys;
@@ -12,14 +14,14 @@ use PHPUnit\Framework\TestCase;
 class SubscriberTest extends TestCase
 {
     private Endpoint $endpoint;
-    private Keys $publicKey;
+    private Keys $keys;
     private ExpirationTime $expirationTime;
     private Publisher $publisher;
 
     protected function setUp(): void
     {
         $this->endpoint = $this->createMock(Endpoint::class);
-        $this->publicKey = $this->createMock(Keys::class);
+        $this->keys = $this->createMock(Keys::class);
         $this->expirationTime = $this->createMock(ExpirationTime::class);
         $this->publisher = $this->createMock(Publisher::class);
     }
@@ -28,7 +30,7 @@ class SubscriberTest extends TestCase
     {
         $subscriber = new Subscriber(
             $this->endpoint,
-            $this->publicKey,
+            $this->keys,
             $this->expirationTime,
             $this->publisher
         );
@@ -40,11 +42,12 @@ class SubscriberTest extends TestCase
     {
         $subscriber = new Subscriber(
             $this->endpoint,
-            $this->publicKey,
+            $this->keys,
             $this->expirationTime,
             $this->publisher
         );
 
-        $this->assertSame($this->publicKey, $subscriber->getKeys());
+        $this->assertSame($this->keys, $subscriber->getKeys());
+
     }
 }

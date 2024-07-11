@@ -5,7 +5,7 @@ namespace Notifications\Tests\Integration\Infrastructure\Lib;
 use Notifications\Infrastructure\Keys\VapidGenerator;
 use PHPUnit\Framework\TestCase;
 
-class CreateVapidKeysForUser extends TestCase
+class CreateVapidKeysForPublisher extends TestCase
 {
     private const PRIVATE = 'privateKey';
     private const PUBLIC = 'publicKey';

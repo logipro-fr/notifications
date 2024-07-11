@@ -9,15 +9,17 @@ use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
 class Subscription
 {
     private SubscriptionResponse $response;
+    private SubscriberRepositoryInterface $repository;
 
     public function __construct(
-        private SubscriberRepositoryInterface $repository,
+        SubscriberRepositoryInterface $repository,
     ) {
+        $this->repository = $repository;
     }
+
     public function execute(SubscriptionRequest $request): void
     {
         $subscriber = $this->createSubscriber($request);
-
 
         $this->repository->add($subscriber);
         $subscriber->setStatus(Status::SUBSCRIBED);
@@ -25,7 +27,7 @@ class Subscription
         $this->response = new SubscriptionResponse(
             $subscriber->getEndpoint(),
             $subscriber->getExpirationTime(),
-            $subscriber->getKeys()->getVAPIDKeys()
+            $subscriber->getKeys()->toArray()
         );
     }
 
@@ -33,9 +35,7 @@ class Subscription
     {
         $subscriberFactory = new SubscriberFactory();
         $subscriber = $subscriberFactory->buildSubscriberFromRequest($request);
-        if (empty($subscriber->getEndpoint())) {
-            throw new \Exception("Subscriber was created without a valid endpoint.");
-        }
+
         return $subscriber;
     }
 

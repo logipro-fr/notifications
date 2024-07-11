@@ -3,34 +3,27 @@
 namespace Notifications\Tests\Domain\Entity\Subscriber;
 
 use Notifications\Domain\Entity\Subscriber\Keys;
-use Notifications\Domain\Services\KeyGeneratorStrategy;
 use PHPUnit\Framework\TestCase;
 
 class KeysTest extends TestCase
 {
-    /** @var Keys */
-    private $keys;
-
-    protected function setUp(): void
+    public function testGetAuthKey()
     {
-        $this->keys = new Keys();
+        $auth = 'authKey123';
+        $p256dh = 'encryptKey456';
+        
+        $keys = new Keys($auth, $p256dh);
+        
+        $this->assertEquals($auth, $keys->getAuthKey());
     }
 
-    public function testGenerateACoupleOfKey(): void
+    public function testGetEncryptKey()
     {
-        $generatedKeys = $this->keys->generateACoupleOfKey();
-
-        $this->assertArrayHasKey('publicKey', $generatedKeys);
-        $this->assertArrayHasKey('privateKey', $generatedKeys);
-    }
-
-    public function testGetVAPIDKeys(): void
-    {
-        $this->keys->generateACoupleOfKey();
-
-        $retrievedKeys = $this->keys->getVAPIDKeys();
-
-        $this->assertArrayHasKey('publicKey', $retrievedKeys);
-        $this->assertArrayHasKey('privateKey', $retrievedKeys);
+        $auth = 'authKey123';
+        $p256dh = 'encryptKey456';
+        
+        $keys = new Keys($auth, $p256dh);
+        
+        $this->assertEquals($p256dh, $keys->getEncryptKey());
     }
 }

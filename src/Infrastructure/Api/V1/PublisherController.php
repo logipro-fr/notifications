@@ -87,11 +87,13 @@ class PublisherController
 
         /** @var string */
         $endpoint = $data['endpoint'];
-        /** @var ?string */
+        /** @var string */
         $expirationTime = $data['expirationTime'];
-        /** @var string[] */
-        $keys = $data['keys'];
+        /** @var string */
+        $authkey = $data['keys']['auth'];
+        /** @var string */
+        $p256dhkey = $data['keys']['p256dh'];
 
-        return new SubscriptionRequest($endpoint, $expirationTime, $keys);
+        return new SubscriptionRequest($endpoint, $expirationTime, $authkey, $p256dhkey);
     }
 }

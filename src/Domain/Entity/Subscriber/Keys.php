@@ -2,42 +2,33 @@
 
 namespace Notifications\Domain\Entity\Subscriber;
 
-use Minishlink\WebPush\VAPID;
-use Notifications\Domain\Services\KeyGeneratorStrategy;
+class Keys
+{ 
+    private string $auth;
+    private string $p256dh;
 
-class Keys implements KeyGeneratorStrategy
-{
-    /** @var array<string, string> */
-    private array $vapid;
-
-    public function __construct()
+    public function __construct(string $auth, string $p256dh)
     {
-        $this->vapid = [];
-    }
-    /**
-     * @return array<string, string>
-     */
-    public function generateACoupleOfKey(): array
-    {
-        $this->vapid = VAPID::createVapidKeys();
-        return $this->vapid;
+        $this->auth = $auth;
+        $this->p256dh = $p256dh;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function getVAPIDKeys(): array
+    public function toArray():array
     {
-        if (!isset($this->vapid)) {
-            throw new \RuntimeException("VAPID keys have not been initialized.");
-        }
-        return $this->vapid;
+        return [
+            'auth' => $this->getAuthKey(),
+            'p256dh' => $this->getEncryptKey(),
+        ];
     }
 
-
-    public function __toString(): string
+    public function getAuthKey():string
     {
-        $json = json_encode($this->vapid);
-        return $json !== false ? $json : '';
+        return $this->auth;
     }
+
+    public function getEncryptKey():string
+    {
+        return $this->p256dh;
+    }
+
 }

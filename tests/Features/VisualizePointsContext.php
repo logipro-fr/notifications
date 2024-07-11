@@ -5,11 +5,11 @@ namespace Features;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Notifications\Application\Service\Subscription;
+use Notifications\Domain\Entity\Publisher\Keys;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
 use Notifications\Domain\Entity\Publisher\Publisher;
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
-use Notifications\Domain\Entity\Subscriber\Keys;
 use Notifications\Infrastructure\Keys\VapidGenerator;
 
 /**

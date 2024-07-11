@@ -4,25 +4,24 @@ namespace Notifications\Domain\Entity\Subscriber;
 
 class ExpirationTime
 {
-    public function __construct(private ?string $id = "")
+    private string $value;
+
+    public function __construct(string $value = "")
     {
-        if (empty($this->id)) {
-            $this->id = uniqid("ExpirationTime");
+        if ($value === null || $value === "") {
+            $this->value = "";
+        } else {
+            $this->value = $value;
         }
     }
 
     public function equals(ExpirationTime $time): bool
     {
-        if ($this->id === $time->id) {
-            return true;
-        }
-        return false;
+        return $this->value === $time->value;
     }
+
     public function __toString(): string
     {
-        if ($this->id == null) {
-            return "";
-        }
-        return $this->id;
+        return $this->value;
     }
 }

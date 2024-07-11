@@ -4,6 +4,7 @@ namespace Notifications\Tests\Infrastructure\Persistance\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Infrastructure\Persistence\Doctrine\Types\ExpirationTimeType;
 use PHPUnit\Framework\TestCase;
 
@@ -32,23 +33,14 @@ class ExpirationTimeTypeTest extends TestCase
 
     public function testConvertToDatabaseValue(): void
     {
-        $value = ['key' => 'value'];
-        $expected = serialize($value);
+        $value = new ExpirationTime('null');
+        $expected = 'null';
 
         /** @var AbstractPlatform $platform */
         $platform = $this->platform;
         $this->assertEquals($expected, $this->type->convertToDatabaseValue($value, $platform));
     }
 
-    public function testConvertToPHPValue(): void
-    {
-        $value = ['key' => 'value'];
-        $serialized = serialize($value);
-
-        /** @var AbstractPlatform $platform */
-        $platform = $this->platform;
-        $this->assertEquals($value, $this->type->convertToPHPValue($serialized, $platform));
-    }
 
     public function testGetSQLDeclaration(): void
     {

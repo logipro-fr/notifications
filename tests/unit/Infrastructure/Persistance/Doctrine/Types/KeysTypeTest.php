@@ -2,13 +2,14 @@
 
 namespace Notifications\Tests\Infrastructure\Persistance\Doctrine\Types;
 
-use Notifications\Infrastructure\Persistence\Doctrine\Types\EndpointType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
+use Notifications\Domain\Entity\Subscriber\AuthKey;
+use Notifications\Domain\Entity\Subscriber\Keys;
+use Notifications\Infrastructure\Persistence\Doctrine\Types\KeysType;
 use PHPUnit\Framework\TestCase;
 
-class EndpointTypeTest extends TestCase
+class KeysTypeTest extends TestCase
 {
     /** @var Type */
     private $type;
@@ -18,36 +19,27 @@ class EndpointTypeTest extends TestCase
 
     protected function setUp(): void
     {
-        if (!Type::hasType('endpoint')) {
-            Type::addType('endpoint', EndpointType::class);
+        if (!Type::hasType('keys')) {
+            Type::addType('keys', KeysType::class);
         }
 
-        $this->type = Type::getType('endpoint');
+        $this->type = Type::getType('keys');
         $this->platform = $this->createMock(AbstractPlatform::class);
     }
 
     public function testGetName(): void
     {
-        $this->assertEquals('endpoint', $this->type->getName());
+        $this->assertEquals('keys', $this->type->getName());
     }
 
     public function testConvertToDatabaseValue(): void
     {
-        $value = new Endpoint('https://example.com');
-        $expected = 'https://example.com';
+        $value = new Keys('1234', '9876');
+        $expected = json_encode(['auth' => '1234', 'p256dh' => '9876']);
 
         /** @var AbstractPlatform $platform */
         $platform = $this->platform;
         $this->assertEquals($expected, $this->type->convertToDatabaseValue($value, $platform));
-    }
-
-    public function testConvertToPHPValue(): void
-    {
-        $value = 'https://example.com';
-        $expected = new Endpoint($value);
-        /** @var AbstractPlatform $platform */
-        $platform = $this->platform;
-        $this->assertEquals($expected, $this->type->convertToPHPValue($value, $platform));
     }
 
     public function testGetSQLDeclaration(): void

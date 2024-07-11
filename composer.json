@@ -29,7 +29,8 @@
         "phariscope/event": "^1.1",
         "symfony/config": "^7.1",
         "symfony/http-kernel": "^7.1",
-        "symfony/dependency-injection": "^7.1"
+        "symfony/dependency-injection": "^7.1",
+        "symfony/monolog-bundle": "^3.10"
     },
     "require-dev": {
         "infection/extension-installer": "0.1.2",

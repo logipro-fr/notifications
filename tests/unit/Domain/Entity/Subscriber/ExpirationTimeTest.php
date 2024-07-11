@@ -7,36 +7,14 @@ use PHPUnit\Framework\TestCase;
 
 class ExpirationTimeTest extends TestCase
 {
-    public function testConstructorGeneratesUniqueIdWhenNotProvided(): void
-    {
-        $time1 = new ExpirationTime();
-        $time2 = new ExpirationTime();
-
-        $this->assertNotEmpty($time1->__toString());
-        $this->assertNotEmpty($time2->__toString());
-
-        $this->assertNotEquals($time1->__toString(), $time2->__toString());
-    }
-
     public function testEqualsMethod(): void
     {
-        $time1 = new ExpirationTime();
-        $time2 = new ExpirationTime();
-        $time3 = new ExpirationTime($time1->__toString());
+        $time1 = new ExpirationTime("2024-12-31T23:59:59Z");
+        $time2 = new ExpirationTime("2024-12-31T23:59:59Z");
+        $time3 = new ExpirationTime();
 
 
-        $this->assertTrue($time1->equals($time1));
-        $this->assertTrue($time1->equals($time3));
-
-        $this->assertFalse($time1->equals($time2));
-    }
-
-    public function testToStringMethod(): void
-    {
-        $time = new ExpirationTime();
-        $idString = $time->__toString();
-
-        // Ensure __toString() returns the ID string
-        $this->assertEquals($idString, (string)$time);
+        $this->assertTrue($time1->equals($time2));
+        $this->assertFalse($time1->equals($time3));
     }
 }

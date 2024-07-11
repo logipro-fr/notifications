@@ -7,22 +7,24 @@ use Notifications\Domain\Entity\Publisher\Publisher;
 
 /**
  * @ORM\Entity
+ * @ORM\Table(name="subscribers")
  */
 class Subscriber
 {
     private Publisher $publisher;
     /**
-     * @ORM\Embedded(class="Endpoint")
+     * @ORM\Embedded(class="endpoint")
      */
     private Endpoint $endpoint;
 
     /**
      * @ORM\Embedded(class="Keys")
+     * @ORM\Column(name="keys", type="json")
      */
     private Keys $keys;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="text", nullable=true)
      */
     private ExpirationTime $expirationTime;
 

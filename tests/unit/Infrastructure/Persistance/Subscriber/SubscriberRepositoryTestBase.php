@@ -3,13 +3,13 @@
 namespace Notifications\Tests\Infrastructure\Persistance\Subscriber;
 
 use Notifications\Domain\Entity\Publisher\Publisher;
+
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Domain\Entity\Subscriber\Keys;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
 use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\Exceptions\SubscriberNotFoundException;
-use Notifications\Domain\Services\KeyGeneratorStrategy;
 use PHPUnit\Framework\TestCase;
 
 abstract class SubscriberRepositoryTestBase extends TestCase
@@ -27,7 +27,8 @@ abstract class SubscriberRepositoryTestBase extends TestCase
     {
         $endpoint = new Endpoint('prime');
         $expirationTime = new ExpirationTime();
-        $keys = new Keys();
+        $keys = new Keys("auth123", "encrypt123");
+
         $publisher = new Publisher("www.exemple.com");
         $subscriber1 = new Subscriber(
             $endpoint,
@@ -36,7 +37,7 @@ abstract class SubscriberRepositoryTestBase extends TestCase
             $publisher
         );
         $endpoint2 = new Endpoint('prime2');
-        $keys2 = new Keys();
+        $keys2 = new Keys("123auth", "123encrypt");
         $subscriber2 = new Subscriber(
             $endpoint2,
             $keys2,

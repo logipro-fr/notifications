@@ -1,26 +1,29 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Api;
+namespace Notifications\Tests\Infrastructure\V1;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\Event\SubscriberCreated;
 use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;
 use Phariscope\Event\Tools\SpyListener;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
+
+use function Safe\json_decode;
 
 class PublisherControllerTest extends WebTestCase
 {
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
+    /** @phpstan-ignore-next-line */
     private SubscriberRepositoryInterface $repository;
 
     public function setUp(): void
@@ -29,7 +32,7 @@ class PublisherControllerTest extends WebTestCase
         $this->clearTables(["subscribers"]);
 
         $this->client = static::createClient(["debug" => false]);
-        /** @var PostRepositoryDoctrine */
+        /** @var SubscriberRepositoryDoctrine */
         $autoInjectedRepo = $this->client->getContainer()->get("subscribers.repository");
         $this->repository = $autoInjectedRepo;
     }
@@ -39,36 +42,50 @@ class PublisherControllerTest extends WebTestCase
         $spy = new SpyListener();
         (new EventFacade())->subscribe($spy);
 
+        $content = json_encode([
+            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
+            "expirationTime" => "",
+            "keys" => [
+                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+        ]);
+
+        if ($content === false) {
+            $this->fail("Failed to encode JSON.");
+        }
+
         $this->client->request(
             "POST",
             "/api/v1/subscriber/register",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-                "expirationTime" => "",
-                "keys" => [
-                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-                ],
-            ])
+            $content
         );
 
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
 
+        if ($responseContent === false) {
+            $this->fail("Failed to get response content.");
+        }
+
         $this->assertJson($responseContent, "Response is not valid JSON: " . $responseContent);
 
+        /** @var array<string> */
         $array = json_decode($responseContent, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
+        var_dump($array['data']);
+         /** @phpstan-ignore-next-line */
         if (!isset($array['data']) || !is_array($array['data'])) {
             $this->fail("Response data does not contain 'data' key or it is not an array: " . $responseContent);
         }
-        var_dump($responseContent);
+
+        /** @phpstan-ignore-next-line */
         $endpoint = $array['data']['endpoint'];
         $researchEndpoint = $this->repository->findById(new Endpoint($endpoint));
 
@@ -82,24 +99,36 @@ class PublisherControllerTest extends WebTestCase
 
     public function testControllerErrorResponse(): void
     {
+        $content = json_encode([
+            "endpoint" => "",
+            "expirationTime" => "",
+            "keys" => [
+                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+        ]);
+
+        if ($content === false) {
+            $this->fail("Failed to encode JSON.");
+        }
+
         $this->client->request(
             "POST",
             "/api/v1/subscriber/register",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "endpoint" => "",
-                "expirationTime" => "",
-                "keys" => [
-                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-                ],
-            ])
+            $content
         );
-        /** @var string */
+
+        /** @var string $responseContent */
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
+
+        if ($responseContent === "") {
+            $this->fail("Failed to get response content.");
+        }
+
         $this->assertEquals(500, $responseCode);
         $this->assertStringContainsString('"success":false', $responseContent);
         $this->assertStringContainsString('"ErrorCode":"EmptySubscriberContentException"', $responseContent);
@@ -107,24 +136,32 @@ class PublisherControllerTest extends WebTestCase
 
     public function testExecute(): void
     {
-
-        $metadata = $this->createMock(ClassMetadata::class);
-        $metadata->name = PublisherControllerTest::class;
-
+        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager
-            ->expects($this->once())
-            ->method('flush');
+        
+        // Create and initialize the ClassMetadata mock
+        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata->name = 'Notifications\Domain\Entity\Subscriber\Subscriber';
+        
+        // Mock the getClassMetadata method to return the initialized ClassMetadata
+        $entityManager->method('getClassMetadata')
+                      ->willReturn($classMetadata);
 
+        $subscriberRepository = new SubscriberRepositoryDoctrine($entityManager);
+        $controller = new PublisherController($subscriberRepository, $entityManager);
 
-        $entityManager
-            ->method('getClassMetadata')
-            ->willReturn($metadata);
+        $content = json_encode([
+            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
+            "expirationTime" => "",
+            "keys" => [
+                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+        ]);
 
-        $controller = new PublisherController(
-            new SubscriberRepositoryDoctrine($entityManager),
-            $entityManager
-        );
+        if ($content === false) {
+            $this->fail("Failed to encode JSON.");
+        }
 
         $request = Request::create(
             "/api/v1/subscriber",
@@ -133,19 +170,17 @@ class PublisherControllerTest extends WebTestCase
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-                "expirationTime" => null,
-                "keys" => [
-                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-                ],
-            ])
+            $content
         );
 
         $response = $controller->execute($request);
-        /** @var string */
+        /** @var string $responseContent */
         $responseContent = $response->getContent();
+
+        if ($responseContent === "") {
+            $this->fail("Failed to get response content.");
+        }
+
         $this->assertJson($responseContent);
     }
 }

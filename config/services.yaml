@@ -10,7 +10,12 @@ services:
   _defaults:
     autowire: true # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-
+  
+  Notifications\Logger\SQLLogger:
+        arguments:
+            $logger: '@logger'
+        tags:
+            - { name: doctrine.dbal.logger, connection: default }
 
   Notifications\Infrastructure\Api\V1\PublisherController:
     autowire: true
