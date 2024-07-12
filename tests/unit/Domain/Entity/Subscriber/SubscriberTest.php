@@ -18,36 +18,35 @@ class SubscriberTest extends TestCase
     private ExpirationTime $expirationTime;
     private Publisher $publisher;
 
+    private Subscriber $subscriber;
+
     protected function setUp(): void
     {
         $this->endpoint = $this->createMock(Endpoint::class);
         $this->keys = $this->createMock(Keys::class);
         $this->expirationTime = $this->createMock(ExpirationTime::class);
         $this->publisher = $this->createMock(Publisher::class);
+
+        $this->subscriber = new Subscriber(
+            $this->endpoint,
+            $this->keys,
+            $this->expirationTime,
+            $this->publisher
+        );
     }
 
     public function testGetEndpoint(): void
     {
-        $subscriber = new Subscriber(
-            $this->endpoint,
-            $this->keys,
-            $this->expirationTime,
-            $this->publisher
-        );
-
-        $this->assertSame($this->endpoint, $subscriber->getEndpoint());
+        $this->assertSame($this->endpoint, $this->subscriber->getEndpoint());
     }
 
     public function testGetKeys(): void
     {
-        $subscriber = new Subscriber(
-            $this->endpoint,
-            $this->keys,
-            $this->expirationTime,
-            $this->publisher
-        );
+        $this->assertSame($this->keys, $this->subscriber->getKeys());
+    }
 
-        $this->assertSame($this->keys, $subscriber->getKeys());
-
+    public function testPublisher(): void
+    {
+        $this->assertSame($this->publisher, $this->subscriber->getPublisher());
     }
 }

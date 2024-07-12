@@ -4,12 +4,10 @@ namespace Notifications\Application\Service;
 
 use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Domain\Entity\Publisher\Publisher;
-
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Domain\Entity\Subscriber\Keys;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
-
 
 class SubscriberFactory
 {

@@ -28,16 +28,6 @@ class PublisherKeys implements KeyGeneratorStrategy
      */
     public function getVAPIDKeys(): array
     {
-        if (!isset($this->vapid)) {
-            throw new \RuntimeException("VAPID keys have not been initialized.");
-        }
         return $this->vapid;
-    }
-
-
-    public function __toString(): string
-    {
-        $json = json_encode($this->vapid);
-        return $json !== false ? $json : '';
     }
 }

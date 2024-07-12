@@ -79,7 +79,7 @@ class PublisherControllerTest extends WebTestCase
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
-        var_dump($array['data']);
+
          /** @phpstan-ignore-next-line */
         if (!isset($array['data']) || !is_array($array['data'])) {
             $this->fail("Response data does not contain 'data' key or it is not an array: " . $responseContent);
@@ -136,18 +136,15 @@ class PublisherControllerTest extends WebTestCase
 
     public function testExecute(): void
     {
-        /** @var EntityManagerInterface|MockObject $entityManager */
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        
-        // Create and initialize the ClassMetadata mock
         $classMetadata = $this->createMock(ClassMetadata::class);
         $classMetadata->name = 'Notifications\Domain\Entity\Subscriber\Subscriber';
-        
-        // Mock the getClassMetadata method to return the initialized ClassMetadata
+
         $entityManager->method('getClassMetadata')
                       ->willReturn($classMetadata);
 
         $subscriberRepository = new SubscriberRepositoryDoctrine($entityManager);
+
         $controller = new PublisherController($subscriberRepository, $entityManager);
 
         $content = json_encode([
@@ -174,13 +171,12 @@ class PublisherControllerTest extends WebTestCase
         );
 
         $response = $controller->execute($request);
-        /** @var string $responseContent */
         $responseContent = $response->getContent();
 
         if ($responseContent === "") {
             $this->fail("Failed to get response content.");
         }
 
-        $this->assertJson($responseContent);
+        $this->assertJson((string)$responseContent);
     }
 }

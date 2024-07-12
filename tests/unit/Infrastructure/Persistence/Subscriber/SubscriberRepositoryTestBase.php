@@ -1,9 +1,8 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Persistance\Subscriber;
+namespace Notifications\Tests\Infrastructure\Persistence\Subscriber;
 
 use Notifications\Domain\Entity\Publisher\Publisher;
-
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Domain\Entity\Subscriber\Keys;

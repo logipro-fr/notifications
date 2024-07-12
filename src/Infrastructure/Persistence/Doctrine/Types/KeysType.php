@@ -32,5 +32,4 @@ class KeysType extends Type
         $length = 255;
         return "VARCHAR($length)";
     }
-    
 }

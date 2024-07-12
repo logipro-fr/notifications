@@ -11,6 +11,8 @@ class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface
 {
     /** @var Subscriber[] */
     private array $subscribers;
+    private int $errorCode = 400;
+
     public function add(Subscriber $subscriber): void
     {
         $this->subscribers[$subscriber->getEndpoint()->__toString()] = $subscriber;
@@ -20,7 +22,10 @@ class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface
     {
         $endpointString = $searchId->__toString();
         if (!isset($this->subscribers[$endpointString])) {
-            throw new SubscriberNotFoundException(sprintf("Error can't find the endpoint %s", $endpointString), 400);
+            throw new SubscriberNotFoundException(
+                sprintf("Error can't find the endpoint %s", $endpointString),
+                $this->errorCode
+            );
         }
         return $this->subscribers[$endpointString];
     }

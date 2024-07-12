@@ -19,33 +19,30 @@ class LoggedException extends \Exception
     {
         parent::__construct($message, $code);
 
-        $logFilePath = CurrentWorkDirPath::getPath() . self::LOG_FILE_PATH;
+        $logFilePath = getcwd() . self::LOG_FILE_PATH;
         $this->ensureLogDirectoryExists(dirname($logFilePath));
         $this->ensureLogFileExists($logFilePath);
-        $this->writeToLogFile($message, $code, $logFilePath);
+        error_log($this->getMessageInFormat($message, $code), 3, $logFilePath);
     }
 
     protected function ensureLogDirectoryExists(string $directoryPath): void
     {
         if (!is_dir($directoryPath)) {
-            mkdir($directoryPath, 0777, true);
+            mkdir($directoryPath);
         }
     }
 
     protected function ensureLogFileExists(string $filePath): void
     {
         if (!file_exists($filePath)) {
+            /** @var resource file pointer resource*/
             $fileHandle = fopen($filePath, 'c+b');
-            if ($fileHandle === false) {
-                throw new Exception("Failed to open or create log file: $filePath");
-            }
             fclose($fileHandle);
         }
     }
 
-    private function writeToLogFile(string $message, int $code, string $logFilePath): void
+    private function getMessageInFormat(string $message, int $code): string
     {
-        $formattedMessage = sprintf(self::LOG_PATTERN, (new DateTime())->format("d.m.Y H:i:s"), $code, $message);
-        error_log($formattedMessage, 3, $logFilePath);
+        return sprintf(self::LOG_PATTERN, (new DateTime())->format("d.m.Y H:i:s"), $code, $message);
     }
 }

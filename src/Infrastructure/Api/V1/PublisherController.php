@@ -3,7 +3,6 @@
 namespace Notifications\Infrastructure\Api\V1;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Notifications\Application\Service\AbstractFactoryPushApi;
 use Notifications\Application\Service\Subscription;
 use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Application\Service\SubscriptionResponse;
@@ -58,7 +57,7 @@ class PublisherController
                     'expirationTime' => $publishResponse->expirationTime,
                     'keys' => $publishResponse->keys
                 ],
-                'message' => "SUCCESS",
+                'message' => "",
             ],
             201
         );
@@ -82,13 +81,13 @@ class PublisherController
     {
         /** @var string */
         $content = $request->getContent();
-        /** @var array<string> */
+        /** @var array<string, mixed>|null */
         $data = json_decode($content, true);
 
         /** @var string */
         $endpoint = $data['endpoint'];
         /** @var string */
-        $expirationTime = $data['expirationTime'];
+        $expirationTime = $data['expirationTime'] ?? '';
         /** @var string */
         $authkey = $data['keys']['auth'];
         /** @var string */

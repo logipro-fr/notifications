@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Persistance\Subscriber;
+namespace Notifications\Tests\Infrastructure\Persistence\Subscriber;
 
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 

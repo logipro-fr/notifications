@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Persistance\Subscriber;
+namespace Notifications\Tests\Infrastructure\Persistence\Subscriber;
 
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;

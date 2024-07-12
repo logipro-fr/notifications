@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Persistance\Doctrine\Types;
+namespace Notifications\Tests\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -40,6 +40,25 @@ class KeysTypeTest extends TestCase
         /** @var AbstractPlatform $platform */
         $platform = $this->platform;
         $this->assertEquals($expected, $this->type->convertToDatabaseValue($value, $platform));
+    }
+
+    public function testConvertToDatabaseNullValue(): void
+    {
+        $value = new Keys('1234', '9876');
+        $expected = json_encode(['auth' => '1234', 'p256dh' => '9876']);
+
+        /** @var AbstractPlatform $platform */
+        $platform = $this->platform;
+        $this->assertEquals($expected, $this->type->convertToDatabaseValue($value, $platform));
+    }
+
+    public function testConvertToDatabaseValueReturnsNull(): void
+    {
+        $value = null;
+
+        /** @var AbstractPlatform $platform */
+        $platform = $this->platform;
+        $this->assertNull($this->type->convertToDatabaseValue($value, $platform));
     }
 
     public function testGetSQLDeclaration(): void

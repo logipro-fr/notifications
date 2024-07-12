@@ -8,16 +8,7 @@ class ExpirationTime
 
     public function __construct(string $value = "")
     {
-        if ($value === null || $value === "") {
-            $this->value = "";
-        } else {
-            $this->value = $value;
-        }
-    }
-
-    public function equals(ExpirationTime $time): bool
-    {
-        return $this->value === $time->value;
+        $this->value = $value;
     }
 
     public function __toString(): string

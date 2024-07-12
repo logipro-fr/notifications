@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Persistance\Doctrine\Types;
+namespace Notifications\Tests\Infrastructure\Persistence\Doctrine\Types;
 
 use Notifications\Infrastructure\Persistence\Doctrine\Types\EndpointType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -58,5 +58,16 @@ class EndpointTypeTest extends TestCase
         /** @var AbstractPlatform $platform */
         $platform = $this->platform;
         $this->assertEquals($expected, $this->type->getSQLDeclaration($column, $platform));
+    }
+
+    public function testConvertToDatabaseValueInvalidType(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid type for endpoint conversion.');
+
+        $invalidValue = 'invalid_endpoint';
+        /** @var AbstractPlatform $platform */
+        $platform = $this->platform;
+        $this->type->convertToDatabaseValue($invalidValue, $platform);
     }
 }

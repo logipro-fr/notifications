@@ -3,7 +3,7 @@
 namespace Notifications\Domain\Entity\Subscriber;
 
 class Keys
-{ 
+{
     private string $auth;
     private string $p256dh;
 
@@ -13,7 +13,10 @@ class Keys
         $this->p256dh = $p256dh;
     }
 
-    public function toArray():array
+      /**
+     * @return array<string, string>
+     */
+    public function toArray(): array
     {
         return [
             'auth' => $this->getAuthKey(),
@@ -21,14 +24,13 @@ class Keys
         ];
     }
 
-    public function getAuthKey():string
+    public function getAuthKey(): string
     {
         return $this->auth;
     }
 
-    public function getEncryptKey():string
+    public function getEncryptKey(): string
     {
         return $this->p256dh;
     }
-
 }

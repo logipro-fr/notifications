@@ -10,13 +10,13 @@ use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Domain\Entity\Subscriber\Keys;
 use Notifications\Domain\Entity\Subscriber\Status;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
-
 use PHPUnit\Framework\TestCase;
 
 class SubscriptionTest extends TestCase
 {
     private SubscriptionRequest $request;
     private SubscriberRepositoryInMemory $repository;
+    private const STATUS_ERROR = "Subscriber status was not set to SUBSCRIBED.";
 
     public function setUp(): void
     {
@@ -44,9 +44,15 @@ class SubscriptionTest extends TestCase
 
         $service->execute($this->request);
         $response = $service->getResponse();
-        $postFromRepo = $this->repository->findById(new Endpoint($this->request->endpoint));
+        $subscriberFromRepo = $this->repository->findById(new Endpoint($this->request->endpoint));
 
         $this->assertInstanceOf(SubscriptionResponse::class, $response);
-        $this->assertEquals(Status::SUBSCRIBED, $postFromRepo->getStatus());
+        $this->assertEquals(Status::SUBSCRIBED, $subscriberFromRepo->getStatus());
+        $this->assertNotNull($subscriberFromRepo, "Subscriber was not added to the repository.");
+        $this->assertEquals(
+            Status::SUBSCRIBED,
+            $subscriberFromRepo->getStatus(),
+            self::STATUS_ERROR
+        );
     }
 }

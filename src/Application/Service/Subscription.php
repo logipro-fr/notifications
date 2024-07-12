@@ -2,7 +2,6 @@
 
 namespace Notifications\Application\Service;
 
-use Notifications\Domain\Entity\Subscriber\Status;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
 use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
 
@@ -22,7 +21,6 @@ class Subscription
         $subscriber = $this->createSubscriber($request);
 
         $this->repository->add($subscriber);
-        $subscriber->setStatus(Status::SUBSCRIBED);
 
         $this->response = new SubscriptionResponse(
             $subscriber->getEndpoint(),

@@ -16,6 +16,9 @@ class ExpirationTimeType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): string
     {
+        if (!$value instanceof ExpirationTime) {
+            throw new \InvalidArgumentException('Invalid type for expirationTime conversion.');
+        }
         return $value->__toString();
     }
 

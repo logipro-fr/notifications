@@ -4,10 +4,8 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-use Notifications\Application\Service\Subscription;
 use Notifications\Domain\Entity\Publisher\Keys;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Domain\Entity\Publisher\Publisher;
+use Notifications\Domain\Entity\Publisher\PublisherKeys;
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Infrastructure\Keys\VapidGenerator;
@@ -36,7 +34,7 @@ class VisualizePointsContext implements Context
     public function aWebsiteNotificationPublisherProposeAUserToSubscribeToReceiveNotification(): void
     {
         $endpoint = new Endpoint(self::URL_PUBLISHER);
-        $generator = new Keys();
+        $generator = new PublisherKeys();
         $expirationTime = new ExpirationTime();
     }
 

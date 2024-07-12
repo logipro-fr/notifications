@@ -4,7 +4,6 @@ doctrine:
             default:
                 driver: 'pdo_mysql'
                 charset: UTF8
-                logging: true 
                 url: "%env(resolve:DATABASE_URL)%"
                 profiling:  true
         types:

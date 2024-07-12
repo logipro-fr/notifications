@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Tests\Infrastructure\Persistance\Doctrine\Types;
+namespace Notifications\Tests\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
@@ -50,5 +50,25 @@ class ExpirationTimeTypeTest extends TestCase
         /** @var AbstractPlatform $platform */
         $platform = $this->platform;
         $this->assertEquals($expected, $this->type->getSQLDeclaration($column, $platform));
+    }
+
+    public function testConvertToPHPValue(): void
+    {
+        $value = '';
+        $expected = new ExpirationTime($value);
+        /** @var AbstractPlatform $platform */
+        $platform = $this->platform;
+        $this->assertEquals($expected, $this->type->convertToPHPValue($value, $platform));
+    }
+
+    public function testConvertToDatabaseValueInvalidType(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid type for expirationTime conversion.');
+
+        $invalidValue = 'invalid_expirationTime';
+        /** @var AbstractPlatform $platform */
+        $platform = $this->platform;
+        $this->type->convertToDatabaseValue($invalidValue, $platform);
     }
 }

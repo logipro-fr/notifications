@@ -5,11 +5,13 @@ namespace Notifications\Tests\Domain\Exceptions;
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Exceptions\BadEndpointException;
 use Notifications\Domain\Exceptions\LoggedException;
-use Notifications\Infrastructure\Shared\CurrentWorkDirPath;
 use PHPUnit\Framework\TestCase;
 
 use function Safe\file_get_contents;
 use function Safe\unlink;
+
+use ReflectionClass;
+use ReflectionMethod;
 
 class LoggedExceptionTest extends TestCase
 {
@@ -18,7 +20,7 @@ class LoggedExceptionTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->logFilePath = CurrentWorkDirPath::getPath() . LoggedException::LOG_FILE_PATH;
+        $this->logFilePath = getcwd() . LoggedException::LOG_FILE_PATH;
         $this->logDirPath = dirname($this->logFilePath);
     }
 
@@ -40,10 +42,10 @@ class LoggedExceptionTest extends TestCase
         $this->assertFileExists($this->logFilePath);
     }
 
-    public function isExceptionThrowed(): void
+    public function testIsExceptionThrown(): void
     {
         $this->expectException(LoggedException::class);
-        new Endpoint("df");
+        new Endpoint("");
     }
 
     private function deleteLogFile(): void
@@ -65,6 +67,28 @@ class LoggedExceptionTest extends TestCase
         $loggedExceptionTester->publicEnsureLogDirectoryExists($this->logDirPath);
 
         $this->assertDirectoryExists($this->logDirPath);
+
+        $message = "a logged exception";
+        $code = 1;
+
+        $mockedException = $this->getMockBuilder(LoggedException::class)
+                                ->setConstructorArgs([$message, $code])
+                                ->onlyMethods(['ensureLogDirectoryExists', 'ensureLogFileExists'])
+                                ->getMock();
+
+        $mockedException->expects($this->once())
+                        ->method('ensureLogDirectoryExists')
+                        ->with($this->equalTo($this->logDirPath));
+
+        $mockedException->expects($this->once())
+                        ->method('ensureLogFileExists')
+                        ->with($this->equalTo($this->logFilePath));
+
+        /** @var ReflectionClass<LoggedException> */
+        $reflection = new ReflectionClass($mockedException);
+        /** @var ReflectionMethod */
+        $constructor = $reflection->getConstructor();
+        $constructor->invoke($mockedException, $message, $code);
     }
 
     public function testEnsureLogFileExists(): void

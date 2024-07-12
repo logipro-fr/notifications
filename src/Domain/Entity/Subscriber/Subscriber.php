@@ -70,11 +70,6 @@ class Subscriber
         return $this->expirationTime;
     }
 
-    public function setStatus(Status $newStatus): void
-    {
-        $this->status = $newStatus;
-    }
-
     public function getStatus(): Status
     {
         return $this->status;
