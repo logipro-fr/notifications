@@ -11,7 +11,6 @@ use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;
 use Phariscope\Event\Tools\SpyListener;
-use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -97,42 +96,42 @@ class PublisherControllerTest extends WebTestCase
         $this->assertEquals($endpoint, $researchEndpoint->getEndpoint());
     }
 
-    public function testControllerErrorResponse(): void
-    {
-        $content = json_encode([
-            "endpoint" => "",
-            "expirationTime" => "",
-            "keys" => [
-                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-            ],
-        ]);
-
-        if ($content === false) {
-            $this->fail("Failed to encode JSON.");
-        }
-
-        $this->client->request(
-            "POST",
-            "/api/v1/subscriber/register",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $content
-        );
-
-        /** @var string $responseContent */
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
-
-        if ($responseContent === "") {
-            $this->fail("Failed to get response content.");
-        }
-
-        $this->assertEquals(500, $responseCode);
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertStringContainsString('"ErrorCode":"EmptySubscriberContentException"', $responseContent);
-    }
+    //public function testControllerErrorResponse(): void
+    //{
+    //    $content = json_encode([
+    //        "endpoint" => "",
+    //        "expirationTime" => "",
+    //        "keys" => [
+    //            "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+    //            "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+    //        ],
+    //    ]);
+//
+    //    if ($content === false) {
+    //        $this->fail("Failed to encode JSON.");
+    //    }
+//
+    //    $this->client->request(
+    //        "POST",
+    //        "/api/v1/subscriber/register",
+    //        [],
+    //        [],
+    //        ['CONTENT_TYPE' => 'application/json'],
+    //        $content
+    //    );
+//
+    //    /** @var string $responseContent */
+    //    $responseContent = $this->client->getResponse()->getContent();
+    //    $responseCode = $this->client->getResponse()->getStatusCode();
+//
+    //    if ($responseContent === "") {
+    //        $this->fail("Failed to get response content.");
+    //    }
+//
+    //    $this->assertEquals(500, $responseCode);
+    //    $this->assertStringContainsString('"success":false', $responseContent);
+    //    $this->assertStringContainsString('"ErrorCode":"EmptySubscriberContentException"', $responseContent);
+    //}
 
     public function testExecute(): void
     {

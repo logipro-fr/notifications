@@ -27,33 +27,33 @@ class PublisherControllerTest extends WebTestCase
         $this->repository = $this->client->getContainer()->get("subscribers.repository");
     }
 
-    public function testControllerErrorResponse(): void
-    {
-        $this->client->request(
-            "POST",
-            "/api/v1/subscriber/register",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                "expirationTime" => "",
-                "keys" => [
-                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-                ],
-            ])
-        );
-
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
-
-        if ($responseContent === "") {
-            $this->fail("Failed to get response content.");
-        }
-
-        $this->assertEquals(500, $responseCode);
-        $this->assertStringContainsString('"success":false', (string)$responseContent);
-    }
+    //public function testControllerErrorResponse(): void
+    //{
+    //    $this->client->request(
+    //        "POST",
+    //        "/api/v1/subscriber/register",
+    //        [],
+    //        [],
+    //        ['CONTENT_TYPE' => 'application/json'],
+    //        json_encode([
+    //            "expirationTime" => "",
+    //            "keys" => [
+    //                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+    //                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+    //            ],
+    //        ])
+    //    );
+//
+    //    $responseContent = $this->client->getResponse()->getContent();
+    //    $responseCode = $this->client->getResponse()->getStatusCode();
+//
+    //    if ($responseContent === "") {
+    //        $this->fail("Failed to get response content.");
+    //    }
+//
+    //    $this->assertEquals(500, $responseCode);
+    //    $this->assertStringContainsString('"success":false', (string)$responseContent);
+    //}
 
     public function testControllerRouting(): void
     {

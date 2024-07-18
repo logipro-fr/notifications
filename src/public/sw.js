@@ -1,15 +1,26 @@
-self.addEventListener("push", (event) => {
-    const notification = event.data.json();
-    event.waitUntil(self.registration.showNotification(notification.title, {
-        body: notification.body,
-        icon: "logipro.png",
-        data: {
-            notifURL: notification.url
-        }
-    }));
+self.addEventListener('fetch', function(event) {
+    event.respondWith(
+        caches.match(event.request).then(function(response) {
+            return response || fetch(event.request);
+        })
+    );
 });
 
-self.addEventListener("notificationclick", (event) => {
-    event.waitUntil(clients.openWindow(event.notification.data.notifURL));
-});
+self.addEventListener('push', function (event) {
+    if (!(self.Notification && self.Notification.permission === 'granted')) {
+        return;
+    }
 
+    const sendNotification = body => {
+        const title = "Web Push example";
+
+        return self.registration.showNotification(title, {
+            body,
+        });
+    };
+
+    if (event.data) {
+        const payload = event.data.json();
+        event.waitUntil(sendNotification(payload.message));
+    }
+});

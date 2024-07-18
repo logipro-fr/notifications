@@ -14,6 +14,7 @@ class Subscriber
     private Publisher $publisher;
     /**
      * @ORM\Embedded(class="endpoint")
+     * @ORM\Column(type="text", nullable=false)
      */
     private Endpoint $endpoint;
 

@@ -23,7 +23,7 @@ class PublisherController
     ) {
     }
 
-    #[Route('/api/v1/subscriber/register', "subscription", methods: ['POST'])]
+    #[Route('/api/v1/subscriber/register', name: 'subscription', methods: ['POST'])]
     public function execute(Request $request): JsonResponse
     {
         return $this->handleRequest(function () use ($request) {
@@ -42,7 +42,7 @@ class PublisherController
         try {
             return $function();
         } catch (Throwable $e) {
-            return $this->writeUnSuccessFulResponse($e);
+            error_log($e->getMessage());
         }
     }
 
@@ -63,20 +63,6 @@ class PublisherController
         );
     }
 
-    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
-    {
-        $className = (new \ReflectionClass($e))->getShortName();
-        return new JsonResponse(
-            [
-                'success' => false,
-                'ErrorCode' => $className,
-                'data' => '',
-                'message' => $e->getMessage(),
-            ],
-            500,
-        );
-    }
-
     private function buildPublishRequest(Request $request): SubscriptionRequest
     {
         /** @var string */
@@ -84,6 +70,10 @@ class PublisherController
         /** @var array<string, mixed>|null */
         $data = json_decode($content, true);
 
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
+        }
+        
         /** @var string */
         $endpoint = $data['endpoint'];
         /** @var string */

@@ -4,11 +4,17 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-use Notifications\Domain\Entity\Publisher\Keys;
-use Notifications\Domain\Entity\Publisher\PublisherKeys;
+
+use Notifications\Application\Service\Subscription;
+use Notifications\Application\Service\SubscriptionRequest;
+use Notifications\Domain\Entity\Publisher\Publisher;
+
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
-use Notifications\Infrastructure\Keys\VapidGenerator;
+use Notifications\Domain\Entity\Subscriber\Keys;
+use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
+use PHPUnit\Framework\Assert;
 
 /**
  * Defines application features from the specific context.
@@ -16,6 +22,14 @@ use Notifications\Infrastructure\Keys\VapidGenerator;
 class VisualizePointsContext implements Context
 {
     private const URL_PUBLISHER = "nextsign.fr";
+
+    private Publisher $website;
+    private Subscriber $subscriber;
+    private SubscriberRepositoryInMemory $repository; 
+
+    private Endpoint $endpoint;
+    private ExpirationTime $expirationTime;
+    private Keys $keys;
 
     /**
      * Initializes context.
@@ -33,9 +47,8 @@ class VisualizePointsContext implements Context
      */
     public function aWebsiteNotificationPublisherProposeAUserToSubscribeToReceiveNotification(): void
     {
-        $endpoint = new Endpoint(self::URL_PUBLISHER);
-        $generator = new PublisherKeys();
-        $expirationTime = new ExpirationTime();
+        $this->website = new Publisher(self::URL_PUBLISHER);
+
     }
 
     /**
@@ -43,6 +56,18 @@ class VisualizePointsContext implements Context
      */
     public function theUserAcceptsToSubscribe(): void
     {
+        $this->repository = new SubscriberRepositoryInMemory();
+        $subscription = new Subscription($this->repository);
+        $this->endpoint = new Endpoint(self::URL_PUBLISHER);
+        $this->keys = new Keys("H9M9HgHX4a3xmcChKQNWFA", "BNBaksmindsZK9u_mghq-Omb1_9bN-hJVP8KjLWB6mlHPf_R3JLmyd-0LwYBGErAjItB2Pex6bAKYFFR_gDdYpo");
+        $this->expirationTime = new ExpirationTime();
+        $request = new SubscriptionRequest(
+                                $this->endpoint,
+                                $this->expirationTime,
+                                $this->keys->getAuthKey(),
+                                $this->keys->getEncryptKey()
+                                );
+        $subscription->execute($request);
     }
 
     /**
@@ -50,7 +75,7 @@ class VisualizePointsContext implements Context
      */
     public function theNavigatorOnTheDeviceBecomeANewSubscriberOfThePublisher(): void
     {
-        $generator = new VapidGenerator();
+        $this->subscriber = new Subscriber($this->endpoint, $this->keys, $this->expirationTime, $this->website);
     }
 
     /**
@@ -58,8 +83,8 @@ class VisualizePointsContext implements Context
      */
     public function theNavigatorHasATokenThatAllowsToRecogizeIt(): void
     {
-        $generator = new VapidGenerator();
-        $generator->generateACoupleOfKey();
+       $endpointInDatabase = $this->repository->findById($this->subscriber->getEndpoint());
+       Assert::assertEquals($this->endpoint, $endpointInDatabase);
     }
 
     /**

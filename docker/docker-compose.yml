@@ -1,5 +1,6 @@
 services:
   notifications-nginx:
+    image: "notifications-nginx"
     container_name: "notifications-nginx"
     build:
       context: ../.
@@ -16,6 +17,7 @@ services:
       - notifications-network
 
   notifications-php:
+    image: "notifications-php"
     container_name: "notifications-php"
     build:
       context: ../.
