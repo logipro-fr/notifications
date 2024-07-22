@@ -45,9 +45,9 @@ abstract class SubscriberRepositoryTestBase extends TestCase
         );
 
         $this->subscriberRepository->add($subscriber1);
-        $found = $this->subscriberRepository->findById(new Endpoint("prime"));
+        $found = $this->subscriberRepository->findById($endpoint);
         $this->subscriberRepository->add($subscriber2);
-        $found2 = $this->subscriberRepository->findById(new Endpoint("prime2"));
+        $found2 = $this->subscriberRepository->findById($endpoint2);
 
         $this->assertInstanceOf(SubscriberRepositoryInterface::class, $this->subscriberRepository);
         $this->assertInstanceOf(Subscriber::class, $found);

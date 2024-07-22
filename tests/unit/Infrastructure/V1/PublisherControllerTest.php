@@ -11,8 +11,10 @@ use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;
 use Phariscope\Event\Tools\SpyListener;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_decode;

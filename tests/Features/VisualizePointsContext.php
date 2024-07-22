@@ -4,15 +4,14 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-
 use Notifications\Application\Service\Subscription;
 use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Domain\Entity\Publisher\Publisher;
-
 use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Domain\Entity\Subscriber\Keys;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Domain\Services\AuthorizationStatus;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 use PHPUnit\Framework\Assert;
 
@@ -25,7 +24,8 @@ class VisualizePointsContext implements Context
 
     private Publisher $website;
     private Subscriber $subscriber;
-    private SubscriberRepositoryInMemory $repository; 
+    private SubscriberRepositoryInMemory $repository;
+    private AuthorizationStatus $authorizationStatus;
 
     private Endpoint $endpoint;
     private ExpirationTime $expirationTime;
@@ -48,7 +48,6 @@ class VisualizePointsContext implements Context
     public function aWebsiteNotificationPublisherProposeAUserToSubscribeToReceiveNotification(): void
     {
         $this->website = new Publisher(self::URL_PUBLISHER);
-
     }
 
     /**
@@ -59,15 +58,19 @@ class VisualizePointsContext implements Context
         $this->repository = new SubscriberRepositoryInMemory();
         $subscription = new Subscription($this->repository);
         $this->endpoint = new Endpoint(self::URL_PUBLISHER);
-        $this->keys = new Keys("H9M9HgHX4a3xmcChKQNWFA", "BNBaksmindsZK9u_mghq-Omb1_9bN-hJVP8KjLWB6mlHPf_R3JLmyd-0LwYBGErAjItB2Pex6bAKYFFR_gDdYpo");
+        $this->keys = new Keys(
+            "H9M9HgHX4a3xmcChKQNWFA",
+            "BNBaksmindsZK9u_mghq-Omb1_9bN-hJVP8KjLWB6mlHPf_R3JLmyd-0LwYBGErAjItB2Pex6bAKYFFR_gDdYpo"
+        );
         $this->expirationTime = new ExpirationTime();
         $request = new SubscriptionRequest(
-                                $this->endpoint,
-                                $this->expirationTime,
-                                $this->keys->getAuthKey(),
-                                $this->keys->getEncryptKey()
-                                );
+            $this->endpoint,
+            $this->expirationTime,
+            $this->keys->getAuthKey(),
+            $this->keys->getEncryptKey()
+        );
         $subscription->execute($request);
+        $this->authorizationStatus->isAuthorized();
     }
 
     /**
@@ -83,8 +86,8 @@ class VisualizePointsContext implements Context
      */
     public function theNavigatorHasATokenThatAllowsToRecogizeIt(): void
     {
-       $endpointInDatabase = $this->repository->findById($this->subscriber->getEndpoint());
-       Assert::assertEquals($this->endpoint, $endpointInDatabase);
+        $endpointInDatabase = $this->repository->findById($this->subscriber->getEndpoint());
+        Assert::assertEquals($this->endpoint, $endpointInDatabase);
     }
 
     /**
@@ -92,7 +95,7 @@ class VisualizePointsContext implements Context
      */
     public function theUserRefuseToSubscribe(): void
     {
-        throw new PendingException();
+        $this->authorizationStatus->setAuthorization(false);
     }
 
     /**
@@ -107,6 +110,7 @@ class VisualizePointsContext implements Context
      */
     public function theUserWantToUnsubscribe(): void
     {
+        throw new PendingException();
     }
 
     /**

@@ -1,0 +1,135 @@
+openapi: 3.1.0
+info:
+  title: Notifications API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Api routes
+  - url: http://172.17.0.1:11480/api/v1
+    description: Local Developement usage API routes
+paths:
+  /subscriber/register:
+    subscriber:
+      summary: Register a new subscriber
+      operationId: subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  description: The endpoint URL for push notifications
+                  example: https://updates.push.services.mozilla.com/wpush/v2/
+                expirationTime:
+                  type: string
+                  nullable: true
+                  description: The expiration time of the subscription
+                  example: ""
+                keys:
+                  type: object
+                  properties:
+                    auth:
+                      type: string
+                      description: The auth key for the subscription
+                      example: BA2noXuKXuNLSJn91VhaIzE2c+PX2C35UXa5CYwC6kZHXS3NmwNjqvFr7qy75GqRrtfzPqINTlgFUBhuWs5xI=
+                    p256dh:
+                      type: string
+                      description: The p256dh key for the subscription
+                      example: 8yQmXFqOwAPqaOAGwGQq6g=
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the subscription was successful
+                    example: true
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: null
+                  data:
+                    type: object
+                    properties:
+                      endpoint:
+                        type: string
+                        description: The ID of the navigator client
+                        example: pos_664c52f9c90cb
+                    description: Data returned by the register service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: ""
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InvalidRequestException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: UnprocessableEntityException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Unprocessable entity
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InternalServerErrorException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Internal server error

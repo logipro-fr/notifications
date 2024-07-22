@@ -6,12 +6,11 @@ use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Exceptions\BadEndpointException;
 use Notifications\Domain\Exceptions\LoggedException;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
 
 use function Safe\file_get_contents;
 use function Safe\unlink;
-
-use ReflectionClass;
-use ReflectionMethod;
 
 class LoggedExceptionTest extends TestCase
 {

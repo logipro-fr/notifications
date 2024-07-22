@@ -10,7 +10,7 @@ use Notifications\Domain\Exceptions\SubscriberNotFoundException;
 class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface
 {
     /** @var Subscriber[] */
-    private array $subscribers;
+    private array $subscribers = [];
     private int $errorCode = 400;
 
     public function add(Subscriber $subscriber): void

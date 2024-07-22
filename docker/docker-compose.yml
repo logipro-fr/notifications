@@ -61,6 +61,21 @@ services:
       - "172.17.0.1:11402:80"
     networks:
       - notifications-network
+  
+  notifications-swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: "notifications-swagger-ui"
+    restart: always
+    environment:
+      PORT: 8080
+      SUPPORTED_SUBMIT_METHODS: "['get', 'post', 'put', 'delete', 'patch']"
+      SWAGGER_JSON: /v1/doc.yaml
+    volumes:
+      - ./swagger/v1:/v1
+    ports:
+      - "172.17.0.1:11403:8080"
+    networks:
+      - notifications-network
 
 networks:
   notifications-network:

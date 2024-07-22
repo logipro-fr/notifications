@@ -70,10 +70,6 @@ class PublisherController
         /** @var array<string, mixed>|null */
         $data = json_decode($content, true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
-        }
-        
         /** @var string */
         $endpoint = $data['endpoint'];
         /** @var string */

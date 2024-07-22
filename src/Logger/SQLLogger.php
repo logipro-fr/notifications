@@ -14,12 +14,12 @@ class SQLLogger implements DoctrineSQLLogger
         $this->logger = $logger;
     }
 
-    public function startQuery($sql, ?array $params = null, ?array $types = null):void
+    public function startQuery($sql, ?array $params = null, ?array $types = null): void
     {
         $this->logger->info($sql, ['params' => $params, 'types' => $types]);
     }
 
-    public function stopQuery():void
+    public function stopQuery(): void
     {
     }
 }
