@@ -1,9 +1,0 @@
-{
-    "endpoint": "https://navigatorname.com/fcm/send/keyaddress",
-    "expirationTime": null,
-    "keys": {
-        "p256dh": "BNBaksmindsZK9u_mghq-Omb1_9bN-hJVP8KjLWB6mlHPf_R3JLmyd-0LwYBGErAjItB2Pex6bAKYFFR_gDdYpo",
-        "auth": "H9M9HgHX4a3xmcChKQNWFA"
-    }
-}
-

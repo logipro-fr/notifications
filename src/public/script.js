@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return push_sendSubscriptionToServer(subscription, 'PUT');
       })
-      .then(subscription => subscription && changePushButtonState('enabled')) // Set your UI to show they have subscribed for push messages
+      .then(subscription => subscription && changePushButtonState('enabled'))
       .catch(e => {
         console.error('Error when updating the subscription', e);
       });
@@ -179,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
   async function push_sendSubscriptionToServer(subscription, method) {
     const key = subscription.getKey('p256dh');
     const token = subscription.getKey('auth');
-    //const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0];
 
     const data = {
       endpoint: subscription.endpoint,
@@ -188,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
           auth: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
           p256dh: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
       },
-      //contentEncoding
     };
     console.log("Enregistrement de data: ");
     console.log(data);
