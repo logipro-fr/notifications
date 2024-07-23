@@ -8,6 +8,7 @@ use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Application\Service\SubscriptionResponse;
 use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\EventFacade\EventFacade;
+use Notifications\Domain\Exceptions\EmptySubscriberContentException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,10 +42,11 @@ class PublisherController
     {
         try {
             return $function();
-        } catch (Throwable $e) {
-            error_log($e->getMessage());
+        } catch (EmptySubscriberContentException $e) {
+            return $this->writeUnSuccessfulResponse($e);
         }
     }
+
 
     private function writeSuccessfulResponse(SubscriptionResponse $publishResponse): JsonResponse
     {
@@ -63,11 +65,26 @@ class PublisherController
         );
     }
 
+    private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
+    {
+        $className = (new \ReflectionClass($e))->getShortName();
+        return new JsonResponse(
+            [
+                'success' => false,
+                'ErrorCode' => $className,
+                'data' => '',
+                'message' => $e->getMessage(),
+            ],
+            JsonResponse::HTTP_INTERNAL_SERVER_ERROR,
+        );
+    }
+
+
     private function buildPublishRequest(Request $request): SubscriptionRequest
     {
         /** @var string */
         $content = $request->getContent();
-        /** @var array<string, mixed>|null */
+         /** @var array<string, array<string>> $data */
         $data = json_decode($content, true);
 
         /** @var string */

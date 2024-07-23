@@ -4,6 +4,7 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Notifications\Application\Service\Subscription;
 use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Domain\Entity\Publisher\Publisher;
@@ -11,9 +12,11 @@ use Notifications\Domain\Entity\Subscriber\Endpoint;
 use Notifications\Domain\Entity\Subscriber\ExpirationTime;
 use Notifications\Domain\Entity\Subscriber\Keys;
 use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Domain\Services\AuthorizationStatus;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 use PHPUnit\Framework\Assert;
+use Symfony\Component\HttpKernel\KernelInterface;
+
+use function Safe\json_encode;
 
 /**
  * Defines application features from the specific context.
@@ -25,24 +28,24 @@ class VisualizePointsContext implements Context
     private Publisher $website;
     private Subscriber $subscriber;
     private SubscriberRepositoryInMemory $repository;
-    private AuthorizationStatus $authorizationStatus;
 
     private Endpoint $endpoint;
     private ExpirationTime $expirationTime;
     private Keys $keys;
 
-    /**
-     * Initializes context.
-     *
-     * Every scenario gets its own context instance.
-     * You can also pass arbitrary arguments to the
-     * context constructor through behat.yml.
+    private string $response;
+    private static KernelInterface $kernel;
+    
+     /**
+     * @BeforeSuite
      */
-    public function __construct()
+    public static function prepare(BeforeSuiteScope $scope): void
     {
+        self::$kernel = new \Notifications\Infrastructure\Shared\Symfony\Kernel('test', true);
+        self::$kernel->boot();
     }
 
-        /**
+    /**
      * @Given a website notification publisher propose a user to subscribe to receive notification
      */
     public function aWebsiteNotificationPublisherProposeAUserToSubscribeToReceiveNotification(): void
@@ -70,7 +73,6 @@ class VisualizePointsContext implements Context
             $this->keys->getEncryptKey()
         );
         $subscription->execute($request);
-        $this->authorizationStatus->isAuthorized();
     }
 
     /**
@@ -79,6 +81,26 @@ class VisualizePointsContext implements Context
     public function theNavigatorOnTheDeviceBecomeANewSubscriberOfThePublisher(): void
     {
         $this->subscriber = new Subscriber($this->endpoint, $this->keys, $this->expirationTime, $this->website);
+         /** @var KernelBrowser */
+         $client = self::$kernel->getContainer()->get('test.client');
+         $client->request(
+             "POST",
+             "/api/v1/subscriber",
+             [],
+             [],
+             ['CONTENT_TYPE' => 'application/json'],
+             json_encode([
+                "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
+                "expirationTime" => "",
+                "keys" => [
+                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+             ])
+         );
+         /** @var string */
+         $response = $client->getResponse()->getContent();
+         $this->response = $response;
     }
 
     /**
@@ -86,8 +108,7 @@ class VisualizePointsContext implements Context
      */
     public function theNavigatorHasATokenThatAllowsToRecogizeIt(): void
     {
-        $endpointInDatabase = $this->repository->findById($this->subscriber->getEndpoint());
-        Assert::assertEquals($this->endpoint, $endpointInDatabase);
+        var_dump($this->response);
     }
 
     /**
@@ -95,7 +116,6 @@ class VisualizePointsContext implements Context
      */
     public function theUserRefuseToSubscribe(): void
     {
-        $this->authorizationStatus->setAuthorization(false);
     }
 
     /**

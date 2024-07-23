@@ -24,7 +24,9 @@ class PublisherControllerTest extends WebTestCase
 
         $this->client = static::createClient(["debug" => false]);
 
-        $this->repository = $this->client->getContainer()->get("subscribers.repository");
+        /** @var SubscriberRepositoryInterface $repo */
+        $repo = $this->client->getContainer()->get("subscribers.repository");
+        $this->repository = $repo;
     }
 
     //public function testControllerErrorResponse(): void
@@ -78,24 +80,26 @@ class PublisherControllerTest extends WebTestCase
         $responseContent = $this->client->getResponse()->getContent();
         $responseCode = $this->client->getResponse()->getStatusCode();
 
-        /** @var array{success: bool, ErrorCode: string, data: array{endpoint: string, expirationTime: string, keys: array{auth: string, p256dh: string}}|null, message: string} */
-        $array = json_decode((string)$responseContent, true);
+        if ($responseContent === false) {
+            $this->fail("Failed to get response content.");
+        }
+
+        /** @var array{success: bool, ErrorCode: string, data: array{endpoint: string, expirationTime: string, keys: array{auth: string, p256dh: string}}|null, message: string} $array */
+        $array = json_decode($responseContent, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
 
-        if (!isset($array['data']) || !isset($array['data']['endpoint']) || !is_string($array['data']['endpoint'])) {
-            throw new \Exception("Endpoint not found in response: " . $responseContent);
-        }
-
         $endpoint = $array['data']['endpoint'];
         $this->repository->findById(new Endpoint($endpoint));
 
+        $subscriber = $this->repository->findById(new Endpoint($endpoint));
+        $this->assertNotNull($subscriber, "Subscriber with endpoint '{$endpoint}' not found.");
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', (string)$responseContent);
+        $this->assertStringContainsString('"success":true', $responseContent);
         $this->assertEquals(201, $responseCode);
-        $this->assertStringContainsString('"ErrorCode":', (string)$responseContent);
-        $this->assertStringContainsString('"endpoint":', (string)$responseContent);
+        $this->assertStringContainsString('"ErrorCode":', $responseContent);
+        $this->assertStringContainsString('"endpoint":', $responseContent);
     }
 }
