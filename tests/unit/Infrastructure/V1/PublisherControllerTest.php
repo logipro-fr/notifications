@@ -11,6 +11,7 @@ use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;
 use Phariscope\Event\Tools\SpyListener;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,6 +25,7 @@ class PublisherControllerTest extends WebTestCase
     private KernelBrowser $client;
     /** @phpstan-ignore-next-line */
     private SubscriberRepositoryInterface $repository;
+    private MockObject $eventFacade;
 
     public function setUp(): void
     {
@@ -34,6 +36,8 @@ class PublisherControllerTest extends WebTestCase
         /** @var SubscriberRepositoryDoctrine */
         $autoInjectedRepo = $this->client->getContainer()->get("subscribers.repository");
         $this->repository = $autoInjectedRepo;
+        $this->eventFacade = $this->createMock(EventFacade::class);
+        $this->client->getContainer()->set(EventFacade::class, $this->eventFacade);
     }
 
     public function testControllerRouting(): void

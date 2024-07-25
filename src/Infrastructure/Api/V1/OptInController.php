@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-
 use function Safe\json_decode;
 
 class OptInController
@@ -22,11 +21,7 @@ class OptInController
         $service->execute($permissionRequest);
         (new EventFacade())->distribute();
         $response = $service->getResponse();
-
-        if (!isset($response->status)) {
-            return new JsonResponse(['success' => false, 'ErrorCode' => 'InvalidInput'], 400);
-        }
-        if ($response->status !== true) {
+        if ($response->status !== true || !isset($response->status)) {
             return new JsonResponse(['success' => false, 'ErrorCode' => 'AuthorizationDenied'], 403);
         }
         return new JsonResponse(['success' => true], 200);

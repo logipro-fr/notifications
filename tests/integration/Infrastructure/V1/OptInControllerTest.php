@@ -15,7 +15,6 @@ class OptInControllerTest extends WebTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-    private SubscriberRepositoryInterface $repository;
 
     public function setUp(): void
     {
@@ -52,6 +51,7 @@ class OptInControllerTest extends WebTestCase
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
 
+        $this->assertIsArray($array);
         $this->assertArrayHasKey('success', $array);
         $this->assertTrue($array['success']);
     }
