@@ -35,7 +35,7 @@ class VisualizePointsContext implements Context
 
     private string $response;
     private static KernelInterface $kernel;
-    
+
      /**
      * @BeforeSuite
      */
@@ -95,7 +95,7 @@ class VisualizePointsContext implements Context
                 "keys" => [
                     "auth" => "8veJjf8tjO1kbYlX3zOoRw",
                     "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-            ],
+                ],
              ])
          );
          /** @var string */
@@ -108,7 +108,7 @@ class VisualizePointsContext implements Context
      */
     public function theNavigatorHasATokenThatAllowsToRecogizeIt(): void
     {
-        var_dump($this->response);
+        $this->subscriber->getKeys();
     }
 
     /**
@@ -116,6 +116,19 @@ class VisualizePointsContext implements Context
      */
     public function theUserRefuseToSubscribe(): void
     {
+        /** @var KernelBrowser */
+        $client = self::$kernel->getContainer()->get('test.client');
+        $client->request(
+            "POST",
+            "/api/v1/subscriber/authorization",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode(["AuthorizedStatus" => false])
+        );
+        /** @var string */
+        $response = $client->getResponse()->getContent();
+        $this->response = $response;
     }
 
     /**

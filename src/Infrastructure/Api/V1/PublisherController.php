@@ -9,6 +9,7 @@ use Notifications\Application\Service\SubscriptionResponse;
 use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Domain\Exceptions\EmptySubscriberContentException;
+use Notifications\Domain\Services\StatusClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,10 +19,13 @@ use function Safe\json_decode;
 
 class PublisherController
 {
+    private StatusClient $client;
+
     public function __construct(
         private SubscriberRepositoryInterface $repo,
         private EntityManagerInterface $entityManager
     ) {
+        $this->client = new StatusClient();
     }
 
     #[Route('/api/v1/subscriber/register', name: 'subscription', methods: ['POST'])]
@@ -50,9 +54,10 @@ class PublisherController
 
     private function writeSuccessfulResponse(SubscriptionResponse $publishResponse): JsonResponse
     {
+        $this->client->setValue(true);
         return new JsonResponse(
             [
-                'success' => true,
+                'success' => $this->client->getValue(),
                 'ErrorCode' => "",
                 'data' => [
                     'endpoint' => $publishResponse->endpoint,
@@ -67,10 +72,11 @@ class PublisherController
 
     private function writeUnSuccessFulResponse(Throwable $e): JsonResponse
     {
+        $this->client->setValue(false);
         $className = (new \ReflectionClass($e))->getShortName();
         return new JsonResponse(
             [
-                'success' => false,
+                'success' => $this->client->getValue(),
                 'ErrorCode' => $className,
                 'data' => '',
                 'message' => $e->getMessage(),

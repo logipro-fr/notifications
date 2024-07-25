@@ -32,7 +32,7 @@ class SQLLoggerTest extends TestCase
         $loggerMock = $this->createMock(LoggerInterface::class);
 
         $sqlLogger = new SQLLogger($loggerMock);
-        
+
         $sqlLogger->stopQuery();
 
         $this->assertTrue(true);

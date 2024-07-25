@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (Notification.permission === 'denied') {
     console.warn('Notifications are denied by the user');
+    sendAuthorizationStatusToServer(false);
     changePushButtonState('incompatible');
     return;
   }
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function sendAuthorizationStatusToServer(AuthorizedStatus) {
-    const response = await fetch('http://172.17.0.1:11480/api/notification/authorization', {
+    const response = await fetch('http://172.17.0.1:11480/api/v1/subscriber/authorization', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

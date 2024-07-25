@@ -22,6 +22,9 @@ services:
     arguments:
       $repo: '@subscribers.repository'
 
+  Notifications\Infrastructure\Api\V1\OptInController:
+    autowire: true
+
   subscribers.repository:
     public: true
     autowire: true
