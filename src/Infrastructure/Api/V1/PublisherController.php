@@ -6,7 +6,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Notifications\Application\Service\Subscription;
 use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Application\Service\SubscriptionResponse;
-use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Domain\Exceptions\EmptySubscriberContentException;
 use Notifications\Domain\Services\StatusClient;

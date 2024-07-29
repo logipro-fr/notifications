@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Domain\Entity\Subscriber;
+namespace Notifications\Domain\Model\Subscriber;
 
 use Notifications\Domain\Exceptions\EmptySubscriberContentException;
 

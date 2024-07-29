@@ -1,14 +1,14 @@
 <?php
 
-namespace Notifications\Tests\Domain\Entity\Subscriber;
+namespace Notifications\Tests\Domain\Model\Subscriber;
 
-use Notifications\Domain\Entity\Publisher\Publisher;
-use Notifications\Domain\Entity\Subscriber\AuthKey;
-use Notifications\Domain\Entity\Subscriber\EncryptKey;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\ExpirationTime;
-use Notifications\Domain\Entity\Subscriber\Keys;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Domain\Model\Publisher\Publisher;
+use Notifications\Domain\Model\Subscriber\AuthKey;
+use Notifications\Domain\Model\Subscriber\EncryptKey;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Subscriber;
 use PHPUnit\Framework\TestCase;
 
 class SubscriberTest extends TestCase

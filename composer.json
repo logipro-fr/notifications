@@ -1,7 +1,7 @@
 {
     "name": "logipro/notifications",
     "type": "app",
-    "description": "start a new PHP project with a simple base structure",
+    "description": "a Notification micro-service",
     "keywords": ["php", "DDT"],
     "homepage": "https://github.com/logipro-fr/notifications",
     "license": "Copyrighted",

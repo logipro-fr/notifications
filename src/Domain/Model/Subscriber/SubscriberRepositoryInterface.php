@@ -1,8 +1,8 @@
 <?php
 
-namespace Notifications\Domain\Entity\Subscriber;
+namespace Notifications\Domain\Model\Subscriber;
 
-use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Domain\Model\Subscriber\Subscriber;
 
 interface SubscriberRepositoryInterface
 {

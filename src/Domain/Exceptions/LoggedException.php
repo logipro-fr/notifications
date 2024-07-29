@@ -3,7 +3,6 @@
 namespace Notifications\Domain\Exceptions;
 
 use Exception;
-use Notifications\Infrastructure\Shared\CurrentWorkDirPath;
 use Safe\DateTime;
 
 use function Safe\error_log;

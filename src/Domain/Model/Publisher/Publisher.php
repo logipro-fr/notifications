@@ -1,10 +1,10 @@
 <?php
 
-namespace Notifications\Domain\Entity\Publisher;
+namespace Notifications\Domain\Model\Publisher;
 
 use Minishlink\WebPush\WebPush;
 use Notifications\Domain\Services\KeyGeneratorStrategy;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Domain\Model\Subscriber\Subscriber;
 
 class Publisher
 {

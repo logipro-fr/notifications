@@ -4,11 +4,13 @@ namespace Notifications\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\Endpoint;
 
 class EndpointType extends Type
 {
     public const TYPE_NAME = "endpoint";
+    public const MAX_VARCHAR_LENGTH = 255;
+    
     public function getName(): string
     {
         return self::TYPE_NAME;
@@ -24,7 +26,7 @@ class EndpointType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        $length = 255;
+        $length = self::MAX_VARCHAR_LENGTH;
         return "VARCHAR($length)";
     }
 

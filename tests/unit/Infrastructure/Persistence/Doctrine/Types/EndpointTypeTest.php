@@ -5,7 +5,7 @@ namespace Notifications\Tests\Infrastructure\Persistence\Doctrine\Types;
 use Notifications\Infrastructure\Persistence\Doctrine\Types\EndpointType;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\Endpoint;
 use PHPUnit\Framework\TestCase;
 
 class EndpointTypeTest extends TestCase

@@ -2,7 +2,7 @@
 
 namespace Notifications\Tests\Domain\Exceptions;
 
-use Notifications\Domain\Entity\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Exceptions\BadEndpointException;
 use Notifications\Domain\Exceptions\LoggedException;
 use PHPUnit\Framework\TestCase;

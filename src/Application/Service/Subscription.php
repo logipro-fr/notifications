@@ -2,8 +2,8 @@
 
 namespace Notifications\Application\Service;
 
-use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Domain\Model\Subscriber\Subscriber;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 
 class Subscription
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Notifications\Tests\Domain\Entity\Subscriber;
+namespace Notifications\Tests\Domain\Model\Subscriber;
 
-use Notifications\Domain\Entity\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Exceptions\EmptySubscriberContentException;
 use PHPUnit\Framework\TestCase;
 

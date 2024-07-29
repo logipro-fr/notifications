@@ -1,8 +1,8 @@
 <?php
 
-namespace Notifications\Tests\Domain\Entity\Subscriber;
+namespace Notifications\Tests\Domain\Model\Subscriber;
 
-use Notifications\Domain\Entity\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
 use PHPUnit\Framework\TestCase;
 
 class ExpirationTimeTest extends TestCase

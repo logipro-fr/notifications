@@ -4,7 +4,7 @@ namespace Notifications\Tests\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Notifications\Domain\Entity\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
 use Notifications\Infrastructure\Persistence\Doctrine\Types\ExpirationTimeType;
 use PHPUnit\Framework\TestCase;
 

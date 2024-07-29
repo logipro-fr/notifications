@@ -30,7 +30,7 @@ services:
     autowire: true
     class: Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine
 
-  Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface: "@subscribers.repository"
+  Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface: "@subscribers.repository"
 
   Notifications\Infrastructure\Api\V1\:
     resource: "../src/Infrastructure/Api/V1/"

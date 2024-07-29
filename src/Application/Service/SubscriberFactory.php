@@ -3,11 +3,11 @@
 namespace Notifications\Application\Service;
 
 use Notifications\Application\Service\SubscriptionRequest;
-use Notifications\Domain\Entity\Publisher\Publisher;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\ExpirationTime;
-use Notifications\Domain\Entity\Subscriber\Keys;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Domain\Model\Publisher\Publisher;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Subscriber;
 
 class SubscriberFactory
 {

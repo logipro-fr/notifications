@@ -1,8 +1,8 @@
 <?php
 
-namespace Notifications\Tests\Domain\Entity\Subscriber;
+namespace Notifications\Tests\Domain\Model\Subscriber;
 
-use Notifications\Domain\Entity\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Keys;
 use PHPUnit\Framework\TestCase;
 
 class KeysTest extends TestCase

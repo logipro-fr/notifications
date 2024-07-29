@@ -2,9 +2,9 @@
 
 namespace Notifications\Infrastructure\Persistence\Subscriber;
 
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\Subscriber;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\Exceptions\SubscriberNotFoundException;
 
 class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface

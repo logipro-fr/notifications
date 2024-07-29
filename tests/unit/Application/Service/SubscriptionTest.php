@@ -5,10 +5,10 @@ namespace Notifications\Tests\Application\Service;
 use Notifications\Application\Service\Subscription;
 use Notifications\Application\Service\SubscriptionRequest;
 use Notifications\Application\Service\SubscriptionResponse;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\ExpirationTime;
-use Notifications\Domain\Entity\Subscriber\Keys;
-use Notifications\Domain\Entity\Subscriber\Status;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Status;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
 

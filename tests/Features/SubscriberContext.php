@@ -7,11 +7,11 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Notifications\Application\Service\Subscription;
 use Notifications\Application\Service\SubscriptionRequest;
-use Notifications\Domain\Entity\Publisher\Publisher;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\ExpirationTime;
-use Notifications\Domain\Entity\Subscriber\Keys;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
+use Notifications\Domain\Model\Publisher\Publisher;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -21,7 +21,7 @@ use function Safe\json_encode;
 /**
  * Defines application features from the specific context.
  */
-class VisualizePointsContext implements Context
+class SubscriberContext implements Context
 {
     private const URL_PUBLISHER = "nextsign.fr";
 

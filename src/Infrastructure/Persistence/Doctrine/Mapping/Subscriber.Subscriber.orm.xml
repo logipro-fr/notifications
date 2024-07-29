@@ -6,12 +6,17 @@
 
 
 
-    <entity name="Notifications\Domain\Entity\Subscriber\Subscriber" table="subscribers"
+    <entity name="Notifications\Domain\Model\Subscriber\Subscriber" 
+            table="subscribers"
             repository-class="Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine">
-        <id name="endpoint" type="endpoint" column="endpoint">
-        </id>
-        <field name="expirationTime" type="expirationTime" column="expirationTime"/>
-         <field name="keys" type="keys" column="subscriptionKey"/>
-        
+        <id name="endpoint" 
+            type="endpoint" 
+            column="endpoint"/>
+        <field  name="expirationTime" 
+                type="expirationTime" 
+                column="expirationTime"/>
+        <field  name="keys" 
+                type="keys" 
+                column="subscriptionKey"/>
     </entity>
 </doctrine-mapping>

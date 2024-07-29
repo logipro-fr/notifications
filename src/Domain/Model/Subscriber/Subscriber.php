@@ -1,37 +1,16 @@
 <?php
 
-namespace Notifications\Domain\Entity\Subscriber;
+namespace Notifications\Domain\Model\Subscriber;
 
-use Doctrine\ORM\Mapping as ORM;
-use Notifications\Domain\Entity\Publisher\Publisher;
+use Notifications\Domain\Model\Publisher\Publisher;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="subscribers")
- */
 class Subscriber
 {
     private Publisher $publisher;
-    /**
-     * @ORM\Embedded(class="endpoint")
-     * @ORM\Column(type="text", nullable=false)
-     */
     private Endpoint $endpoint;
-
-    /**
-     * @ORM\Embedded(class="Keys")
-     * @ORM\Column(name="keys", type="json")
-     */
     private Keys $keys;
-
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
     private ExpirationTime $expirationTime;
-
-    /**
-     * @ORM\Column(type="string", enumType="Status")
-     */
+    
     private Status $status;
 
     public function __construct(

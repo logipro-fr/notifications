@@ -11,6 +11,7 @@ paths:
   /subscriber/register:
     subscriber:
       summary: Register a new subscriber
+      description: When a one user navigator made a request after an action AND after he authorizes the notification send, he is registered as a subscriber
       operationId: subscription
       requestBody:
         required: true
@@ -103,7 +104,7 @@ paths:
                   errorCode:
                     type: string
                     description: Name of the exception class if any error occurs
-                    example: UnprocessableEntityException
+                    example: UnprocessableModelException
                   data:
                     type: object
                     description: Data returned by the publication service

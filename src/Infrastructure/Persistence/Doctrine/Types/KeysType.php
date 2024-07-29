@@ -4,11 +4,13 @@ namespace Notifications\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Notifications\Domain\Entity\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Keys;
 
 class KeysType extends Type
 {
     public const TYPE_NAME = 'keys';
+    public const MAX_VARCHAR_LENGTH = 255;
+
     public function getName(): string
     {
         return self::TYPE_NAME;
@@ -29,7 +31,7 @@ class KeysType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        $length = 255;
+        $length = self::MAX_VARCHAR_LENGTH;
         return "VARCHAR($length)";
     }
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Notifications\Tests\Domain\Entity\Subscriber;
+namespace Notifications\Tests\Domain\Model\Subscriber;
 
-use Notifications\Domain\Entity\Publisher\PublisherKeys;
+use Notifications\Domain\Model\Publisher\PublisherKeys;
 use PHPUnit\Framework\TestCase;
 
 class PublisherKeysTest extends TestCase

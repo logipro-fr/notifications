@@ -4,8 +4,8 @@ namespace Notifications\Tests\Infrastructure\Persistence\Doctrine\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Notifications\Domain\Entity\Subscriber\AuthKey;
-use Notifications\Domain\Entity\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\AuthKey;
+use Notifications\Domain\Model\Subscriber\Keys;
 use Notifications\Infrastructure\Persistence\Doctrine\Types\KeysType;
 use PHPUnit\Framework\TestCase;
 

@@ -5,8 +5,8 @@ namespace Notifications\Tests\Infrastructure\V1;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;
@@ -23,7 +23,6 @@ class PublisherControllerTest extends WebTestCase
     use DoctrineRepositoryTesterTrait;
 
     private KernelBrowser $client;
-    /** @phpstan-ignore-next-line */
     private SubscriberRepositoryInterface $repository;
     private MockObject $eventFacade;
 
@@ -83,12 +82,10 @@ class PublisherControllerTest extends WebTestCase
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
 
-         /** @phpstan-ignore-next-line */
         if (!isset($array['data']) || !is_array($array['data'])) {
             $this->fail("Response data does not contain 'data' key or it is not an array: " . $responseContent);
         }
 
-        /** @phpstan-ignore-next-line */
         $endpoint = $array['data']['endpoint'];
         $researchEndpoint = $this->repository->findById(new Endpoint($endpoint));
 
@@ -137,7 +134,7 @@ class PublisherControllerTest extends WebTestCase
     {
         $entityManager = $this->createMock(EntityManagerInterface::class);
         $classMetadata = $this->createMock(ClassMetadata::class);
-        $classMetadata->name = 'Notifications\Domain\Entity\Subscriber\Subscriber';
+        $classMetadata->name = 'Notifications\Domain\Model\Subscriber\Subscriber';
 
         $entityManager->method('getClassMetadata')
                       ->willReturn($classMetadata);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Domain\Entity\Publisher;
+namespace Notifications\Domain\Model\Publisher;
 
 use Minishlink\WebPush\VAPID;
 use Notifications\Domain\Services\KeyGeneratorStrategy;

@@ -10,7 +10,7 @@ default:
       paths:
         - '%paths.base%/features/'
       contexts:
-        - Features\VisualizePointsContext
+        - Features\SubscriberContext
 #  extensions:
 #    DVDoug\Behat\CodeCoverage\Extension:
 #      filter:

@@ -3,8 +3,8 @@
 namespace Notifications\Tests\Integration\Infrastructure\Lib;
 
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

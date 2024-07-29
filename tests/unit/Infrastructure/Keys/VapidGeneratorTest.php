@@ -8,16 +8,9 @@ use Notifications\Tests\Domain\Services\KeyGenFakeTest;
 
 class VapidGeneratorTest extends KeyGenFakeTest
 {
-    protected KeyGeneratorStrategy $generatorKey;
-
-    protected function setUp(): void
-    {
-        $this->generatorKey = new VapidGenerator();
-    }
-
     public function testCreate(): void
     {
-        $generatedKey = $this->generatorKey->generateACoupleOfKey();
+        $generatedKey = (new VapidGenerator())->generateACoupleOfKey();
         $this->assertNotEmpty($generatedKey);
     }
 }

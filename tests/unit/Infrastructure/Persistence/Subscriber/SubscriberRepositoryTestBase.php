@@ -2,12 +2,12 @@
 
 namespace Notifications\Tests\Infrastructure\Persistence\Subscriber;
 
-use Notifications\Domain\Entity\Publisher\Publisher;
-use Notifications\Domain\Entity\Subscriber\Endpoint;
-use Notifications\Domain\Entity\Subscriber\ExpirationTime;
-use Notifications\Domain\Entity\Subscriber\Keys;
-use Notifications\Domain\Entity\Subscriber\Subscriber;
-use Notifications\Domain\Entity\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Domain\Model\Publisher\Publisher;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Subscriber;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\Exceptions\SubscriberNotFoundException;
 use PHPUnit\Framework\TestCase;
 
