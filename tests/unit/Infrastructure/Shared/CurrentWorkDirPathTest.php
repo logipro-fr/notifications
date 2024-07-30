@@ -7,7 +7,7 @@ use Notifications\Infrastructure\Shared\CurrentWorkDirPath;
 
 class CurrentWorkDirPathTest extends TestCase
 {
-    private const MY_CURRENT_WORKING_DIR = '/home/myfolder';
+    private const MY_CURRENT_WORKING_DIR = '/home/dev/work/notifications';
 
     private ?string $d_env;
     private ?string $env;

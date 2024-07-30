@@ -2,7 +2,7 @@
     "name": "logipro/notifications",
     "type": "app",
     "description": "a Notification micro-service",
-    "keywords": ["php", "DDT"],
+    "keywords": ["webpush", "notification"],
     "homepage": "https://github.com/logipro-fr/notifications",
     "license": "Copyrighted",
     "minimum-stability": "stable",

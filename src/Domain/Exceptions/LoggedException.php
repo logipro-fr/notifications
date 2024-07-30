@@ -2,7 +2,6 @@
 
 namespace Notifications\Domain\Exceptions;
 
-use Exception;
 use Safe\DateTime;
 
 use function Safe\error_log;

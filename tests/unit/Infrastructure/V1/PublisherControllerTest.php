@@ -33,8 +33,7 @@ class PublisherControllerTest extends WebTestCase
 
         $this->client = static::createClient(["debug" => false]);
         /** @var SubscriberRepositoryDoctrine */
-        $autoInjectedRepo = $this->client->getContainer()->get("subscribers.repository");
-        $this->repository = $autoInjectedRepo;
+        $this->repository = $this->client->getContainer()->get("subscribers.repository");
         $this->eventFacade = $this->createMock(EventFacade::class);
         $this->client->getContainer()->set(EventFacade::class, $this->eventFacade);
     }

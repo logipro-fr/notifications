@@ -10,7 +10,7 @@ class Subscriber
     private Endpoint $endpoint;
     private Keys $keys;
     private ExpirationTime $expirationTime;
-    
+
     private Status $status;
 
     public function __construct(

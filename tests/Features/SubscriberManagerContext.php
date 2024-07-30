@@ -21,7 +21,7 @@ use function Safe\json_encode;
 /**
  * Defines application features from the specific context.
  */
-class SubscriberContext implements Context
+class SubscriberManagerContext implements Context
 {
     private const URL_PUBLISHER = "nextsign.fr";
 

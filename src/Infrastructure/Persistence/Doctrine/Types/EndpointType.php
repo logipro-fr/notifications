@@ -10,7 +10,7 @@ class EndpointType extends Type
 {
     public const TYPE_NAME = "endpoint";
     public const MAX_VARCHAR_LENGTH = 255;
-    
+
     public function getName(): string
     {
         return self::TYPE_NAME;

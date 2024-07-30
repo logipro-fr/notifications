@@ -3,8 +3,6 @@
 namespace Notifications\Tests\Domain\Model\Subscriber;
 
 use Notifications\Domain\Model\Publisher\Publisher;
-use Notifications\Domain\Model\Subscriber\AuthKey;
-use Notifications\Domain\Model\Subscriber\EncryptKey;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\ExpirationTime;
 use Notifications\Domain\Model\Subscriber\Keys;
@@ -13,40 +11,21 @@ use PHPUnit\Framework\TestCase;
 
 class SubscriberTest extends TestCase
 {
-    private Endpoint $endpoint;
-    private Keys $keys;
-    private ExpirationTime $expirationTime;
-    private Publisher $publisher;
-
-    private Subscriber $subscriber;
-
-    protected function setUp(): void
+    public function testGetSubscriberValues(): void
     {
-        $this->endpoint = $this->createMock(Endpoint::class);
-        $this->keys = $this->createMock(Keys::class);
-        $this->expirationTime = $this->createMock(ExpirationTime::class);
-        $this->publisher = $this->createMock(Publisher::class);
+        $endpoint = new Endpoint("www.nextsign.fr");
+        $keys = new Keys("1234", "5678");
+        $expirationTime = new ExpirationTime("");
+        $publisher = $this->createMock(Publisher::class);
 
-        $this->subscriber = new Subscriber(
-            $this->endpoint,
-            $this->keys,
-            $this->expirationTime,
-            $this->publisher
+        $subscriber = new Subscriber(
+            $endpoint,
+            $keys,
+            $expirationTime,
+            $publisher
         );
-    }
-
-    public function testGetEndpoint(): void
-    {
-        $this->assertSame($this->endpoint, $this->subscriber->getEndpoint());
-    }
-
-    public function testGetKeys(): void
-    {
-        $this->assertSame($this->keys, $this->subscriber->getKeys());
-    }
-
-    public function testPublisher(): void
-    {
-        $this->assertSame($this->publisher, $this->subscriber->getPublisher());
+        $this->assertSame($endpoint, $subscriber->getEndpoint());
+        $this->assertSame($keys, $subscriber->getKeys());
+        $this->assertSame($publisher, $subscriber->getPublisher());
     }
 }
