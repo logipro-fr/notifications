@@ -4,8 +4,8 @@ namespace Notifications\Infrastructure\Persistence\Subscriber;
 
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\Subscriber;
-use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\Exceptions\SubscriberNotFoundException;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 
 class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface
 {
@@ -16,6 +16,18 @@ class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface
     public function add(Subscriber $subscriber): void
     {
         $this->subscribers[$subscriber->getEndpoint()->__toString()] = $subscriber;
+    }
+
+    public function delete(Subscriber $subscriber): void
+    {
+        $endpointString = $subscriber->getEndpoint()->__toString();
+        if (!isset($this->subscribers[$endpointString])) {
+            throw new SubscriberNotFoundException(
+                sprintf("Error can't find the endpoint %s", $endpointString),
+                $this->errorCode
+            );
+        }
+        unset($this->subscribers[$endpointString]);
     }
 
     public function findById(Endpoint $searchId): Subscriber

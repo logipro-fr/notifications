@@ -2,8 +2,8 @@
 
 namespace Notifications\Infrastructure\Api\V1;
 
-use Notifications\Application\Service\PermissionOptIn;
-use Notifications\Application\Service\PermissionRequest;
+use Notifications\Application\Service\OptIn\PermissionOptIn;
+use Notifications\Application\Service\OptIn\PermissionRequest;
 use Notifications\Domain\EventFacade\EventFacade;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

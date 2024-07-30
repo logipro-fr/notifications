@@ -28,6 +28,12 @@ class SubscriberRepositoryDoctrine extends EntityRepository implements Subscribe
         $this->getEntityManager()->persist($subscriber);
     }
 
+    public function delete(Subscriber $subscriber): void
+    {
+        $this->getEntityManager()->remove($subscriber);
+    }
+
+
     public function findById(Endpoint $searchId): Subscriber
     {
         $subscriber = $this->getEntityManager()->find(Subscriber::class, $searchId);

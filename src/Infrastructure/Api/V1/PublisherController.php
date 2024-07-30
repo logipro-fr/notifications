@@ -3,9 +3,9 @@
 namespace Notifications\Infrastructure\Api\V1;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Notifications\Application\Service\Subscription;
-use Notifications\Application\Service\SubscriptionRequest;
-use Notifications\Application\Service\SubscriptionResponse;
+use Notifications\Application\Service\Subscription\Subscription;
+use Notifications\Application\Service\Subscription\SubscriptionRequest;
+use Notifications\Application\Service\Subscription\SubscriptionResponse;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Domain\Exceptions\EmptySubscriberContentException;

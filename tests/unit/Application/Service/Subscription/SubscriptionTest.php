@@ -2,9 +2,9 @@
 
 namespace Notifications\Tests\Application\Service;
 
-use Notifications\Application\Service\Subscription;
-use Notifications\Application\Service\SubscriptionRequest;
-use Notifications\Application\Service\SubscriptionResponse;
+use Notifications\Application\Service\Subscription\Subscription;
+use Notifications\Application\Service\Subscription\SubscriptionRequest;
+use Notifications\Application\Service\Subscription\SubscriptionResponse;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\ExpirationTime;
 use Notifications\Domain\Model\Subscriber\Keys;

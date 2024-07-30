@@ -1,6 +1,6 @@
 <?php
 
-namespace Notifications\Application\Service;
+namespace Notifications\Application\Service\OptIn;
 
 class PermissionRequest
 {

@@ -2,7 +2,7 @@
 
 namespace Notifications\Application\Service;
 
-use Notifications\Application\Service\SubscriptionRequest;
+use Notifications\Application\Service\Subscription\SubscriptionRequest;
 use Notifications\Domain\Model\Publisher\Publisher;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\ExpirationTime;

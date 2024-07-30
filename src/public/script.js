@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
   navigator.serviceWorker.register('sw.js').then(
     () => {
       console.log('[SW] Service worker has been registered');
-      push_updateSubscription();
     },
     e => {
       console.error('[SW] Service worker registration failed', e);
@@ -139,23 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  function push_updateSubscription() {
-    navigator.serviceWorker.ready
-      .then(serviceWorkerRegistration => serviceWorkerRegistration.pushManager.getSubscription())
-      .then(subscription => {
-        changePushButtonState('disabled');
-
-        if (!subscription) {
-          return;
-        }
-        return push_sendSubscriptionToServer(subscription, 'PUT');
-      })
-      .then(subscription => subscription && changePushButtonState('enabled'))
-      .catch(e => {
-        console.error('Error when updating the subscription', e);
-      });
-  }
-
   function push_unsubscribe() {
     changePushButtonState('computing');
 
@@ -166,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
           changePushButtonState('disabled');
           return;
         }
-        return push_sendSubscriptionToServer(subscription, 'DELETE');
+        return push_sendUnSubscriptionToServer(subscription, 'DELETE');
       })
       .then(subscription => subscription.unsubscribe())
       .then(() => changePushButtonState('disabled'))
@@ -210,6 +192,31 @@ document.addEventListener('DOMContentLoaded', () => {
     
   }
 
+  async function push_sendUnSubscriptionToServer(subscription, method) {
+    const data = {
+      endpoint: subscription.endpoint,
+    };
+    console.log("Suppression de l'utilisateur: ");
+    console.log(data);
+
+    const url = 'http://172.17.0.1:11480/api/v1/subscriber/manager';
+    const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+        console.log('Unsubscription successful:', result);
+    } else {
+        console.error('Unsubscription failed:', result);
+    }
+    
+  }
+
   async function sendAuthorizationStatusToServer(AuthorizedStatus) {
     const response = await fetch('http://172.17.0.1:11480/api/v1/subscriber/authorization', {
         method: 'POST',
@@ -219,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({ AuthorizedStatus }),
     });
     return response.json();
-}
+  }
 
   const sendPushButton = document.querySelector('#send-push-button');
   if (!sendPushButton) {

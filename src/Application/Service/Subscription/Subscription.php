@@ -1,7 +1,8 @@
 <?php
 
-namespace Notifications\Application\Service;
+namespace Notifications\Application\Service\Subscription;
 
+use Notifications\Application\Service\SubscriberFactory;
 use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 
