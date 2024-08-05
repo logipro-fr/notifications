@@ -8,7 +8,7 @@ servers:
   - url: http://172.17.0.1:11480/api/v1
     description: Local Developement usage API routes
 paths:
-  /subscriber/register:
+  /subscriber/manager:
     subscriber:
       summary: Register a new subscriber
       description: When a one user navigator made a request after an action AND after he authorizes the notification send, he is registered as a subscriber

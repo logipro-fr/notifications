@@ -85,7 +85,7 @@ class SubscriberManagerContext implements Context
          $client = self::$kernel->getContainer()->get('test.client');
          $client->request(
              "POST",
-             "/api/v1/subscriber",
+             "/api/v1/subscriber/manager",
              [],
              [],
              ['CONTENT_TYPE' => 'application/json'],

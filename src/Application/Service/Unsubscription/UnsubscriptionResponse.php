@@ -4,15 +4,13 @@ namespace Notifications\Application\Service\Unsubscription;
 
 class UnsubscriptionResponse
 {
-    private $status;
-
-    public function __construct(string $status)
-    {
-        $this->status = $status;
-    }
-
-    public function getStatus(): string
-    {
-        return $this->status;
+    public function __construct(
+        public readonly string $endpoint,
+        public readonly string $expirationTime,
+        /**
+         * @var array<string, string> $keys
+         */
+        public readonly array $keys
+    ) {
     }
 }

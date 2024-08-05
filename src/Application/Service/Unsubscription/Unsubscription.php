@@ -2,6 +2,7 @@
 
 namespace Notifications\Application\Service\Unsubscription;
 
+use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 
@@ -22,13 +23,16 @@ class Unsubscription
         $this->repository->delete($subscriber);
 
         $this->response = new UnsubscriptionResponse(
-            "success"
+            $subscriber->getEndpoint(),
+            $subscriber->getExpirationTime(),
+            $subscriber->getKeys()->toArray()
         );
     }
 
     private function deleteSubscriber(UnsubscriptionRequest $request): Subscriber
     {
-        $subscriber = $this->repository->findById($request->endpoint);
+        $endpoint = new Endpoint($request->endpoint);
+        $subscriber = $this->repository->findById($endpoint);
 
         return $subscriber;
     }

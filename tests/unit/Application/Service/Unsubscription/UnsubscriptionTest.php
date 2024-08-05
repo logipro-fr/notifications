@@ -43,7 +43,7 @@ class UnsubscriptionTest extends TestCase
             ->method('delete')
             ->with($this->equalTo($subscriber));
 
-        $request = new UnsubscriptionRequest($endpoint);
+        $request = new UnsubscriptionRequest($endpoint, $expirationTime, $keys->getAuthKey(), $keys->getEncryptKey());
 
         $this->unsubscription->execute($request);
         

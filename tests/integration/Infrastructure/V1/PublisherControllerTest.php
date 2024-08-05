@@ -42,7 +42,7 @@ class PublisherControllerTest extends WebTestCase
 
         $this->client->request(
             "POST",
-            "/api/v1/subscriber/register",
+            "/api/v1/subscriber/manager",
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
