@@ -12,6 +12,7 @@ use Notifications\Application\Service\Unsubscription\UnsubscriptionResponse;
 use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Domain\Exceptions\EmptySubscriberContentException;
 use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\Keys;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\Services\StatusClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -117,10 +118,14 @@ class PublisherController
             [
                 'success' => $this->client->getValue(),
                 'ErrorCode' => "",
-                'data' => '',
+                'data' => [
+                    'endpoint' => $unsubscribeResponse->endpoint,
+                    'expirationTime' => $unsubscribeResponse->expirationTime,
+                    'keys' => $unsubscribeResponse->keys
+                ],
                 'message' => "",
             ],
-            200
+            201
         );
     }
 
@@ -147,8 +152,11 @@ class PublisherController
 
     private function buildUnsubscribeRequest(Request $request): UnsubscriptionRequest
     {
+        /** @var string */
         $content = $request->getContent();
+         /** @var array<string, array<string>> $data */
         $data = json_decode($content, true);
+
         /** @var string */
         $endpoint = $data['endpoint'];
         /** @var string */
@@ -158,7 +166,8 @@ class PublisherController
         /** @var string */
         $p256dhkey = $data['keys']['p256dh'];
 
-        return new UnsubscriptionRequest($endpoint, $expirationTime, $authkey, $p256dhkey);
+        $keys = new Keys($authkey, $p256dhkey);
+        return new UnsubscriptionRequest($endpoint, $expirationTime, $keys);
     }
 
 }

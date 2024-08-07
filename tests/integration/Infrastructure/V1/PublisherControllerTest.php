@@ -29,7 +29,7 @@ class PublisherControllerTest extends WebTestCase
         $this->repository = $repo;
     }
 
-    public function testControllerRouting(): void
+    public function testSubscriptionRouting(): void
     {
         $content = json_encode([
             "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
@@ -73,5 +73,41 @@ class PublisherControllerTest extends WebTestCase
         $this->assertEquals(201, $responseCode);
         $this->assertStringContainsString('"ErrorCode":', $responseContent);
         $this->assertStringContainsString('"endpoint":', $responseContent);
+    }
+
+    public function testUnsubscriptionRouting(): void
+    {
+        $endpoint = "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx";
+        $content = json_encode([
+            "endpoint" => $endpoint,
+            "expirationTime" => "",
+            "keys" => [
+                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+        ]);
+
+        $this->client->request(
+            "DELETE",
+            "/api/v1/subscriber/manager",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $content
+        );
+
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+
+        if ($responseContent === false) {
+            $this->fail("Failed to get response content.");
+        }
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->fail("Failed to decode JSON: " . json_last_error_msg());
+        }
+
+        $subscriber = $this->repository->findById(new Endpoint($endpoint));
+        $this->assertNull($subscriber, "Error can't find the endpoint '{$endpoint}'");
     }
 }

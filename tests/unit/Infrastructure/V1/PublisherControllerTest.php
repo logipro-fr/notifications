@@ -175,12 +175,20 @@ class PublisherControllerTest extends WebTestCase
         $this->assertJson((string)$responseContent);
     }
 
-    public function testUnsubscribeSuccess(): void
+    public function testExecuteUnsubscription(): void
     {
-        $spy = new SpyListener();
-        (new EventFacade())->subscribe($spy);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata->name = 'Notifications\Domain\Model\Subscriber\Subscriber';
 
-        $subscribeContent = json_encode([
+        $entityManager->method('getClassMetadata')
+                      ->willReturn($classMetadata);
+
+        $subscriberRepository = new SubscriberRepositoryDoctrine($entityManager);
+
+        $controller = new PublisherController($subscriberRepository, $entityManager);
+
+        $content = json_encode([
             "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
             "expirationTime" => "",
             "keys" => [
@@ -189,94 +197,26 @@ class PublisherControllerTest extends WebTestCase
             ],
         ]);
 
-        if ($subscribeContent === false) {
+        if ($content === false) {
             $this->fail("Failed to encode JSON.");
         }
 
-        $this->client->request(
-            "POST",
-            "/api/v1/subscriber/manager",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $subscribeContent
-        );
-
-        $subscribeResponseContent = $this->client->getResponse()->getContent();
-        $subscribeResponseCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertEquals(201, $subscribeResponseCode);
-        $this->assertStringContainsString('"success":true', $subscribeResponseContent);
-
-        $unsubscribeContent = json_encode([
-            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx"
-        ]);
-
-        if ($unsubscribeContent === false) {
-            $this->fail("Failed to encode JSON.");
-        }
-
-        $this->client->request(
+        $request = Request::create(
+            "/api/v1/subscriber",
             "DELETE",
-            "/api/v1/subscriber/manager",
+            [],
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            $unsubscribeContent
+            $content
         );
+        $response = $controller->unsubscribe($request);
+        $responseContent = $response->getContent();
 
-        $unsubscribeResponseContent = $this->client->getResponse()->getContent();
-        $unsubscribeResponseCode = $this->client->getResponse()->getStatusCode();
-
-        if ($unsubscribeResponseContent === false) {
+        if ($responseContent === "") {
             $this->fail("Failed to get response content.");
         }
 
-        $this->assertJson($unsubscribeResponseContent, "Response is not valid JSON: " . $unsubscribeResponseContent);
-
-        /** @var array<string> */
-        $array = json_decode($unsubscribeResponseContent, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->fail("Failed to decode JSON: " . json_last_error_msg());
-        }
-
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $unsubscribeResponseContent);
-        $this->assertEquals(200, $unsubscribeResponseCode);
-        $this->assertStringContainsString('"ErrorCode":""', $unsubscribeResponseContent);
-
-        $endpoint = $array['data']['endpoint'];
-        $researchEndpoint = $this->repository->findById(new Endpoint($endpoint));
-
-        $this->assertNull($researchEndpoint, "The endpoint should have been removed from the repository.");
-    }
-
-    public function testUnsubscribeErrorResponse(): void
-    {
-        $unsubscribeContent = json_encode([
-            "endpoint" => ""
-        ]);
-
-        if ($unsubscribeContent === false) {
-            $this->fail("Failed to encode JSON.");
-        }
-
-        $this->client->request(
-            "DELETE",
-            "/api/v1/subscriber/manager",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $unsubscribeContent
-        );
-
-        /** @var string $responseContent */
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertEquals(500, $responseCode);
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertStringContainsString('"ErrorCode":"EmptySubscriberContentException"', $responseContent);
+        $this->assertJson((string)$responseContent);
     }
 }

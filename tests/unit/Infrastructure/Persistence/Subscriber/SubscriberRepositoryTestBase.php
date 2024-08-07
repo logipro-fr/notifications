@@ -55,10 +55,4 @@ abstract class SubscriberRepositoryTestBase extends TestCase
         $this->assertFalse($found->getEndpoint()->equals($found2->getEndpoint()));
     }
 
-    public function testFindByIdException(): void
-    {
-        $this->expectException(SubscriberNotFoundException::class);
-        $this->expectExceptionMessage("Error can't find the endpoint prime54845");
-        $this->subscriberRepository->findById(new Endpoint("prime54845"));
-    }
 }

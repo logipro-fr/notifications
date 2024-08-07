@@ -20,7 +20,7 @@ class SubscriptionTest extends TestCase
 
     public function setUp(): void
     {
-        $endpoint = new Endpoint("test");
+        $endpoint = new Endpoint("https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx");
         $expirationTime = new ExpirationTime();
         $keys = new Keys("8veJjf8tjO1kbYlX3zOoRw", "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL");
 

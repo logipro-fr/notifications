@@ -2,7 +2,11 @@
 
 namespace Notifications\Application\Service\Unsubscription;
 
+use Notifications\Application\Service\SubscriberFactory;
+use Notifications\Domain\Model\Publisher\Publisher;
 use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\Keys;
 use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 
@@ -18,24 +22,22 @@ class Unsubscription
     }
 
     public function execute(UnsubscriptionRequest $request): void
-    {
-        $subscriber = $this->deleteSubscriber($request);
-        $this->repository->delete($subscriber);
-
-        $this->response = new UnsubscriptionResponse(
-            $subscriber->getEndpoint(),
-            $subscriber->getExpirationTime(),
-            $subscriber->getKeys()->toArray()
-        );
+    {        
+        $subscriberFactory = new SubscriberFactory();
+        $subscriber = $subscriberFactory->buildSubscriberForDelete($request);
+        if ($subscriber !== null) {
+            $this->repository->delete($subscriber);
+            $this->repository->flush;
+            $this->response = new UnsubscriptionResponse(
+                $subscriber->getEndpoint(),
+                $subscriber->getExpirationTime(),
+                $subscriber->getKeys()->toArray()
+            );
+        } else {
+            throw new \Exception('Subscriber not found.');
+        }
     }
 
-    private function deleteSubscriber(UnsubscriptionRequest $request): Subscriber
-    {
-        $endpoint = new Endpoint($request->endpoint);
-        $subscriber = $this->repository->findById($endpoint);
-
-        return $subscriber;
-    }
 
     public function getResponse(): UnsubscriptionResponse
     {
