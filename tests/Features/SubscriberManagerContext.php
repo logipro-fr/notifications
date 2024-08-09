@@ -7,6 +7,8 @@ use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Notifications\Application\Service\Subscription\Subscription;
 use Notifications\Application\Service\Subscription\SubscriptionRequest;
+use Notifications\Application\Service\Unsubscription\Unsubscription;
+use Notifications\Application\Service\Unsubscription\UnsubscriptionRequest;
 use Notifications\Domain\Model\Publisher\Publisher;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\ExpirationTime;
@@ -143,7 +145,20 @@ class SubscriberManagerContext implements Context
      */
     public function theUserWantToUnsubscribe(): void
     {
-        throw new PendingException();
+        $this->repository = new SubscriberRepositoryInMemory();
+        $unsubscription = new Unsubscription($this->repository);
+        $this->endpoint = new Endpoint(self::URL_PUBLISHER);
+        $this->keys = new Keys(
+            "H9M9HgHX4a3xmcChKQNWFA",
+            "BNBaksmindsZK9u_mghq-Omb1_9bN-hJVP8KjLWB6mlHPf_R3JLmyd-0LwYBGErAjItB2Pex6bAKYFFR_gDdYpo"
+        );
+        $this->expirationTime = new ExpirationTime();
+        $request = new UnsubscriptionRequest(
+            $this->endpoint,
+            $this->expirationTime,
+            $this->keys
+        );
+        $unsubscription->execute($request);
     }
 
     /**
@@ -151,7 +166,26 @@ class SubscriberManagerContext implements Context
      */
     public function theNavigatorUnsubscribedFromPublisher(): void
     {
-        throw new PendingException();
+         /** @var KernelBrowser */
+         $client = self::$kernel->getContainer()->get('test.client');
+         $client->request(
+             "DELETE",
+             "/api/v1/subscriber/manager",
+             [],
+             [],
+             ['CONTENT_TYPE' => 'application/json'],
+             json_encode([
+                "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
+                "expirationTime" => "",
+                "keys" => [
+                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+                ],
+             ])
+         );
+         /** @var string */
+         $response = $client->getResponse()->getContent();
+         $this->response = $response;
     }
 
     /**
@@ -159,7 +193,7 @@ class SubscriberManagerContext implements Context
      */
     public function theNavigatorDeletedTheTokenThatAllowsToRecogizeIt(): void
     {
-        throw new PendingException();
+        $this->subscriber->getKeys();
     }
 
     /**

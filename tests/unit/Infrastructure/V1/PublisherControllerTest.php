@@ -38,7 +38,7 @@ class PublisherControllerTest extends WebTestCase
         $this->client->getContainer()->set(EventFacade::class, $this->eventFacade);
     }
 
-    public function testControllerRouting(): void
+    public function testPOSTControllerRouting(): void
     {
         $spy = new SpyListener();
         (new EventFacade())->subscribe($spy);
@@ -94,6 +94,48 @@ class PublisherControllerTest extends WebTestCase
         $this->assertStringContainsString('"ErrorCode":', $responseContent);
         $this->assertStringContainsString('"endpoint":', $responseContent);
         $this->assertEquals($endpoint, $researchEndpoint->getEndpoint());
+    }
+
+    public function testDELETEControllerRouting(): void
+    {
+        $spy = new SpyListener();
+        (new EventFacade())->unsubscribe($spy);
+
+        $content = json_encode([
+            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
+            "expirationTime" => "",
+            "keys" => [
+                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+        ]);
+
+        if ($content === false) {
+            $this->fail("Failed to encode JSON.");
+        }
+
+        $this->client->request(
+            "DELETE",
+            "/api/v1/subscriber/manager",
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            $content
+        );
+
+        $responseContent = $this->client->getResponse()->getContent();
+        $responseCode = $this->client->getResponse()->getStatusCode();
+
+        if ($responseContent === false) {
+            $this->fail("Failed to get response content.");
+        }
+
+        $this->assertJson($responseContent, "Response is not valid JSON: " . $responseContent);
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('"success":true', $responseContent);
+        $this->assertEquals(201, $responseCode);
+        $this->assertStringContainsString('"ErrorCode":', $responseContent);
+        $this->assertStringContainsString('"endpoint":', $responseContent);
     }
 
     public function testControllerErrorResponse(): void

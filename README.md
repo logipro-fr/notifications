@@ -6,15 +6,18 @@ Allow to send web push notification on website.
 
 ```console
 git clone git@github.com:
+./install
 ```
 
-# To Contribute to SocialNetworkPublisher
+# To Contribute to Notifications
 
 ## Requirements
 
 * docker
 * git
+* a web browser (chrome, firefox, ...)
 
+To use notification you need a website who using a HTTPS protocol. If you test with the integrate webapp test, you need to autorize HTTP communication on your web browser for the service worker (parameters in inspectate menu).
 
 ## Unit test
 
@@ -32,7 +35,7 @@ Using Test-Driven Development (TDD) principles (thanks to Kent Beck and others),
 
 Then, you can access Swagger at http://172.17.0.1:11403/ in your browser to test different routes. 
 You can also access phpMyAdmin at http://172.17.0.1:11402/ and test the demo page with `NGINX` at http://172.17.0.1:11480/index.html.
-IMPORTANT: If you test with `NGINX`, you need to autorize HTTP communication on your navigator for the service worker.
+
 
 In `docker/mariad/db.env`, you can set a new password for the root user.
 

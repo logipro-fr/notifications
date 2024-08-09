@@ -12,6 +12,12 @@ class EventFacade
     {
         EventDispatcher::instance()->subscribe($eventListener);
     }
+
+    public function unsubscribe(ListenerInterface $eventListener): void
+    {
+        EventDispatcher::instance()->unsubscribe($eventListener);
+    }
+    
     public function dispatch(Event $event): void
     {
         EventDispatcher::instance()->dispatch($event);

@@ -3,11 +3,6 @@
 namespace Notifications\Application\Service\Unsubscription;
 
 use Notifications\Application\Service\SubscriberFactory;
-use Notifications\Domain\Model\Publisher\Publisher;
-use Notifications\Domain\Model\Subscriber\Endpoint;
-use Notifications\Domain\Model\Subscriber\ExpirationTime;
-use Notifications\Domain\Model\Subscriber\Keys;
-use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 
 class Unsubscription
@@ -27,7 +22,6 @@ class Unsubscription
         $subscriber = $subscriberFactory->buildSubscriberForDelete($request);
         if ($subscriber !== null) {
             $this->repository->delete($subscriber);
-            $this->repository->flush;
             $this->response = new UnsubscriptionResponse(
                 $subscriber->getEndpoint(),
                 $subscriber->getExpirationTime(),

@@ -4,6 +4,7 @@ namespace Notifications\Infrastructure\Persistence\Subscriber;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\Persistence\ObjectManager;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
@@ -25,12 +26,16 @@ class SubscriberRepositoryDoctrine extends EntityRepository implements Subscribe
 
     public function add(Subscriber $subscriber): void
     {
-        $this->getEntityManager()->persist($subscriber);
+        $em = $this->getEntityManager();
+        $em->persist($subscriber);
+        $em->flush();
     }
 
     public function delete(Subscriber $subscriber): void
     {
-        $this->getEntityManager()->remove($subscriber);
+        $em = $this->getEntityManager();
+        $em->remove($subscriber);
+        $em->flush();
     }
 
 

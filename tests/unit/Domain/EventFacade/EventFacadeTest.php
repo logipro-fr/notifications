@@ -19,6 +19,16 @@ class EventFacadeTest extends TestCase
         $this->assertTrue(EventDispatcher::instance()->hasSubscriber($listener));
     }
 
+    public function testUnSubscribe(): void
+    {
+        $listener = new SpyListener();
+        $sut = new EventFacade();
+
+        $sut->unsubscribe($listener);
+
+        $this->assertFalse(EventDispatcher::instance()->hasSubscriber($listener));
+    }
+
     public function testDispatchEvent(): void
     {
         $event = new EventFake("unId");

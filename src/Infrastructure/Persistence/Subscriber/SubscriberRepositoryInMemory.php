@@ -20,14 +20,7 @@ class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface
 
     public function delete(Subscriber $subscriber): void
     {
-        $endpointString = $subscriber->getEndpoint()->__toString();
-        if (!isset($this->subscribers[$endpointString])) {
-            throw new SubscriberNotFoundException(
-                sprintf("Error can't find the endpoint %s", $endpointString),
-                $this->errorCode
-            );
-        }
-        unset($this->subscribers[$endpointString]);
+        $this->subscribers[$subscriber->getEndpoint()->__toString()]="";
     }
 
     public function findById(Endpoint $searchId): Subscriber
