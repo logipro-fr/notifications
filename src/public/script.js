@@ -234,13 +234,41 @@ document.addEventListener('DOMContentLoaded', () => {
           alert('Please enable push notifications');
           return;
         }
-
-        const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0];
-        const jsonSubscription = subscription.toJSON();
-        fetch('send_push_notification.php', {
-          method: 'POST',
-          body: JSON.stringify(Object.assign(jsonSubscription, { contentEncoding })),
-        });
+        sendPushButton.addEventListener('click', () => sendPushNotification());
       })
   );
+
+  async function sendPushNotification() {
+    try {
+      const serviceWorkerRegistration = await navigator.serviceWorker.ready;
+      const subscription = await serviceWorkerRegistration.pushManager.getSubscription();
+
+      if (!subscription) {
+        alert('Please enable push notifications');
+        return;
+      }
+
+      const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0];
+      const jsonSubscription = subscription.toJSON();
+
+      const response = await fetch('http://172.17.0.1:11480/api/v1/subscriber/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...jsonSubscription,
+          contentEncoding,
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Failed to send push notification', await response.text());
+      } else {
+        console.log('Push notification sent successfully');
+      }
+    } catch (error) {
+      console.error('Error sending push notification', error);
+    }
+  }
 });

@@ -35,3 +35,10 @@ services:
   Notifications\Infrastructure\Api\V1\:
     resource: "../src/Infrastructure/Api/V1/"
     tags: ["controller.service_arguments"]
+
+  Minishlink\WebPush\Subscription:
+        arguments:
+            $endpoint: ''
+            $publicKey: ''
+            $authToken: ''
+            $contentEncoding: 'aesgcm'

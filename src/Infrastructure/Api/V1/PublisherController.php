@@ -11,7 +11,6 @@ use Notifications\Application\Service\Unsubscription\UnsubscriptionRequest;
 use Notifications\Application\Service\Unsubscription\UnsubscriptionResponse;
 use Notifications\Domain\EventFacade\EventFacade;
 use Notifications\Domain\Exceptions\EmptySubscriberContentException;
-use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\Keys;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\Services\StatusClient;
