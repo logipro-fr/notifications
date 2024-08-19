@@ -10,6 +10,10 @@ services:
   _defaults:
     autowire: true # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    bind:
+            $vapidSubject: '%env(VAPID_SUBJECT)%'
+            $vapidPublicKey: '%env(VAPID_PUBLIC_KEY)%'
+            $vapidPrivateKey: '%env(VAPID_PRIVATE_KEY)%'
   
   Notifications\Logger\SQLLogger:
         arguments:
@@ -35,6 +39,17 @@ services:
   Notifications\Infrastructure\Api\V1\:
     resource: "../src/Infrastructure/Api/V1/"
     tags: ["controller.service_arguments"]
+
+  Notifications\Application\Service\Subscription\Subscription:
+      arguments: []
+
+  Minishlink\WebPush\WebPush:
+        arguments:
+            $auth: # The VAPID authentication keys
+                VAPID: 
+                    subject: 'mailto:me@website.com'
+                    publicKey: '%env(VAPID_PUBLIC_KEY)%'
+                    privateKey: '%env(VAPID_PRIVATE_KEY)%'
 
   Minishlink\WebPush\Subscription:
         arguments:

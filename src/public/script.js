@@ -248,18 +248,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0];
-      const jsonSubscription = subscription.toJSON();
-
+      const key = subscription.getKey('p256dh');
+      const token = subscription.getKey('auth');
+    
+      const data = {
+        endpoint: subscription.endpoint,
+        expirationTime: "",
+        keys: {
+          auth: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
+          p256dh: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
+        },
+      };
+      
       const response = await fetch('http://172.17.0.1:11480/api/v1/subscriber/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...jsonSubscription,
-          contentEncoding,
-        }),
+        body: JSON.stringify(data),
       });
 
       if (!response.ok) {
