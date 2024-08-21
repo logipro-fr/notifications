@@ -11,3 +11,4 @@ default:
         - '%paths.base%/features/'
       contexts:
         - Features\SubscriberManagerContext
+        - Features\NotificationManagerContext

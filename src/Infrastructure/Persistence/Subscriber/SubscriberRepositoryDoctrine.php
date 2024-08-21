@@ -4,7 +4,6 @@ namespace Notifications\Infrastructure\Persistence\Subscriber;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\Persistence\ObjectManager;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
@@ -15,9 +14,6 @@ use Notifications\Domain\Exceptions\SubscriberNotFoundException;
  */
 class SubscriberRepositoryDoctrine extends EntityRepository implements SubscriberRepositoryInterface
 {
-    private const ERROR_MSG = "Error can't find the endpoint %s";
-    private const ERROR_CODE = 400;
-
     public function __construct(EntityManagerInterface $em)
     {
         $class = $em->getClassMetadata(Subscriber::class);
@@ -42,6 +38,13 @@ class SubscriberRepositoryDoctrine extends EntityRepository implements Subscribe
     public function findById(Endpoint $searchId): ?Subscriber
     {
         $subscriber = $this->getEntityManager()->find(Subscriber::class, $searchId);
+        if($subscriber === null)
+        {
+            throw new SubscriberNotFoundException(
+                sprintf("Error can't find the endpoint %s", $searchId),
+                SubscriberNotFoundException::ERROR_CODE
+            );
+        }
         return $subscriber;
     }
 

@@ -8,9 +8,7 @@ class Title
     {
         if (empty($this->content)) {
             $this->content = "Default Title";
-        }
-        else
-        {
+        } else {
             $this->content = $content;
         }
     }
@@ -19,5 +17,4 @@ class Title
     {
         return $this->content;
     }
-
 }

@@ -17,7 +17,7 @@ class EventFacade
     {
         EventDispatcher::instance()->unsubscribe($eventListener);
     }
-    
+
     public function dispatch(Event $event): void
     {
         EventDispatcher::instance()->dispatch($event);
@@ -26,4 +26,5 @@ class EventFacade
     {
         EventDispatcher::instance()->distribute();
     }
+
 }

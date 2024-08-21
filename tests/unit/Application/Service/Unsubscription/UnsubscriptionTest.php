@@ -2,17 +2,15 @@
 
 namespace Notifications\Tests\Application\Service;
 
-use Notifications\Application\Service\Subscription\Subscription;
-use Notifications\Application\Service\Subscription\SubscriptionRequest;
-use Notifications\Application\Service\Subscription\SubscriptionResponse;
+use Exception;
 use Notifications\Application\Service\Unsubscription\Unsubscription;
 use Notifications\Application\Service\Unsubscription\UnsubscriptionRequest;
 use Notifications\Application\Service\Unsubscription\UnsubscriptionResponse;
+use Notifications\Domain\Exceptions\SubscriberNotFoundException;
 use Notifications\Domain\Model\Publisher\Publisher;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\ExpirationTime;
 use Notifications\Domain\Model\Subscriber\Keys;
-use Notifications\Domain\Model\Subscriber\Status;
 use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +19,6 @@ class UnsubscriptionTest extends TestCase
 {
     private UnsubscriptionRequest $request;
     private SubscriberRepositoryInMemory $repository;
-    private const STATUS_ERROR = "Subscriber status was not set to SUBSCRIBED.";
 
     public function setUp(): void
     {
@@ -30,11 +27,12 @@ class UnsubscriptionTest extends TestCase
         );
         $expirationTime = new ExpirationTime();
         $keys = new Keys(
-            "8veJjf8tjO1kbYlX3zOoRw", 
-            "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL");
+            "8veJjf8tjO1kbYlX3zOoRw",
+            "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+        );
 
         $publisher = new Publisher("www.nextsign.fr");
-        
+
         $subscriber = new Subscriber($endpoint, $keys, $expirationTime, $publisher);
         $this->repository = new SubscriberRepositoryInMemory();
         $this->repository->add($subscriber);
@@ -54,7 +52,7 @@ class UnsubscriptionTest extends TestCase
         }
         $serviceUnsub->execute($this->request);
         $response = $serviceUnsub->getResponse();
-    
+
         $this->assertInstanceOf(UnsubscriptionResponse::class, $response);
     }
 }

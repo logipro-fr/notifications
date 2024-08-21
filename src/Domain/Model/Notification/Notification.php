@@ -2,7 +2,6 @@
 
 namespace Notifications\Domain\Model\Notification;
 
-
 class Notification
 {
     private Title $title;
@@ -20,7 +19,6 @@ class Notification
         $this->description = $description;
         $this->url = $url;
         $this->image = $image;
-      
     }
 
     /**

@@ -17,7 +17,7 @@ class Unsubscription
     }
 
     public function execute(UnsubscriptionRequest $request): void
-    {        
+    {
         $subscriberFactory = new SubscriberFactory();
         $subscriber = $subscriberFactory->buildSubscriberForDelete($request);
         if ($subscriber !== null) {
@@ -27,11 +27,8 @@ class Unsubscription
                 $subscriber->getExpirationTime(),
                 $subscriber->getKeys()->toArray()
             );
-        } else {
-            throw new \Exception('Subscriber not found.');
         }
     }
-
 
     public function getResponse(): UnsubscriptionResponse
     {

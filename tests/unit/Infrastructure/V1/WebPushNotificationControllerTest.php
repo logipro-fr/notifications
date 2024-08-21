@@ -2,263 +2,139 @@
 
 namespace Notifications\Tests\Infrastructure\V1;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
-use Notifications\Domain\Model\Subscriber\Endpoint;
-use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
-use Notifications\Domain\EventFacade\EventFacade;
-use Notifications\Infrastructure\Api\V1\PublisherController;
-use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;
-use Phariscope\Event\Tools\SpyListener;
-use PHPUnit\Framework\MockObject\MockObject;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription as WebPushSubscription;
+use Notifications\Infrastructure\Api\V1\WebPushNotificationController;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Notifications\Domain\Model\Notification\Notification;
+use Notifications\Domain\Model\Notification\Title;
+use Notifications\Domain\Model\Notification\Description;
+use Notifications\Domain\Model\Notification\Icon;
+use Notifications\Domain\Model\Notification\Action;
 
-use function Safe\json_decode;
-
-class WebPushNotificationControllerTest extends WebTestCase
+class WebPushNotificationControllerTest extends TestCase
 {
-    use DoctrineRepositoryTesterTrait;
+    private $webPushMock;
+    private $controller;
 
-    private KernelBrowser $client;
-    private SubscriberRepositoryInterface $repository;
-    private MockObject $eventFacade;
-
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $this->initDoctrineTester();
-        $this->clearTables(["subscribers"]);
-
-        $this->client = static::createClient(["debug" => false]);
-        /** @var SubscriberRepositoryDoctrine */
-        $this->repository = $this->client->getContainer()->get("subscribers.repository");
-        $this->eventFacade = $this->createMock(EventFacade::class);
-        $this->client->getContainer()->set(EventFacade::class, $this->eventFacade);
+        $this->webPushMock = $this->createMock(WebPush::class);
+        $this->controller = new WebPushNotificationController();
+        $reflection = new \ReflectionClass($this->controller);
+        $property = $reflection->getProperty('webPush');
+        $property->setAccessible(true);
+        $property->setValue($this->controller, $this->webPushMock);
     }
 
-    public function testPOSTControllerRouting(): void
+    public function testSendNotificationSuccess(): void
     {
-        $spy = new SpyListener();
-        (new EventFacade())->subscribe($spy);
-
-        $content = json_encode([
-            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-            "expirationTime" => "",
-            "keys" => [
-                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+        $requestData = [
+            'endpoint' => 'https://example.com/endpoint',
+            'keys' => [
+                'auth' => 'auth_key',
+                'p256dh' => 'p256dh_key'
             ],
-        ]);
+            'notification' => [
+                'title' => 'Test Title',
+                'description' => 'Test Description',
+                'image' => 'https://example.com/icon.png',
+                'url' => 'https://example.com'
+            ]
+        ];
 
-        if ($content === false) {
-            $this->fail("Failed to encode JSON.");
-        }
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
-        $this->client->request(
-            "POST",
-            "/api/v1/subscriber/manager",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $content
-        );
+        $this->webPushMock->expects($this->once())
+            ->method('sendOneNotification')
+            ->with(
+                $this->isInstanceOf(WebPushSubscription::class),
+                json_encode([
+                    'title' => 'Test Title',
+                    'body' => 'Test Description',
+                    'icon' => 'https://example.com/icon.png',
+                    'url' => 'https://example.com'
+                ])
+            );
 
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
+        $response = $this->controller->sendNotification($request);
 
-        if ($responseContent === false) {
-            $this->fail("Failed to get response content.");
-        }
+        $responseContent = json_decode($response->getContent(), true);
+        $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
 
-        $this->assertJson($responseContent, "Response is not valid JSON: " . $responseContent);
+        $expectedResponse = [
+            'success' => true,
+            'ErrorCode' => "",
+            'data' => [[
+                'title' => 'Test Title',
+                'body' => 'Test Description',
+                'icon' => 'https://example.com/icon.png',
+                'url' => 'https://example.com'
+            ]],
+            'message' => ""
+        ];
 
-        /** @var array<string> */
-        $array = json_decode($responseContent, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->fail("Failed to decode JSON: " . json_last_error_msg());
-        }
-
-        if (!isset($array['data']) || !is_array($array['data'])) {
-            $this->fail("Response data does not contain 'data' key or it is not an array: " . $responseContent);
-        }
-
-        $endpoint = $array['data']['endpoint'];
-        $researchEndpoint = $this->repository->findById(new Endpoint($endpoint));
-
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
-        $this->assertEquals(201, $responseCode);
-        $this->assertStringContainsString('"ErrorCode":', $responseContent);
-        $this->assertStringContainsString('"endpoint":', $responseContent);
-        $this->assertEquals($endpoint, $researchEndpoint->getEndpoint());
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals($expectedResponse, $responseContent);
     }
 
-    public function testDELETEControllerRouting(): void
+
+    public function testSendNotificationWithInvalidData(): void
     {
-        $spy = new SpyListener();
-        (new EventFacade())->unsubscribe($spy);
+        $requestData = [
+            'endpoint' => 'https://example.com/endpoint',
+            'keys' => [
+                'auth' => '',
+                'p256dh' => ''
+            ]
+        ];
 
-        $content = json_encode([
-            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-            "expirationTime" => "",
-            "keys" => [
-                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-            ],
-        ]);
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
-        if ($content === false) {
-            $this->fail("Failed to encode JSON.");
-        }
+        $response = $this->controller->sendNotification($request);
 
-        $this->client->request(
-            "DELETE",
-            "/api/v1/subscriber/manager",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $content
-        );
-
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
-
-        if ($responseContent === false) {
-            $this->fail("Failed to get response content.");
-        }
-
-        $this->assertJson($responseContent, "Response is not valid JSON: " . $responseContent);
-        $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('"success":true', $responseContent);
-        $this->assertEquals(201, $responseCode);
-        $this->assertStringContainsString('"ErrorCode":', $responseContent);
-        $this->assertStringContainsString('"endpoint":', $responseContent);
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(json_encode([
+            'success' => false,
+            'ErrorCode' => "Invalid subscription data",
+            'message' => "An error occurred"
+        ]), $response->getContent());
     }
 
-    public function testControllerErrorResponse(): void
+    public function testSendNotificationExceptionHandling(): void
     {
-        $content = json_encode([
-            "endpoint" => "",
-            "expirationTime" => "",
-            "keys" => [
-                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+        $requestData = [
+            'endpoint' => 'https://example.com/endpoint',
+            'keys' => [
+                'auth' => 'auth_key',
+                'p256dh' => 'p256dh_key'
             ],
-        ]);
+            'notification' => [
+                'title' => 'Test Title',
+                'description' => 'Test Description',
+                'image' => 'https://example.com/icon.png',
+                'url' => 'https://example.com'
+            ]
+        ];
 
-        if ($content === false) {
-            $this->fail("Failed to encode JSON.");
-        }
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
-        $this->client->request(
-            "POST",
-            "/api/v1/subscriber/manager",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $content
-        );
+        $this->webPushMock->expects($this->once())
+            ->method('sendOneNotification')
+            ->willThrowException(new \Exception('Push service error'));
 
-        /** @var string $responseContent */
-        $responseContent = $this->client->getResponse()->getContent();
-        $responseCode = $this->client->getResponse()->getStatusCode();
+        $response = $this->controller->sendNotification($request);
 
-        $this->assertEquals(500, $responseCode);
-        $this->assertStringContainsString('"success":false', $responseContent);
-        $this->assertStringContainsString('"ErrorCode":"EmptySubscriberContentException"', $responseContent);
-    }
-
-    public function testExecuteSubscription(): void
-    {
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $classMetadata = $this->createMock(ClassMetadata::class);
-        $classMetadata->name = 'Notifications\Domain\Model\Subscriber\Subscriber';
-
-        $entityManager->method('getClassMetadata')
-                      ->willReturn($classMetadata);
-
-        $subscriberRepository = new SubscriberRepositoryDoctrine($entityManager);
-
-        $controller = new PublisherController($subscriberRepository, $entityManager);
-
-        $content = json_encode([
-            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-            "expirationTime" => "",
-            "keys" => [
-                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-            ],
-        ]);
-
-        if ($content === false) {
-            $this->fail("Failed to encode JSON.");
-        }
-
-        $request = Request::create(
-            "/api/v1/subscriber",
-            "POST",
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $content
-        );
-
-        $response = $controller->execute($request);
-        $responseContent = $response->getContent();
-
-        if ($responseContent === "") {
-            $this->fail("Failed to get response content.");
-        }
-
-        $this->assertJson((string)$responseContent);
-    }
-
-    public function testExecuteUnsubscription(): void
-    {
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-        $classMetadata = $this->createMock(ClassMetadata::class);
-        $classMetadata->name = 'Notifications\Domain\Model\Subscriber\Subscriber';
-
-        $entityManager->method('getClassMetadata')
-                      ->willReturn($classMetadata);
-
-        $subscriberRepository = new SubscriberRepositoryDoctrine($entityManager);
-
-        $controller = new PublisherController($subscriberRepository, $entityManager);
-
-        $content = json_encode([
-            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-            "expirationTime" => "",
-            "keys" => [
-                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-            ],
-        ]);
-
-        if ($content === false) {
-            $this->fail("Failed to encode JSON.");
-        }
-
-        $request = Request::create(
-            "/api/v1/subscriber",
-            "DELETE",
-            [],
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            $content
-        );
-        $response = $controller->unsubscribe($request);
-        $responseContent = $response->getContent();
-
-        if ($responseContent === "") {
-            $this->fail("Failed to get response content.");
-        }
-
-        $this->assertJson((string)$responseContent);
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(json_encode([
+            'success' => false,
+            'ErrorCode' => 'Push service error',
+            'message' => "An error occurred"
+        ]), $response->getContent());
     }
 }

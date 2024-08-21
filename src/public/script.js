@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
   navigator.serviceWorker.register('sw.js').then(
     () => {
       console.log('[SW] Service worker has been registered');
-      push_updateSubscription();
     },
     e => {
       console.error('[SW] Service worker registration failed', e);
@@ -161,24 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  function push_updateSubscription() {
-    navigator.serviceWorker.ready
-      .then(serviceWorkerRegistration => serviceWorkerRegistration.pushManager.getSubscription())
-      .then(subscription => {
-        changePushButtonState('disabled');
-
-        if (!subscription) {
-          return;
-        }
-        return push_manageDataToServer(subscription, 'PUT');
-      })
-      .then(subscription => subscription && changePushButtonState('enabled'))
-      .catch(e => {
-        console.error('Error when updating the subscription', e);
-      });
-  }
-
-
   async function push_manageDataToServer(subscription, method) {
     const key = subscription.getKey('p256dh');
     const token = subscription.getKey('auth');
@@ -248,6 +229,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const url = document.getElementById('url').value;
+      const image = document.getElementById('image').value;
+
+
       const key = subscription.getKey('p256dh');
       const token = subscription.getKey('auth');
     
@@ -258,6 +245,12 @@ document.addEventListener('DOMContentLoaded', () => {
           auth: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
           p256dh: token ? btoa(String.fromCharCode.apply(null, new Uint8Array(token))) : null,
         },
+        notification: {
+          title: title || 'Default Title',
+          description: description || 'Default Description',
+          url: url || 'https://example.com',
+          image: image || null
+        }
       };
       
       const response = await fetch('http://172.17.0.1:11480/api/v1/subscriber/send', {

@@ -22,7 +22,7 @@ class ActionTest extends TestCase
         $action = new Action($url);
 
         $this->assertInstanceOf(Action::class, $action);
-        $this->assertSame("" ,(string)$action);
+        $this->assertSame("", (string)$action);
     }
 
     public function testToString(): void

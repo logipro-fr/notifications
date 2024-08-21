@@ -22,7 +22,7 @@ class IconTest extends TestCase
         $icon = new Icon($path);
 
         $this->assertInstanceOf(Icon::class, $icon);
-        $this->assertSame("" ,(string)$icon);
+        $this->assertSame("", (string)$icon);
     }
 
     public function testToString(): void

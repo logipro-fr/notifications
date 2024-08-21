@@ -22,7 +22,7 @@ class TitleTest extends TestCase
         $title = new Title($content);
 
         $this->assertInstanceOf(Title::class, $title);
-        $this->assertSame("Default Title" ,(string)$title);
+        $this->assertSame("Default Title", (string)$title);
     }
 
     public function testToString(): void

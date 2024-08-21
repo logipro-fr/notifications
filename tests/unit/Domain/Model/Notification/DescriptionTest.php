@@ -22,7 +22,7 @@ class DescriptionTest extends TestCase
         $description = new Description($content);
 
         $this->assertInstanceOf(Description::class, $description);
-        $this->assertSame("" ,(string)$description);
+        $this->assertSame("", (string)$description);
     }
 
     public function testToString(): void

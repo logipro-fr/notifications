@@ -8,9 +8,7 @@ class Icon
     {
         if (empty($this->imageName)) {
             $this->imageName = "";
-        }
-        else
-        {
+        } else {
             $this->imageName = $imageName;
         }
     }
@@ -19,5 +17,4 @@ class Icon
     {
         return $this->imageName;
     }
-
 }

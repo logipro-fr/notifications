@@ -8,9 +8,7 @@ class Description
     {
         if (empty($this->content)) {
             $this->content = "";
-        }
-        else
-        {
+        } else {
             $this->content = $content;
         }
     }
@@ -19,5 +17,4 @@ class Description
     {
         return $this->content;
     }
-
 }

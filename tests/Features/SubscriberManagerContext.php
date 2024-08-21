@@ -15,7 +15,6 @@ use Notifications\Domain\Model\Subscriber\ExpirationTime;
 use Notifications\Domain\Model\Subscriber\Keys;
 use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
-use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 use function Safe\json_encode;
@@ -41,7 +40,7 @@ class SubscriberManagerContext implements Context
      /**
      * @BeforeSuite
      */
-    public static function prepare(BeforeSuiteScope $scope): void
+    public static function prepare(): void
     {
         self::$kernel = new \Notifications\Infrastructure\Shared\Symfony\Kernel('test', true);
         self::$kernel->boot();

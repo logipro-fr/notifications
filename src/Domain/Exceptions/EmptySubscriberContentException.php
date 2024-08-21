@@ -2,8 +2,6 @@
 
 namespace Notifications\Domain\Exceptions;
 
-use Exception;
-
 class EmptySubscriberContentException extends LoggedException
 {
     public const MESSAGE =

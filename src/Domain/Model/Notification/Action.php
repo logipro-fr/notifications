@@ -8,9 +8,7 @@ class Action
     {
         if (empty($this->url)) {
             $this->url = "";
-        }
-        else
-        {
+        } else {
             $this->url = $url;
         }
     }
@@ -19,5 +17,4 @@ class Action
     {
         return $this->url;
     }
-
 }

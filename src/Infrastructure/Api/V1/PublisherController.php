@@ -66,13 +66,8 @@ class PublisherController
             return $function();
         } catch (EmptySubscriberContentException $e) {
             return $this->writeUnSuccessfulResponse($e);
-        } catch (Throwable $e) { // Catch all other exceptions to ensure JSON response
-            return new JsonResponse([
-                'success' => false,
-                'ErrorCode' => 'ServerError',
-                'data' => '',
-                'message' => 'An unexpected error occurred: ' . $e->getMessage(),
-            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        } catch (Throwable $e) {
+            return $this->writeUnSuccessfulResponse($e);
         }
     }
 
@@ -129,7 +124,7 @@ class PublisherController
     }
 
 
-   
+
     private function buildPublishRequest(Request $request): SubscriptionRequest
     {
         /** @var string */
@@ -168,5 +163,4 @@ class PublisherController
         $keys = new Keys($authkey, $p256dhkey);
         return new UnsubscriptionRequest($endpoint, $expirationTime, $keys);
     }
-
 }
