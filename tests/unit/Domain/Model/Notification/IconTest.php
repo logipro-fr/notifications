@@ -13,7 +13,7 @@ class IconTest extends TestCase
         $icon = new Icon($path);
 
         $this->assertInstanceOf(Icon::class, $icon);
-        $this->assertEquals($path, (string)$icon);
+        $this->assertEquals($path, $icon->getIcon());
     }
 
     public function testConstructWithEmptyContent(): void
@@ -22,7 +22,7 @@ class IconTest extends TestCase
         $icon = new Icon($path);
 
         $this->assertInstanceOf(Icon::class, $icon);
-        $this->assertSame("", (string)$icon);
+        $this->assertEmpty($icon->getIcon());
     }
 
     public function testToString(): void
@@ -30,6 +30,6 @@ class IconTest extends TestCase
         $path = "Notification/path";
         $icon = new Icon($path);
 
-        $this->assertEquals($path, $icon->__toString());
+        $this->assertEquals($path, $icon->getIcon());
     }
 }

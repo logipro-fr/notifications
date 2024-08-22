@@ -8,11 +8,6 @@ use Notifications\Infrastructure\Api\V1\WebPushNotificationController;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Notifications\Domain\Model\Notification\Notification;
-use Notifications\Domain\Model\Notification\Title;
-use Notifications\Domain\Model\Notification\Description;
-use Notifications\Domain\Model\Notification\Icon;
-use Notifications\Domain\Model\Notification\Action;
 
 class WebPushNotificationControllerTest extends TestCase
 {
@@ -29,7 +24,7 @@ class WebPushNotificationControllerTest extends TestCase
         $property->setValue($this->controller, $this->webPushMock);
     }
 
-    public function testSendNotificationSuccess(): void
+    public function testSendCompleteNotificationSuccess(): void
     {
         $requestData = [
             'endpoint' => 'https://example.com/endpoint',
@@ -80,6 +75,56 @@ class WebPushNotificationControllerTest extends TestCase
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals($expectedResponse, $responseContent);
     }
+
+    public function testSendPartialNotificationWithoutIcon(): void
+    {
+        $requestData = [
+            'endpoint' => 'https://example.com/endpoint',
+            'keys' => [
+                'auth' => 'auth_key',
+                'p256dh' => 'p256dh_key'
+            ],
+            'notification' => [
+                'title' => 'Test Title',
+                'description' => 'Test Description',
+                'url' => 'https://example.com'
+            ]
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+
+        $this->webPushMock->expects($this->once())
+            ->method('sendOneNotification')
+            ->with(
+                $this->isInstanceOf(WebPushSubscription::class),
+                json_encode([
+                    'title' => 'Test Title',
+                    'body' => 'Test Description',
+                    'url' => 'https://example.com'
+                ])
+            );
+
+        $response = $this->controller->sendNotification($request);
+
+        $responseContent = json_decode($response->getContent(), true);
+        $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+
+        $expectedResponse = [
+            'success' => true,
+            'ErrorCode' => "",
+            'data' => [[
+                'title' => 'Test Title',
+                'body' => 'Test Description',
+                'url' => 'https://example.com'
+            ]],
+            'message' => ""
+        ];
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals($expectedResponse, $responseContent);
+    }
+
 
 
     public function testSendNotificationWithInvalidData(): void

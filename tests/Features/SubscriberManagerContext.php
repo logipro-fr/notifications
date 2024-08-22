@@ -3,8 +3,8 @@
 namespace Features;
 
 use Behat\Behat\Context\Context;
-use Behat\Behat\Tester\Exception\PendingException;
-use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
+use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\Generator\Generator;
 use Notifications\Application\Service\Subscription\Subscription;
 use Notifications\Application\Service\Subscription\SubscriptionRequest;
 use Notifications\Application\Service\Unsubscription\Unsubscription;
@@ -14,8 +14,11 @@ use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\ExpirationTime;
 use Notifications\Domain\Model\Subscriber\Keys;
 use Notifications\Domain\Model\Subscriber\Subscriber;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Infrastructure\Api\V1\OptInController;
+use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
@@ -29,21 +32,36 @@ class SubscriberManagerContext implements Context
     private Publisher $website;
     private Subscriber $subscriber;
     private SubscriberRepositoryInMemory $repository;
+    private SubscriberRepositoryInterface $subscribers;
+
+    private PublisherController $createSubscriberController;
+    private OptInController $createSubscriberOPT;
 
     private Endpoint $endpoint;
     private ExpirationTime $expirationTime;
     private Keys $keys;
 
     private string $response;
-    private static KernelInterface $kernel;
 
-     /**
-     * @BeforeSuite
-     */
-    public static function prepare(): void
+    public function __construct()
     {
-        self::$kernel = new \Notifications\Infrastructure\Shared\Symfony\Kernel('test', true);
-        self::$kernel->boot();
+        $this->subscribers = new SubscriberRepositoryInMemory();
+
+        /** @var MockObject $entityManager */
+        $entityManager = (new Generator())->testDouble(
+            EntityManagerInterface::class,
+            true,
+            true,
+            callOriginalConstructor: false
+        );
+        /** @var EntityManagerInterface $entityManager */
+        $this->createSubscriberController = new PublisherController(
+            $this->subscribers,
+            $entityManager
+        );
+
+        /** @var EntityManagerInterface $entityManager */
+        $this->createSubscriberOPT = new OptInController();
     }
 
     /**
@@ -82,26 +100,23 @@ class SubscriberManagerContext implements Context
     public function theNavigatorOnTheDeviceBecomeANewSubscriberOfThePublisher(): void
     {
         $this->subscriber = new Subscriber($this->endpoint, $this->keys, $this->expirationTime, $this->website);
-         /** @var KernelBrowser */
-         $client = self::$kernel->getContainer()->get('test.client');
-         $client->request(
-             "POST",
-             "/api/v1/subscriber/manager",
-             [],
-             [],
-             ['CONTENT_TYPE' => 'application/json'],
-             json_encode([
-                "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-                "expirationTime" => "",
-                "keys" => [
-                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-                ],
-             ])
-         );
-         /** @var string */
-         $response = $client->getResponse()->getContent();
-         $this->response = $response;
+        $data = json_encode([
+            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
+            "expirationTime" => "",
+            "keys" => [
+                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+        ]);
+         
+        $request = Request::create(
+            "/api/v1/subscriber/manager",
+            "POST",
+            content: $data
+        );
+        
+        $this->response = $this->createSubscriberController->execute($request);
+
     }
 
     /**
@@ -117,19 +132,12 @@ class SubscriberManagerContext implements Context
      */
     public function theUserRefuseToSubscribe(): void
     {
-        /** @var KernelBrowser */
-        $client = self::$kernel->getContainer()->get('test.client');
-        $client->request(
-            "POST",
+        $request = Request::create(
             "/api/v1/subscriber/authorization",
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode(["AuthorizedStatus" => false])
+            "POST",
+            content: json_encode(["AuthorizedStatus" => false])
         );
-        /** @var string */
-        $response = $client->getResponse()->getContent();
-        $this->response = $response;
+        $this->response = $this->createSubscriberOPT->execute($request);
     }
 
     /**
@@ -165,26 +173,24 @@ class SubscriberManagerContext implements Context
      */
     public function theNavigatorUnsubscribedFromPublisher(): void
     {
-         /** @var KernelBrowser */
-         $client = self::$kernel->getContainer()->get('test.client');
-         $client->request(
-             "DELETE",
-             "/api/v1/subscriber/manager",
-             [],
-             [],
-             ['CONTENT_TYPE' => 'application/json'],
-             json_encode([
-                "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
-                "expirationTime" => "",
-                "keys" => [
-                    "auth" => "8veJjf8tjO1kbYlX3zOoRw",
-                    "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
-                ],
-             ])
-         );
-         /** @var string */
-         $response = $client->getResponse()->getContent();
-         $this->response = $response;
+        $this->subscriber = new Subscriber($this->endpoint, $this->keys, $this->expirationTime, $this->website);
+        $data = json_encode([
+            "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
+            "expirationTime" => "",
+            "keys" => [
+                "auth" => "8veJjf8tjO1kbYlX3zOoRw",
+                "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
+            ],
+        ]);
+         
+        $request = Request::create(
+            "/api/v1/subscriber/manager",
+            "DELETE",
+            content: $data
+        );
+        
+        $this->response = $this->createSubscriberController->execute($request);
+
     }
 
     /**
@@ -192,30 +198,10 @@ class SubscriberManagerContext implements Context
      */
     public function theNavigatorDeletedTheTokenThatAllowsToRecogizeIt(): void
     {
-        $this->subscriber->getKeys();
-    }
-
-    /**
-     * @When the user complete an action (for exemple a purchase)
-     */
-    public function theUserCompleteAnActionForExempleAPurchase(): void
-    {
-        throw new PendingException();
-    }
-
-    /**
-     * @Then the navigator receives an invitation to subscribe for the publisher
-     */
-    public function theNavigatorReceivesAnInvitationToSubscribeForThePublisher(): void
-    {
-        throw new PendingException();
-    }
-
-    /**
-     * @Then if the user accept, the navigator has a token that allows to recogize it
-     */
-    public function ifTheUserAcceptTheNavigatorHasATokenThatAllowsToRecogizeIt(): void
-    {
-        throw new PendingException();
+        if ($this->subscriber !== null) {
+            $this->subscriber->getKeys();
+        } else {
+            throw new \RuntimeException('Subscriber has already been deleted.');
+        }
     }
 }

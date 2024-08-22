@@ -247,8 +247,8 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         notification: {
           title: title || 'Default Title',
-          description: description || 'Default Description',
-          url: url || 'https://example.com',
+          description: description || 'Default Body',
+          url: url || null,
           image: image || null
         }
       };

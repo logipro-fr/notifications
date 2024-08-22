@@ -4,6 +4,23 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use Notifications\Domain\Model\Publisher\Publisher;
+use Notifications\Domain\Model\Subscriber\Endpoint;
+use Notifications\Domain\Model\Subscriber\ExpirationTime;
+use Notifications\Domain\Model\Subscriber\Keys;
+use Notifications\Domain\Model\Subscriber\Subscriber;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
+use Notifications\Infrastructure\Api\V1\OptInController;
+use Notifications\Infrastructure\Api\V1\PublisherController;
+use Notifications\Infrastructure\Api\V1\WebPushNotificationController;
+use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
+use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\Generator\Generator;
+use Notifications\Application\Service\Subscription\Subscription;
+use Notifications\Application\Service\Subscription\SubscriptionRequest;
+use Notifications\Application\Service\Unsubscription\Unsubscription;
+use Notifications\Application\Service\Unsubscription\UnsubscriptionRequest;
+use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
@@ -12,7 +29,43 @@ use function Safe\json_encode;
  */
 class NotificationManagerContext implements Context
 {
-        /**
+    private WebPushNotificationController $createNotification;
+    private const URL_PUBLISHER = "nextsign.fr";
+
+    private Publisher $website;
+    private Subscriber $subscriber;
+    private SubscriberRepositoryInMemory $repository;
+    private SubscriberRepositoryInterface $subscribers;
+
+    private PublisherController $createSubscriberController;
+    private OptInController $createSubscriberOPT;
+
+    private Endpoint $endpoint;
+    private ExpirationTime $expirationTime;
+    private Keys $keys;
+
+    public function __construct()
+    {
+        $this->subscribers = new SubscriberRepositoryInMemory();
+
+        /** @var MockObject $entityManager */
+        $entityManager = (new Generator())->testDouble(
+            EntityManagerInterface::class,
+            true,
+            true,
+            callOriginalConstructor: false
+        );
+        /** @var EntityManagerInterface $entityManager */
+        $this->createSubscriberController = new WebPushNotificationController(
+            $this->subscribers,
+            $entityManager
+        );
+
+        /** @var EntityManagerInterface $entityManager */
+        $this->createNotification = new WebPushNotificationController();
+    }
+
+    /**
      * @When the user complete an action (for exemple a purchase)
      */
     public function theUserCompleteAnActionForExempleAPurchase()
@@ -139,5 +192,4 @@ class NotificationManagerContext implements Context
     {
         throw new PendingException();
     }
-    
 }

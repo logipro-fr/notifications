@@ -54,8 +54,8 @@ class WebPushNotificationController
     {
         $title = $data['notification']['title'];
         $body = $data['notification']['description'];
-        $icon = $data['notification']['image'];
-        $url = $data['notification']['url'];
+        $icon = $data['notification']['image']??'';
+        $url = $data['notification']['url']??'';
 
         $notification = new Notification(
             new Title($title),
@@ -63,11 +63,22 @@ class WebPushNotificationController
             new Action($url),
             new Icon($icon)
         );
-        return json_encode([
+
+        $payload = [
             'title' => $notification->getTitle()->__toString(),
             'body' => $notification->getDescription()->__toString(),
-            'icon' => $notification->getIcon()->__toString(),
-            'url' => $notification->getAction()->__toString()
-        ]);
+        ];
+
+        if (!empty($notification->getIcon()->getIcon())) 
+        {
+            $payload['icon'] = $notification->getIcon()->getIcon();
+        }
+        if (!empty($notification->getAction()->__toString())) 
+        {
+            $payload['url'] = $notification->getAction()->__toString();
+        }
+        
+        return json_encode($payload);
+
     }
 }

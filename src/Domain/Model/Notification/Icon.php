@@ -4,16 +4,12 @@ namespace Notifications\Domain\Model\Notification;
 
 class Icon
 {
-    public function __construct(private string $imageName)
+    public function __construct(private string|null $imageName)
     {
-        if (empty($this->imageName)) {
-            $this->imageName = "";
-        } else {
-            $this->imageName = $imageName;
-        }
+        $this->imageName = $imageName ?: '';
     }
 
-    public function __toString(): string
+    public function getIcon(): string|null
     {
         return $this->imageName;
     }
