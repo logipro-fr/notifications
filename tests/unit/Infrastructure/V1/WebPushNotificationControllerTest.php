@@ -125,8 +125,6 @@ class WebPushNotificationControllerTest extends TestCase
         $this->assertEquals($expectedResponse, $responseContent);
     }
 
-
-
     public function testSendNotificationWithInvalidData(): void
     {
         $requestData = [
@@ -146,6 +144,33 @@ class WebPushNotificationControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'success' => false,
             'ErrorCode' => "Invalid subscription data",
+            'message' => "An error occurred"
+        ]), $response->getContent());
+    }
+
+    public function testSendNotificationWithMissingTitleOrDescription(): void
+    {
+        $requestData = [
+            'endpoint' => 'https://example.com/endpoint',
+            'keys' => [
+                'auth' => 'auth_key',
+                'p256dh' => 'p256dh_key'
+            ],
+            'notification' => [
+                'title' => '',
+                'description' => 'Test Description'
+            ]
+        ];
+
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+
+        $response = $this->controller->sendNotification($request);
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(json_encode([
+            'success' => false,
+            'ErrorCode' => "Invalid notification data",
             'message' => "An error occurred"
         ]), $response->getContent());
     }

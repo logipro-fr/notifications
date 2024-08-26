@@ -26,5 +26,4 @@ class EventFacade
     {
         EventDispatcher::instance()->distribute();
     }
-
 }

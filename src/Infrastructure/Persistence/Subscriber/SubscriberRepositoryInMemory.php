@@ -20,7 +20,7 @@ class SubscriberRepositoryInMemory implements SubscriberRepositoryInterface
 
     public function delete(Subscriber $subscriber): void
     {
-        $this->subscribers[$subscriber->getEndpoint()->__toString()] = "";
+        unset($this->subscribers[$subscriber->getEndpoint()->__toString()]);
     }
 
     public function findById(Endpoint $searchId): Subscriber

@@ -64,10 +64,8 @@ class PublisherController
     {
         try {
             return $function();
-        } catch (EmptySubscriberContentException $e) {
-            return $this->writeUnSuccessfulResponse($e);
-        } catch (Throwable $e) {
-            return $this->writeUnSuccessfulResponse($e);
+        } catch (EmptySubscriberContentException | Throwable $e) {
+            return $this->writeUnSuccessFulResponse($e);
         }
     }
 

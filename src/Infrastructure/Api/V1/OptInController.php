@@ -21,7 +21,7 @@ class OptInController
         $service->execute($permissionRequest);
         (new EventFacade())->distribute();
         $response = $service->getResponse();
-        if ($response->status !== true || !isset($response->status)) {
+        if ($response->status !== true) {
             return new JsonResponse(['success' => false, 'ErrorCode' => 'AuthorizationDenied'], 403);
         }
         return new JsonResponse(['success' => true], 200);

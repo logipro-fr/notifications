@@ -3,6 +3,7 @@
 namespace Notifications\Tests\Integration\Infrastructure\Lib;
 
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
+use Notifications\Domain\Exceptions\SubscriberNotFoundException;
 use Notifications\Domain\Model\Subscriber\Endpoint;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -56,17 +57,20 @@ class PublisherControllerTest extends WebTestCase
             $this->fail("Failed to get response content.");
         }
 
-        /** @var array{success: bool, ErrorCode: string, data: array{endpoint: string, expirationTime: string, keys: array{auth: string, p256dh: string}}|null, message: string} $array */
+        /** @var array{success: bool, ErrorCode: string, data: array{endpoint: string, expirationTime: string, keys: array{auth: string, p256dh: string}}|null, message: string}|null $array */
         $array = json_decode($responseContent, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
 
-        $endpoint = $array['data']['endpoint'];
-        $this->repository->findById(new Endpoint($endpoint));
+        if ($array === null || !isset($array['data'])) {
+            $this->fail("Invalid response data structure.");
+        }
 
+        $endpoint = $array['data']['endpoint'];
         $subscriber = $this->repository->findById(new Endpoint($endpoint));
+
         $this->assertNotNull($subscriber, "Subscriber with endpoint '{$endpoint}' not found.");
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('"success":true', $responseContent);
@@ -107,7 +111,11 @@ class PublisherControllerTest extends WebTestCase
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
 
-        $subscriber = $this->repository->findById(new Endpoint($endpoint));
-        $this->assertNull($subscriber, "Error can't find the endpoint '{$endpoint}'");
+        try {
+            $this->repository->findById(new Endpoint($endpoint));
+            $this->fail("Expected SubscriberNotFoundException not thrown.");
+        } catch (SubscriberNotFoundException $e) {
+            $this->assertTrue(true, "SubscriberNotFoundException was thrown as expected.");
+        }
     }
 }

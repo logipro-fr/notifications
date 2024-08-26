@@ -108,15 +108,14 @@ class SubscriberManagerContext implements Context
                 "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
             ],
         ]);
-         
+
         $request = Request::create(
             "/api/v1/subscriber/manager",
             "POST",
             content: $data
         );
-        
-        $this->response = $this->createSubscriberController->execute($request);
 
+        $this->response = $this->createSubscriberController->execute($request);
     }
 
     /**
@@ -182,15 +181,14 @@ class SubscriberManagerContext implements Context
                 "p256dh" => "BF1Z6uz9IZRoqbzyW3GPIYpld0vhSBWUaDslQQWqL"
             ],
         ]);
-         
+
         $request = Request::create(
             "/api/v1/subscriber/manager",
             "DELETE",
             content: $data
         );
-        
-        $this->response = $this->createSubscriberController->execute($request);
 
+        $this->response = $this->createSubscriberController->execute($request);
     }
 
     /**

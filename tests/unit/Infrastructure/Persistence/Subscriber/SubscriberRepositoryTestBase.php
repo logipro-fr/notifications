@@ -61,5 +61,4 @@ abstract class SubscriberRepositoryTestBase extends TestCase
         $this->expectExceptionMessage("Error can't find the endpoint prime54845");
         $this->subscriberRepository->findById(new Endpoint("prime54845"));
     }
-   
 }

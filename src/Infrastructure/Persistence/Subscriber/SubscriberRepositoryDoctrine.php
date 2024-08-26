@@ -38,8 +38,7 @@ class SubscriberRepositoryDoctrine extends EntityRepository implements Subscribe
     public function findById(Endpoint $searchId): ?Subscriber
     {
         $subscriber = $this->getEntityManager()->find(Subscriber::class, $searchId);
-        if($subscriber === null)
-        {
+        if ($subscriber === null) {
             throw new SubscriberNotFoundException(
                 sprintf("Error can't find the endpoint %s", $searchId),
                 SubscriberNotFoundException::ERROR_CODE
