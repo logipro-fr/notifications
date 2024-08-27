@@ -43,11 +43,11 @@ if (Notification.permission === 'denied') {
 
   navigator.serviceWorker.register('sw.js').then(
       () => {
-            console.log('[SW] Service worker has been registered');
+      console.log('[SW] Service worker has been registered');
       },
       e => {
-            console.error('[SW] Service worker registration failed', e);
-            changePushButtonState('incompatible');
+      console.error('[SW] Service worker registration failed', e);
+      changePushButtonState('incompatible');
       }
   );
 

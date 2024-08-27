@@ -26,9 +26,9 @@ class WebPushNotificationController
                 'subject' =>
                     'https://github.com/logipro-fr/notifications/',
                 'publicKey' =>
-                    'BMBlr6YznhYMX3NgcWIDRxZXs0sh7tCv7_YCsWcww0ZCv9WGg-tRCXfMEHTiBPCksSqeve1twlbmVAZFv7GSuj0',
+                    file_get_contents(__DIR__ . '/../../../../keys/public_key.txt'),
                 'privateKey' =>
-                    'vplfkITvu0cwHqzK9Kj-DYStbCH_9AhGx9LqMyaeI6w',
+                    file_get_contents(__DIR__ . '/../../../../keys/private_key.txt'),
             ],
         ];
         $this->webPush = new WebPush($auth);
@@ -38,16 +38,8 @@ class WebPushNotificationController
     public function sendNotification(Request $request): JsonResponse
     {
         try {
-            $response = json_decode($request->getContent(), true) ?? [];
-            if (
-                !is_string($response['endpoint']) ||
-                !is_string($response['keys']['auth']) ||
-                !is_string($response['keys']['p256dh']) ||
-                empty($response['endpoint']) ||
-                empty($response['keys']['auth']) ||
-                empty($response['keys']['p256dh']) ||
-                !is_array($response)
-            ) {
+            $response = json_decode($request->getContent(), true);
+            if (!$this->isValidSubscriptionData($response)) {
                 throw new \InvalidArgumentException("Invalid subscription data");
             }
 
@@ -81,6 +73,7 @@ class WebPushNotificationController
         if (empty($data['title']) || empty($data['description'])) {
             throw new \InvalidArgumentException("Invalid notification data");
         }
+
         $title = $data['title'];
         $body = $data['description'];
         $icon = $data['image'] ?? '';
@@ -105,7 +98,24 @@ class WebPushNotificationController
             $payload['url'] = $notification->getAction()->__toString();
         }
 
-        $encodedPayload = json_encode($payload);
-        return $encodedPayload;
+        $jsonPayload = json_encode($payload);
+        return $jsonPayload;
+    }
+
+    private function isValidSubscriptionData(array $response): bool
+    {
+        if (!is_string($response['endpoint']) || empty($response['endpoint'])) {
+            return false;
+        }
+        if (!isset($response['keys']['auth'], $response['keys']['p256dh'])) {
+            return false;
+        }
+        if (!is_string($response['keys']['auth']) || empty($response['keys']['auth'])) {
+            return false;
+        }
+        if (!is_string($response['keys']['p256dh']) || empty($response['keys']['p256dh'])) {
+            return false;
+        }
+        return true;
     }
 }

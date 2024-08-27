@@ -50,8 +50,10 @@ abstract class SubscriberRepositoryTestBase extends TestCase
         $found2 = $this->subscriberRepository->findById($endpoint2);
 
         $this->assertInstanceOf(SubscriberRepositoryInterface::class, $this->subscriberRepository);
+        $this->assertNotNull($found);
         $this->assertInstanceOf(Subscriber::class, $found);
         $this->assertEquals("prime", $found->getEndpoint());
+        $this->assertNotNull($found2);
         $this->assertFalse($found->getEndpoint()->equals($found2->getEndpoint()));
     }
 

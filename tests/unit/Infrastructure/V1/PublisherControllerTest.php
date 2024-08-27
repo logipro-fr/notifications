@@ -6,8 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use DoctrineTestingTools\DoctrineRepositoryTesterTrait;
 use Notifications\Domain\Model\Subscriber\Endpoint;
-use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Domain\EventFacade\EventFacade;
+use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
 use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine;
 use Phariscope\Event\Tools\SpyListener;
@@ -32,7 +32,6 @@ class PublisherControllerTest extends WebTestCase
         $this->clearTables(["subscribers"]);
 
         $this->client = static::createClient(["debug" => false]);
-        /** @var SubscriberRepositoryDoctrine */
         $this->repository = $this->client->getContainer()->get("subscribers.repository");
         $this->eventFacade = $this->createMock(EventFacade::class);
         $this->client->getContainer()->set(EventFacade::class, $this->eventFacade);
@@ -81,8 +80,8 @@ class PublisherControllerTest extends WebTestCase
             $this->fail("Failed to decode JSON: " . json_last_error_msg());
         }
 
-        if (!isset($array['data']) || !is_array($array['data'])) {
-            $this->fail("Response data does not contain 'data' key or it is not an array: " . $responseContent);
+        if (empty($array['data']) || !is_array($array['data'])) {
+            $this->fail("Response data not contain 'data' key or is not an array: " . $responseContent);
         }
 
         $endpoint = $array['data']['endpoint'];

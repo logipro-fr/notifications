@@ -5,14 +5,15 @@ namespace Notifications\Tests\Infrastructure\V1;
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription as WebPushSubscription;
 use Notifications\Infrastructure\Api\V1\WebPushNotificationController;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class WebPushNotificationControllerTest extends TestCase
 {
-    private $webPushMock;
-    private $controller;
+    private MockObject $webPushMock;
+    private WebPushNotificationController $controller;
 
     protected function setUp(): void
     {
@@ -40,6 +41,10 @@ class WebPushNotificationControllerTest extends TestCase
             ]
         ];
 
+        $jsonContent = json_encode($requestData);
+        if ($jsonContent === false) {
+            throw new \RuntimeException('Failed to encode JSON');
+        }
         $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
         $this->webPushMock->expects($this->once())
@@ -57,7 +62,9 @@ class WebPushNotificationControllerTest extends TestCase
         $response = $this->controller->sendNotification($request);
 
         $responseContent = json_decode($response->getContent(), true);
-        $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+        if (is_array($responseContent) && isset($responseContent['data'][0])) {
+            $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+        }
 
         $expectedResponse = [
             'success' => true,
@@ -90,6 +97,10 @@ class WebPushNotificationControllerTest extends TestCase
                 'url' => 'https://example.com'
             ]
         ];
+        $jsonContent = json_encode($requestData);
+        if ($jsonContent === false) {
+            throw new \RuntimeException('Failed to encode JSON');
+        }
 
         $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
@@ -107,7 +118,9 @@ class WebPushNotificationControllerTest extends TestCase
         $response = $this->controller->sendNotification($request);
 
         $responseContent = json_decode($response->getContent(), true);
-        $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+        if (is_array($responseContent) && isset($responseContent['data'][0])) {
+            $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+        }
 
         $expectedResponse = [
             'success' => true,
@@ -134,6 +147,10 @@ class WebPushNotificationControllerTest extends TestCase
                 'p256dh' => ''
             ]
         ];
+        $jsonContent = json_encode($requestData);
+        if ($jsonContent === false) {
+            throw new \RuntimeException('Failed to encode JSON');
+        }
 
         $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
@@ -206,5 +223,30 @@ class WebPushNotificationControllerTest extends TestCase
             'ErrorCode' => 'Push service error',
             'message' => "An error occurred"
         ]), $response->getContent());
+    }
+
+    public function testInvalidSubscriptionData(): void
+    {
+        $invalidDataSets = [
+            ['endpoint' => '', 'keys' => ['auth' => 'auth_key', 'p256dh' => 'p256dh_key']],
+            ['endpoint' => 'https://example.com/endpoint', 'keys' => ['auth' => '', 'p256dh' => 'p256dh_key']],
+            ['endpoint' => 'https://example.com/endpoint', 'keys' => ['auth' => 'auth_key', 'p256dh' => '']],
+            ['endpoint' => 'https://example.com/endpoint', 'keys' => []],
+            // Add more cases as needed
+        ];
+
+        foreach ($invalidDataSets as $data) {
+            $request = new Request([], [], [], [], [], [], json_encode($data));
+
+            $response = $this->controller->sendNotification($request);
+
+            $this->assertInstanceOf(JsonResponse::class, $response);
+            $this->assertEquals(400, $response->getStatusCode());
+            $this->assertJsonStringEqualsJsonString(json_encode([
+                'success' => false,
+                'ErrorCode' => "Invalid subscription data",
+                'message' => "An error occurred"
+            ]), $response->getContent());
+        }
     }
 }

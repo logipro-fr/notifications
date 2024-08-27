@@ -4,23 +4,12 @@ namespace Features;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
-use Notifications\Domain\Model\Publisher\Publisher;
-use Notifications\Domain\Model\Subscriber\Endpoint;
-use Notifications\Domain\Model\Subscriber\ExpirationTime;
-use Notifications\Domain\Model\Subscriber\Keys;
-use Notifications\Domain\Model\Subscriber\Subscriber;
 use Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface;
-use Notifications\Infrastructure\Api\V1\OptInController;
 use Notifications\Infrastructure\Api\V1\PublisherController;
 use Notifications\Infrastructure\Api\V1\WebPushNotificationController;
 use Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryInMemory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\Generator\Generator;
-use Notifications\Application\Service\Subscription\Subscription;
-use Notifications\Application\Service\Subscription\SubscriptionRequest;
-use Notifications\Application\Service\Unsubscription\Unsubscription;
-use Notifications\Application\Service\Unsubscription\UnsubscriptionRequest;
-use Symfony\Component\HttpFoundation\Request;
 
 use function Safe\json_encode;
 
@@ -30,19 +19,8 @@ use function Safe\json_encode;
 class NotificationManagerContext implements Context
 {
     private WebPushNotificationController $createNotification;
-    private const URL_PUBLISHER = "nextsign.fr";
-
-    private Publisher $website;
-    private Subscriber $subscriber;
-    private SubscriberRepositoryInMemory $repository;
     private SubscriberRepositoryInterface $subscribers;
-
     private PublisherController $createSubscriberController;
-    private OptInController $createSubscriberOPT;
-
-    private Endpoint $endpoint;
-    private ExpirationTime $expirationTime;
-    private Keys $keys;
 
     public function __construct()
     {
@@ -55,7 +33,6 @@ class NotificationManagerContext implements Context
             true,
             callOriginalConstructor: false
         );
-        /** @var EntityManagerInterface $entityManager */
         $this->createSubscriberController = new WebPushNotificationController(
             $this->subscribers,
             $entityManager
@@ -68,7 +45,7 @@ class NotificationManagerContext implements Context
     /**
      * @When the user complete an action (for exemple a purchase)
      */
-    public function theUserCompleteAnActionForExempleAPurchase()
+    public function theUserCompleteAnActionForExempleAPurchase(): void
     {
         throw new PendingException();
     }
@@ -76,7 +53,7 @@ class NotificationManagerContext implements Context
     /**
      * @When a new article is published on the site
      */
-    public function aNewArticleIsPublishedOnTheSite()
+    public function aNewArticleIsPublishedOnTheSite(): void
     {
         throw new PendingException();
     }
@@ -84,7 +61,7 @@ class NotificationManagerContext implements Context
     /**
      * @Then a push notification entitled :arg1 with the body :arg2 and the icon :arg3 is sent to :arg4 and :arg5
      */
-    public function aPushNotificationEntitledWithTheBodyAndTheIconIsSentToAnd($arg1, $arg2, $arg3, $arg4, $arg5)
+    public function aPushNotificationEntitledWithTheBodyAndTheIconIsSentToAnd($arg1, $arg2, $arg3, $arg4, $arg5): void
     {
         throw new PendingException();
     }
@@ -92,7 +69,7 @@ class NotificationManagerContext implements Context
     /**
      * @Then the notification contains the URL :arg1 for redirection
      */
-    public function theNotificationContainsTheUrlForRedirection($arg1)
+    public function theNotificationContainsTheUrlForRedirection($arg1): void
     {
         throw new PendingException();
     }
@@ -100,7 +77,7 @@ class NotificationManagerContext implements Context
     /**
      * @Given the token of :arg1 has expired
      */
-    public function theTokenOfHasExpired($arg1)
+    public function theTokenOfHasExpired($arg1): void
     {
         throw new PendingException();
     }
@@ -108,7 +85,7 @@ class NotificationManagerContext implements Context
     /**
      * @When a push notification is attempted to be sent to :arg1
      */
-    public function aPushNotificationIsAttemptedToBeSentTo($arg1)
+    public function aPushNotificationIsAttemptedToBeSentTo($arg1): void
     {
         throw new PendingException();
     }
@@ -116,7 +93,7 @@ class NotificationManagerContext implements Context
     /**
      * @Then the notification fails
      */
-    public function theNotificationFails()
+    public function theNotificationFails(): void
     {
         throw new PendingException();
     }
@@ -124,7 +101,7 @@ class NotificationManagerContext implements Context
     /**
      * @Then the publisher tries to refresh the token of :arg1 or mark it as inactive
      */
-    public function thePublisherTriesToRefreshTheTokenOfOrMarkItAsInactive($arg1)
+    public function thePublisherTriesToRefreshTheTokenOfOrMarkItAsInactive($arg1): void
     {
         throw new PendingException();
     }
@@ -132,7 +109,7 @@ class NotificationManagerContext implements Context
     /**
      * @Given :arg1 received a notification less than an hour ago
      */
-    public function receivedANotificationLessThanAnHourAgo($arg1)
+    public function receivedANotificationLessThanAnHourAgo($arg1): void
     {
         throw new PendingException();
     }
@@ -140,7 +117,7 @@ class NotificationManagerContext implements Context
     /**
      * @When a new trigger event is recorded
      */
-    public function aNewTriggerEventIsRecorded()
+    public function aNewTriggerEventIsRecorded(): void
     {
         throw new PendingException();
     }
@@ -148,7 +125,7 @@ class NotificationManagerContext implements Context
     /**
      * @Then the sending of the new notification to :arg1 is delayed to respect the frequency limitation
      */
-    public function theSendingOfTheNewNotificationToIsDelayedToRespectTheFrequencyLimitation($arg1)
+    public function theSendingOfTheNewNotificationToIsDelayedToRespectTheFrequencyLimitation($arg1): void
     {
         throw new PendingException();
     }
@@ -156,7 +133,7 @@ class NotificationManagerContext implements Context
     /**
      * @Then the notification will be sent to :arg1 after a time period respecting his frequency limitation preference
      */
-    public function theNotificationWillBeSentToAfterATimePeriodRespectingHisFrequencyLimitationPreference($arg1)
+    public function theNotificationWillBeSentToAfterATimePeriodRespectingHisFrequencyLimitationPreference($arg1): void
     {
         throw new PendingException();
     }
@@ -164,7 +141,7 @@ class NotificationManagerContext implements Context
     /**
      * @Given :arg1 received a notification
      */
-    public function receivedANotification($arg1)
+    public function receivedANotification($arg1): void
     {
         throw new PendingException();
     }
@@ -172,7 +149,7 @@ class NotificationManagerContext implements Context
     /**
      * @Given the payload contains some actions
      */
-    public function thePayloadContainsSomeActions()
+    public function thePayloadContainsSomeActions(): void
     {
         throw new PendingException();
     }
@@ -180,7 +157,7 @@ class NotificationManagerContext implements Context
     /**
      * @When :arg1 clicks the :arg2 notification button
      */
-    public function clicksTheNotificationButton($arg1, $arg2)
+    public function clicksTheNotificationButton($arg1, $arg2): void
     {
         throw new PendingException();
     }
@@ -188,7 +165,7 @@ class NotificationManagerContext implements Context
     /**
      * @Then the page https:\/\/accidentprediction.fr\/accidents\/RN88 is opened
      */
-    public function thePageHttpsAccidentpredictionFrAccidentsRnIsOpened()
+    public function thePageHttpsAccidentpredictionFrAccidentsRnIsOpened(): void
     {
         throw new PendingException();
     }

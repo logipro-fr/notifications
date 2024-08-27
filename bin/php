@@ -7,7 +7,7 @@ then
 docker exec \
     -ti \
     -e APP_ENV=test \
-    notifications-php php $@
+    notifications-php php -d memory_limit=512M $@
 else
 ## execution de PHP de manière autonome (pas besoin d'un environnement de containers)
 docker run \
@@ -19,6 +19,6 @@ docker run \
     -v "$PWD":"$PWD" \
     --user 1000:1000 \
     -w "$PWD" \
-    notifications-php php $@
+    notifications-php php -d memory_limit=512M $@
 fi
 

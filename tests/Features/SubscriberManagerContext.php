@@ -41,13 +41,9 @@ class SubscriberManagerContext implements Context
     private ExpirationTime $expirationTime;
     private Keys $keys;
 
-    private string $response;
-
     public function __construct()
     {
         $this->subscribers = new SubscriberRepositoryInMemory();
-
-        /** @var MockObject $entityManager */
         $entityManager = (new Generator())->testDouble(
             EntityManagerInterface::class,
             true,
@@ -115,7 +111,7 @@ class SubscriberManagerContext implements Context
             content: $data
         );
 
-        $this->response = $this->createSubscriberController->execute($request);
+        $this->createSubscriberController->execute($request);
     }
 
     /**
@@ -136,7 +132,7 @@ class SubscriberManagerContext implements Context
             "POST",
             content: json_encode(["AuthorizedStatus" => false])
         );
-        $this->response = $this->createSubscriberOPT->execute($request);
+        $this->createSubscriberOPT->execute($request);
     }
 
     /**
@@ -188,7 +184,7 @@ class SubscriberManagerContext implements Context
             content: $data
         );
 
-        $this->response = $this->createSubscriberController->execute($request);
+        $this->createSubscriberController->execute($request);
     }
 
     /**
@@ -198,8 +194,6 @@ class SubscriberManagerContext implements Context
     {
         if ($this->subscriber !== null) {
             $this->subscriber->getKeys();
-        } else {
-            throw new \RuntimeException('Subscriber has already been deleted.');
         }
     }
 }

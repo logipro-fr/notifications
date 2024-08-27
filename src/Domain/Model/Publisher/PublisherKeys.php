@@ -15,6 +15,7 @@ class PublisherKeys implements KeyGeneratorStrategy
         $this->vapid = [];
     }
     /**
+     * Generate a new pair of VAPID keys.
      * @return array<string, string>
      */
     public function generateACoupleOfKey(): array
@@ -24,6 +25,7 @@ class PublisherKeys implements KeyGeneratorStrategy
     }
 
     /**
+     * Get the current VAPID keys.
      * @return array<string, string>
      */
     public function getVAPIDKeys(): array
