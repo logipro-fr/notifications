@@ -7,6 +7,8 @@ Allow to send web push notification on website.
 ```console
 git clone git@github.com:
 ./install
+
+Copy the public key from public_key to your script.js (in line 2): const applicationServerKey = 'COPY_YOUR_PUBLIC_KEY_HERE';
 ```
 
 # To Contribute to Notifications

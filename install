@@ -30,22 +30,20 @@ function start_containers() {
 function generate_vapid_keys_if_missing() {
     PUBLIC_KEY_FILE="keys/public_key.txt"
     PRIVATE_KEY_FILE="keys/private_key.txt"
-    PHP_CONTAINER_NAME="notifications-php"
+    PRIVATE_KEY_PEM="keys/private_key.pem"
 
-    # Check if both the public and private key files exist and are non-empty
     if [[ -s "$PUBLIC_KEY_FILE" && -s "$PRIVATE_KEY_FILE" ]]; then
         echo "VAPID keys already exist."
     else
         echo "Generating VAPID keys..."
-        docker exec -i $PHP_CONTAINER_NAME php -r "
-        require 'vendor/autoload.php';
-        \$publisherKeys = new Notifications\\Domain\\Model\\Publisher\\PublisherKeys();
-        \$keys = \$publisherKeys->generateACoupleOfKey();
-        file_put_contents('$PUBLIC_KEY_FILE', \$keys['publicKey']);
-        file_put_contents('$PRIVATE_KEY_FILE', \$keys['privateKey']);
-        "
-        
-        if [ $? -eq 0 ]; then
+        mkdir -p keys
+        openssl ecparam -genkey -name prime256v1 -out "$PRIVATE_KEY_PEM"
+        openssl ec -in "$PRIVATE_KEY_PEM" -pubout -outform DER \
+        | tail -c 65 | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' > "$PUBLIC_KEY_FILE"
+        openssl ec -in "$PRIVATE_KEY_PEM" -outform DER \
+        | tail -c +8 | head -c 32 | base64 | tr -d '=' | tr '/+' '_-' > "$PRIVATE_KEY_FILE"
+
+        if [[ -s "$PUBLIC_KEY_FILE" && -s "$PRIVATE_KEY_FILE" ]]; then
             echo "Success! VAPID keys generated and saved."
         else
             echo "Error: Failed to generate VAPID keys."
