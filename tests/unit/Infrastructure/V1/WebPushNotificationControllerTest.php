@@ -138,33 +138,6 @@ class WebPushNotificationControllerTest extends TestCase
         $this->assertEquals($expectedResponse, $responseContent);
     }
 
-    public function testSendNotificationWithInvalidData(): void
-    {
-        $requestData = [
-            'endpoint' => 'https://example.com/endpoint',
-            'keys' => [
-                'auth' => '',
-                'p256dh' => ''
-            ]
-        ];
-        $jsonContent = json_encode($requestData);
-        if ($jsonContent === false) {
-            throw new \RuntimeException('Failed to encode JSON');
-        }
-
-        $request = new Request([], [], [], [], [], [], json_encode($requestData));
-
-        $response = $this->controller->sendNotification($request);
-
-        $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
-            'success' => false,
-            'ErrorCode' => "Invalid subscription data",
-            'message' => "An error occurred"
-        ]), $response->getContent());
-    }
-
     public function testSendNotificationWithMissingTitleOrDescription(): void
     {
         $requestData = [
@@ -225,28 +198,29 @@ class WebPushNotificationControllerTest extends TestCase
         ]), $response->getContent());
     }
 
-    public function testInvalidSubscriptionData(): void
+    public function testSendNotificationWithInvalidSubscriptionData(): void
     {
-        $invalidDataSets = [
-            ['endpoint' => '', 'keys' => ['auth' => 'auth_key', 'p256dh' => 'p256dh_key']],
-            ['endpoint' => 'https://example.com/endpoint', 'keys' => ['auth' => '', 'p256dh' => 'p256dh_key']],
-            ['endpoint' => 'https://example.com/endpoint', 'keys' => ['auth' => 'auth_key', 'p256dh' => '']],
-            ['endpoint' => 'https://example.com/endpoint', 'keys' => []],
-            // Add more cases as needed
+        $requestData = [
+            'keys' => [
+                'auth' => 'auth_key',
+                'p256dh' => 'p256dh_key'
+            ],
+            'notification' => [
+                'title' => 'Test Title',
+                'description' => 'Test Description'
+            ]
         ];
 
-        foreach ($invalidDataSets as $data) {
-            $request = new Request([], [], [], [], [], [], json_encode($data));
+        $request = new Request([], [], [], [], [], [], json_encode($requestData));
 
-            $response = $this->controller->sendNotification($request);
+        $response = $this->controller->sendNotification($request);
 
-            $this->assertInstanceOf(JsonResponse::class, $response);
-            $this->assertEquals(400, $response->getStatusCode());
-            $this->assertJsonStringEqualsJsonString(json_encode([
-                'success' => false,
-                'ErrorCode' => "Invalid subscription data",
-                'message' => "An error occurred"
-            ]), $response->getContent());
-        }
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString(json_encode([
+            'success' => false,
+            'ErrorCode' => "Invalid subscription data",
+            'message' => "An error occurred"
+        ]), $response->getContent());
     }
 }

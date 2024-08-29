@@ -33,6 +33,8 @@ services:
     public: true
     autowire: true
     class: Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine
+    arguments:
+        - '@doctrine.orm.entity_manager'
 
   Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface: "@subscribers.repository"
 

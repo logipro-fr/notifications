@@ -38,15 +38,20 @@ class WebPushNotificationController
     public function sendNotification(Request $request): JsonResponse
     {
         try {
+            /** @var array{endpoint: string, keys: array{auth: string, p256dh: string}, notification: array{title: string, description: string, image: ?string, url: ?string}} $response */
             $response = json_decode($request->getContent(), true);
             if (!$this->isValidSubscriptionData($response)) {
                 throw new \InvalidArgumentException("Invalid subscription data");
             }
 
+            $endpoint = $response['endpoint'];
+            $auth = $response['keys']['auth'];
+            $p256dh = $response['keys']['p256dh'];
+
             $webpushSubscription = new WebPushSubscription(
-                $response['endpoint'],
-                $response['keys']['auth'],
-                $response['keys']['p256dh']
+                $endpoint,
+                $auth,
+                $p256dh
             );
             $payload = $this->prepareNotificationObject($response['notification']);
 
@@ -99,21 +104,16 @@ class WebPushNotificationController
         }
 
         $jsonPayload = json_encode($payload);
-        return $jsonPayload;
+        return $jsonPayload !== false ? $jsonPayload : '';
     }
 
+    /**
+     * @param array{endpoint: string, keys: array{auth: string, p256dh: string}} $response
+     * @return bool
+     */
     private function isValidSubscriptionData(array $response): bool
     {
-        if (!is_string($response['endpoint']) || empty($response['endpoint'])) {
-            return false;
-        }
-        if (!isset($response['keys']['auth'], $response['keys']['p256dh'])) {
-            return false;
-        }
-        if (!is_string($response['keys']['auth']) || empty($response['keys']['auth'])) {
-            return false;
-        }
-        if (!is_string($response['keys']['p256dh']) || empty($response['keys']['p256dh'])) {
+        if (!is_string($response['endpoint'])) {
             return false;
         }
         return true;

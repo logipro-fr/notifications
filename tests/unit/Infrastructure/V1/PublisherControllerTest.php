@@ -41,6 +41,7 @@ class PublisherControllerTest extends WebTestCase
     {
         $spy = new SpyListener();
         (new EventFacade())->subscribe($spy);
+        $subscriberCount = $this->repository->count([]);
 
         $content = json_encode([
             "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
