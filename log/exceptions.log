@@ -1,0 +1,65 @@
+[30.08.2024 09:58:31] 1: a logged exception
+[30.08.2024 09:58:31] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 400: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 400: Error can't find the endpoint prime54845
+[30.08.2024 09:58:32] 400: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 500: Error can't find the endpoint prime54845
+[30.08.2024 09:58:32] 500: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:32] 400: Error can't find the endpoint prime54845
+[30.08.2024 09:58:32] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:33] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:33] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:33] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:34] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:35] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:36] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:36] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:36] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:36] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:36] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:36] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:36] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:38] 500: Error can't find the endpoint prime54845
+[30.08.2024 09:58:38] 500: Error can't find the endpoint prime54845
+[30.08.2024 09:58:38] 500: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:38] 500: Error can't find the endpoint prime54845
+[30.08.2024 09:58:38] 500: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:39] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:39] 500: Error can't find the endpoint prime
+[30.08.2024 09:58:39] 500: Error can't find the endpoint prime54845
+[30.08.2024 09:58:39] 500: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:39] 422: An EmptySubscriberContentException has occurred: Unable to perform operation due to empty content.
+[30.08.2024 09:58:39] 500: Error can't find the endpoint https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx
+[30.08.2024 09:58:39] 500: Error can't find the endpoint prime
+[30.08.2024 09:58:39] 500: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:39] 500: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:39] 400: Error can't find the endpoint https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx
+[30.08.2024 09:58:39] 400: Error can't find the endpoint prime
+[30.08.2024 09:58:39] 400: Error can't find the endpoint prime54845
+[30.08.2024 09:58:39] 500: Error can't find the endpoint http://example.com
+[30.08.2024 09:58:39] 500: Error can't find the endpoint prime54845
+[30.08.2024 09:58:39] 500: Error can't find the endpoint prime54845
+[30.08.2024 09:58:39] 500: Error can't find the endpoint http://example.com

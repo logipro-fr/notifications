@@ -1,0 +1,61 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+parameters:
+
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    bind:
+            $vapidSubject: '%env(VAPID_SUBJECT)%'
+            $vapidPublicKey: '%env(VAPID_PUBLIC_KEY)%'
+            $vapidPrivateKey: '%env(VAPID_PRIVATE_KEY)%'
+  
+  Notifications\Logger\SQLLogger:
+        arguments:
+            $logger: '@logger'
+        tags:
+            - { name: doctrine.dbal.logger, connection: default }
+
+  Notifications\Infrastructure\Api\V1\PublisherController:
+    autowire: true
+    arguments:
+      $repo: '@subscribers.repository'
+
+  Notifications\Infrastructure\Api\V1\OptInController:
+    autowire: true
+
+  subscribers.repository:
+    public: true
+    autowire: true
+    class: Notifications\Infrastructure\Persistence\Subscriber\SubscriberRepositoryDoctrine
+    arguments:
+        - '@doctrine.orm.entity_manager'
+
+  Notifications\Domain\Model\Subscriber\SubscriberRepositoryInterface: "@subscribers.repository"
+
+  Notifications\Infrastructure\Api\V1\:
+    resource: "../src/Infrastructure/Api/V1/"
+    tags: ["controller.service_arguments"]
+
+  Notifications\Application\Service\Subscription\Subscription:
+      arguments: []
+
+  Minishlink\WebPush\WebPush:
+        arguments:
+            $auth: # The VAPID authentication keys
+                VAPID: 
+                    subject: 'mailto:me@website.com'
+                    publicKey: '%env(VAPID_PUBLIC_KEY)%'
+                    privateKey: '%env(VAPID_PRIVATE_KEY)%'
+
+  Minishlink\WebPush\Subscription:
+        arguments:
+            $endpoint: ''
+            $publicKey: ''
+            $authToken: ''
+            $contentEncoding: 'aesgcm'

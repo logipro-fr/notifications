@@ -1,0 +1,9 @@
+# config/packages/monolog.yaml
+monolog:
+    channels: ['doctrine']
+    handlers:
+        doctrine:
+            type: stream
+            path: '%kernel.logs_dir%/doctrine.log'
+            level: debug
+            channels: ['doctrine']

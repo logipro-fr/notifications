@@ -1,0 +1,448 @@
+openapi: 3.1.0
+info:
+  title: Notifications API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+    description: Api routes
+  - url: http://172.17.0.1:11480/api/v1
+    description: Local Developement usage API routes
+paths:
+  /subscriber/manager:
+    post:
+      summary: Register a new subscriber
+      description: When a one user navigator made a request after an action AND after he authorizes the notification send, he is registered as a subscriber
+      operationId: subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  description: The endpoint URL for push notifications
+                  example: https://updates.push.services.mozilla.com/wpush/v2/
+                expirationTime:
+                  type: string
+                  nullable: true
+                  description: The expiration time of the subscription
+                  example: ""
+                keys:
+                  type: object
+                  properties:
+                    auth:
+                      type: string
+                      description: The auth key for the subscription
+                      example: BA2noXuKXuNLSJn91VhaIzE2c+PX2C35UXa5CYwC6kZHXS3NmwNjqvFr7qy75GqRrtfzPqINTlgFUBhuWs5xI=
+                    p256dh:
+                      type: string
+                      description: The p256dh key for the subscription
+                      example: 8yQmXFqOwAPqaOAGwGQq6g=
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the subscription was successful
+                    example: true
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: null
+                  data:
+                    type: object
+                    properties:
+                      endpoint:
+                        type: string
+                        description: The ID of the navigator client
+                        example: pos_664c52f9c90cb
+                    description: Data returned by the register service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: ""
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InvalidRequestException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: UnprocessableModelException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Unprocessable entity
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the publication was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InternalServerErrorException
+                  data:
+                    type: object
+                    description: Data returned by the publication service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Internal server error
+    delete:
+      summary: Unsubscribe a subscriber
+      description: Unsubscribes a registered subscriber from receiving notifications
+      operationId: unsubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  description: The endpoint URL for push notifications
+                  example: https://updates.push.services.mozilla.com/wpush/v2/
+                expirationTime:
+                  type: string
+                  nullable: true
+                  description: The expiration time of the subscription
+                  example: ""
+                keys:
+                  type: object
+                  properties:
+                    auth:
+                      type: string
+                      description: The auth key for the subscription
+                      example: BA2noXuKXuNLSJn91VhaIzE2c+PX2C35UXa5CYwC6kZHXS3NmwNjqvFr7qy75GqRrtfzPqINTlgFUBhuWs5xI=
+                    p256dh:
+                      type: string
+                      description: The p256dh key for the subscription
+                      example: 8yQmXFqOwAPqaOAGwGQq6g=
+      responses:
+        '201':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the unsubscription was successful
+                    example: true
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: null
+                  data:
+                    type: object
+                    properties:
+                      endpoint:
+                        type: string
+                        description: The ID of the navigator client
+                        example: pos_664c52f9c90cb
+                    description: Data returned by the unregister service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: ""
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the unsubscription was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InvalidRequestException
+                  data:
+                    type: object
+                    description: Data returned by the unsubscription service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Invalid request
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the unsubscription was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: UnprocessableModelException
+                  data:
+                    type: object
+                    description: Data returned by the unsubscription service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Unprocessable entity
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the unsubscription was successful
+                    example: false
+                  errorCode:
+                    type: string
+                    description: Name of the exception class if any error occurs
+                    example: InternalServerErrorException
+                  data:
+                    type: object
+                    description: Data returned by the unsubscription service
+                  message:
+                    type: string
+                    description: Message associated with the response
+                    example: Internal server error  
+  /subscriber/authorization:
+    post:
+      summary: Get authorization status
+      description: Checks the authorization status of the subscriber for receiving notifications.
+      operationId: authorizationStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                AuthorizedStatus:
+                  type: boolean
+                  description: Indicates whether the user has authorized notifications
+                  example: true
+      responses:
+        '200':
+          description: Authorization successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the authorization was successful
+                    example: true
+        '403':
+          description: Authorization denied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the authorization was successful
+                    example: false
+                  ErrorCode:
+                    type: string
+                    description: The error code if authorization is denied
+                    example: AuthorizationDenied
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the authorization was successful
+                    example: false
+                  ErrorCode:
+                    type: string
+                    description: The error code if an internal server error occurs
+                    example: InternalServerErrorException
+  /subscriber/send:
+    post:
+      summary: Send a push notification to a subscriber
+      description: Sends a push notification to a subscriber using their subscription details.
+      operationId: sendNotification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                  description: The endpoint URL for the subscriber's push notification.
+                  example: https://fcm.googleapis.com/fcm/send/e12345
+                keys:
+                  type: object
+                  properties:
+                    auth:
+                      type: string
+                      description: The auth key for the subscription.
+                      example: BA2noXuKXuNLSJn91VhaIzE2c+PX2C35UXa5CYwC6kZHXS3NmwNjqvFr7qy75GqRrtfzPqINTlgFUBhuWs5xI=
+                    p256dh:
+                      type: string
+                      description: The p256dh key for the subscription.
+                      example: 8yQmXFqOwAPqaOAGwGQq6g=
+                notification:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: The title of the notification.
+                      example: "New message received"
+                    description:
+                      type: string
+                      description: The body text of the notification.
+                      example: "You have a new message in your inbox."
+                    image:
+                      type: string
+                      nullable: true
+                      description: URL to an image/icon for the notification.
+                      example: "https://example.com/icon.png"
+                    url:
+                      type: string
+                      nullable: true
+                      description: URL to be opened when the notification is clicked.
+                      example: "https://example.com"
+      responses:
+        '201':
+          description: Notification sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the notification was sent successfully.
+                    example: true
+                  ErrorCode:
+                    type: string
+                    description: Error code if any issues occurred (empty if no issues).
+                    example: ""
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                          description: The title of the notification.
+                          example: "New message received"
+                        body:
+                          type: string
+                          description: The body of the notification.
+                          example: "You have a new message in your inbox."
+                        icon:
+                          type: string
+                          nullable: true
+                          description: The icon URL for the notification.
+                          example: "https://example.com/icon.png"
+                        url:
+                          type: string
+                          nullable: true
+                          description: The URL opened when the notification is clicked.
+                          example: "https://example.com"
+                  message:
+                    type: string
+                    description: A message describing the result.
+                    example: ""
+        '400':
+          description: Bad request or invalid data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the request was successful.
+                    example: false
+                  ErrorCode:
+                    type: string
+                    description: The error message describing why the request failed.
+                    example: Invalid subscription data
+                  message:
+                    type: string
+                    description: A message describing the error.
+                    example: "An error occurred"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indicates whether the request was successful.
+                    example: false
+                  ErrorCode:
+                    type: string
+                    description: The error message describing the server error.
+                    example: InternalServerErrorException
+                  message:
+                    type: string
+                    description: A message describing the error.
+                    example: "An internal server error occurred"  

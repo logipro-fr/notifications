@@ -1,0 +1,14 @@
+# behat.yml
+default:
+  autoload:
+    '': '%paths.base%/tests'
+  formatters:
+    progress: true
+    pretty: true
+  suites:
+    default:
+      paths:
+        - '%paths.base%/features/'
+      contexts:
+        - Features\SubscriberManagerContext
+        - Features\NotificationManagerContext

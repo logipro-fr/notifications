@@ -1,0 +1,5 @@
+/var/
+/vendor/
+/log/
+/src/Infrastructure/Shared/Symfony/.env.local
+/src/public/script.js

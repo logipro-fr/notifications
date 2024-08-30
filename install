@@ -1,0 +1,81 @@
+#!/bin/bash
+
+source install-lib/database-functions.sh
+
+# Create the var directory if it does not exist
+function create_var_directory() {
+    DIR_VAR=var
+    if [ ! -d "$DIR_VAR" ]; then
+        mkdir $DIR_VAR
+    fi
+}
+
+function build_docker_images() {
+    (
+        cd docker || exit;
+        docker compose build
+    )
+}
+
+function start_containers() {
+    CONTAINER_NAME="notifications-mariadb"
+    PHP_CONTAINER_NAME="notifications-php"
+
+    (
+        cd docker || exit;
+        docker compose up -d $CONTAINER_NAME $PHP_CONTAINER_NAME
+    )
+}
+
+function generate_vapid_keys_if_missing() {
+    PUBLIC_KEY_FILE="keys/public_key.txt"
+    PRIVATE_KEY_FILE="keys/private_key.txt"
+    PRIVATE_KEY_PEM="keys/private_key.pem"
+
+    if [[ -s "$PUBLIC_KEY_FILE" && -s "$PRIVATE_KEY_FILE" ]]; then
+        echo "VAPID keys already exist."
+    else
+        echo "Generating VAPID keys..."
+        mkdir -p keys
+        openssl ecparam -genkey -name prime256v1 -out "$PRIVATE_KEY_PEM"
+        openssl ec -in "$PRIVATE_KEY_PEM" -pubout -outform DER \
+        | tail -c 65 | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' > "$PUBLIC_KEY_FILE"
+        openssl ec -in "$PRIVATE_KEY_PEM" -outform DER \
+        | tail -c +8 | head -c 32 | base64 | tr -d '=' | tr '/+' '_-' > "$PRIVATE_KEY_FILE"
+
+        if [[ -s "$PUBLIC_KEY_FILE" && -s "$PRIVATE_KEY_FILE" ]]; then
+            echo "Success! VAPID keys generated and saved."
+        else
+            echo "Error: Failed to generate VAPID keys."
+        fi
+    fi
+}
+
+
+echo "-------------Step 1: Create some directories-----------------------------------------------------"
+create_var_directory
+echo "-------------Step 1: Done!"
+
+echo "-------------Step 2: Build docker images---------------------------------------------------------"
+build_docker_images
+echo "-------------Step 2: Done!"
+
+echo "-------------Step 3: Assure that no docker container is running anymore--------------------------"
+./stop
+echo "-------------Step 3: Done!"
+
+echo "-------------Step 4: Composer tool will install php components in vendor directory---------------"
+./bin/composer install
+echo "-------------Step 4: Done!"
+
+echo "-------------Step 5: Create database if no database exists---------------------------------------"
+create_database_in_container "docker/mariadb/db.env" "notifications-mariadb" "notifications-php"
+echo "-------------Step 5: Done!"
+
+echo "-------------Step 6: Start necessary containers for generating VAPID keys------------------------"
+start_containers
+echo "-------------Step 6: Done!"
+
+echo "-------------Step 7: Generate VAPID keys if not already generated--------------------------------"
+generate_vapid_keys_if_missing
+echo "-------------Step 7: Done!"

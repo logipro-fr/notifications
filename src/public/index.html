@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Notification Push</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico" />
+</head>
+<body>
+    <header>
+        <h1>Push Notification - Logipro</h1>
+    </header>
+    <div class="container">
+        <div class="form-container">
+            <button id="push-subscription-button">Enable Push Notifications</button>
+            <form id="notification-form">
+                <div class="form-group">
+                    <label for="title">Notification Title:</label>
+                    <input type="text" id="title" placeholder="Enter notification title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Notification Description:</label>
+                    <textarea id="description" placeholder="Enter notification description" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="url">Redirection URL:</label>
+                    <input type="text" id="url" placeholder="Enter redirection URL">
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Image URL:</label>
+                    <input type="text" id="image" placeholder="Enter image URL">
+                </div>
+
+                <button type="button" id="send-push-button">Send Push Notification</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="sw.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
