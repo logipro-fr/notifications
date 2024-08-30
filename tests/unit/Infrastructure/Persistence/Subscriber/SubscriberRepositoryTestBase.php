@@ -63,4 +63,28 @@ abstract class SubscriberRepositoryTestBase extends TestCase
         $this->expectExceptionMessage("Error can't find the endpoint prime54845");
         $this->subscriberRepository->findById(new Endpoint("prime54845"));
     }
+
+    public function testDeleteSubscriber(): void
+    {
+        $endpoint = new Endpoint('http://example.com');
+        $expirationTime = new ExpirationTime();
+        $keys = new Keys("auth123", "encrypt123");
+
+        $publisher = new Publisher("www.exemple.com");
+        $subscriber = new Subscriber(
+            $endpoint,
+            $keys,
+            $expirationTime,
+            $publisher
+        );
+        $this->subscriberRepository->add($subscriber);
+
+        $this->assertNotNull(
+            $this->subscriberRepository->findById(new Endpoint('http://example.com'))
+        );
+        $this->subscriberRepository->delete($subscriber);
+        $this->expectException(SubscriberNotFoundException::class);
+        $this->subscriberRepository->findById(new Endpoint('http://example.com'));
+    }
+
 }
