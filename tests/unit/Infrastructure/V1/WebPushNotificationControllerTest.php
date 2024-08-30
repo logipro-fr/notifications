@@ -45,7 +45,7 @@ class WebPushNotificationControllerTest extends TestCase
         if ($jsonContent === false) {
             throw new \RuntimeException('Failed to encode JSON');
         }
-        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request = new Request([], [], [], [], [], [], $jsonContent);
 
         $this->webPushMock->expects($this->once())
             ->method('sendOneNotification')
@@ -60,8 +60,15 @@ class WebPushNotificationControllerTest extends TestCase
             );
 
         $response = $this->controller->sendNotification($request);
-
-        $responseContent = json_decode($response->getContent(), true);
+        $content = $response->getContent();
+        if ($content !== false) {
+            $responseContent = json_decode($content, true);
+        } else {
+            throw new \Exception('Failed to get content from response.');
+        }
+        if ($responseContent === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Failed to decode JSON: ' . json_last_error_msg());
+        }
         if (is_array($responseContent) && isset($responseContent['data'][0])) {
             $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
         }
@@ -101,8 +108,7 @@ class WebPushNotificationControllerTest extends TestCase
         if ($jsonContent === false) {
             throw new \RuntimeException('Failed to encode JSON');
         }
-
-        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $request = new Request([], [], [], [], [], [], $jsonContent);
 
         $this->webPushMock->expects($this->once())
             ->method('sendOneNotification')
@@ -116,8 +122,15 @@ class WebPushNotificationControllerTest extends TestCase
             );
 
         $response = $this->controller->sendNotification($request);
-
-        $responseContent = json_decode($response->getContent(), true);
+        $content = $response->getContent();
+        if ($content !== false) {
+            $responseContent = json_decode($content, true);
+        } else {
+            throw new \Exception('Failed to get content from response.');
+        }
+        if ($responseContent === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Failed to decode JSON: ' . json_last_error_msg());
+        }
         if (is_array($responseContent) && isset($responseContent['data'][0])) {
             $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
         }
@@ -152,17 +165,39 @@ class WebPushNotificationControllerTest extends TestCase
             ]
         ];
 
-        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $jsonContent = json_encode($requestData);
+        if ($jsonContent === false) {
+            throw new \RuntimeException('Failed to encode JSON');
+        }
+        $request = new Request([], [], [], [], [], [], $jsonContent);
 
         $response = $this->controller->sendNotification($request);
+        $content = $response->getContent();
+        if ($content !== false) {
+            $responseContent = json_decode($content, true);
+        } else {
+            throw new \Exception('Failed to get content from response.');
+        }
+        if ($responseContent === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Failed to decode JSON: ' . json_last_error_msg());
+        }
+        if (is_array($responseContent) && isset($responseContent['data'][0])) {
+            $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+        }
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
+        $actualJson = $response->getContent();
+        $expectedResponse = [
             'success' => false,
             'ErrorCode' => "Invalid notification data",
             'message' => "An error occurred"
-        ]), $response->getContent());
+        ];
+        $expectedJson = json_encode($expectedResponse);
+        if ($expectedJson === false || $actualJson === false) {
+            throw new \RuntimeException('Failed to encode expected JSON');
+        }
+        $this->assertJsonStringEqualsJsonString($expectedJson, $actualJson);
     }
 
     public function testSendNotificationExceptionHandling(): void
@@ -181,7 +216,25 @@ class WebPushNotificationControllerTest extends TestCase
             ]
         ];
 
-        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $jsonContent = json_encode($requestData);
+        if ($jsonContent === false) {
+            throw new \RuntimeException('Failed to encode JSON');
+        }
+        $request = new Request([], [], [], [], [], [], $jsonContent);
+
+        $response = $this->controller->sendNotification($request);
+        $content = $response->getContent();
+        if ($content !== false) {
+            $responseContent = json_decode($content, true);
+        } else {
+            throw new \Exception('Failed to get content from response.');
+        }
+        if ($responseContent === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Failed to decode JSON: ' . json_last_error_msg());
+        }
+        if (is_array($responseContent) && isset($responseContent['data'][0])) {
+            $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+        }
 
         $this->webPushMock->expects($this->once())
             ->method('sendOneNotification')
@@ -191,11 +244,17 @@ class WebPushNotificationControllerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
+        $actualJson = $response->getContent();
+        $expectedResponse = [
             'success' => false,
             'ErrorCode' => 'Push service error',
             'message' => "An error occurred"
-        ]), $response->getContent());
+        ];
+        $expectedJson = json_encode($expectedResponse);
+        if ($expectedJson === false || $actualJson === false) {
+            throw new \RuntimeException('Failed to encode expected JSON');
+        }
+        $this->assertJsonStringEqualsJsonString($expectedJson, $actualJson);
     }
 
     public function testSendNotificationWithInvalidSubscriptionData(): void
@@ -211,16 +270,40 @@ class WebPushNotificationControllerTest extends TestCase
             ]
         ];
 
-        $request = new Request([], [], [], [], [], [], json_encode($requestData));
+        $jsonContent = json_encode($requestData);
+        if ($jsonContent === false) {
+            throw new \RuntimeException('Failed to encode JSON');
+        }
+        $request = new Request([], [], [], [], [], [], $jsonContent);
+
+        $response = $this->controller->sendNotification($request);
+        $content = $response->getContent();
+        if ($content !== false) {
+            $responseContent = json_decode($content, true);
+        } else {
+            throw new \Exception('Failed to get content from response.');
+        }
+        if ($responseContent === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException('Failed to decode JSON: ' . json_last_error_msg());
+        }
+        if (is_array($responseContent) && isset($responseContent['data'][0])) {
+            $responseContent['data'][0] = json_decode($responseContent['data'][0], true);
+        }
 
         $response = $this->controller->sendNotification($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode([
+        $actualJson = $response->getContent();
+        $expectedResponse = [
             'success' => false,
             'ErrorCode' => "Invalid subscription data",
             'message' => "An error occurred"
-        ]), $response->getContent());
+        ];
+        $expectedJson = json_encode($expectedResponse);
+        if ($expectedJson === false || $actualJson === false) {
+            throw new \RuntimeException('Failed to encode expected JSON');
+        }
+        $this->assertJsonStringEqualsJsonString($expectedJson, $actualJson);
     }
 }

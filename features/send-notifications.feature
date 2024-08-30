@@ -22,6 +22,6 @@ To inform them of updates, special offers and important alerts
 
     Scenario: Execute an action following the receipt of a notification
         Given "Jean" received a notification
-        And the payload contains some actions 
+        And the payload contains action
         When "Jean" clicks the "More info" notification button
         Then the page https://accidentprediction.fr/accidents/RN88 is opened

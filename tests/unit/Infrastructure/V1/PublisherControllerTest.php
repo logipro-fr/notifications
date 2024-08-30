@@ -32,7 +32,13 @@ class PublisherControllerTest extends WebTestCase
         $this->clearTables(["subscribers"]);
 
         $this->client = static::createClient(["debug" => false]);
-        $this->repository = $this->client->getContainer()->get("subscribers.repository");
+
+        /** @var SubscriberRepositoryDoctrine $autoInjectedRepository */
+        $autoInjectedRepository = $this->client->getContainer()->get("subscribers.repository");
+        $this->repository = $autoInjectedRepository;
+        if (!$this->repository instanceof SubscriberRepositoryInterface) {
+            throw new \RuntimeException('The repository service does not implement SubscriberRepositoryInterface');
+        }
         $this->eventFacade = $this->createMock(EventFacade::class);
         $this->client->getContainer()->set(EventFacade::class, $this->eventFacade);
     }
@@ -41,8 +47,6 @@ class PublisherControllerTest extends WebTestCase
     {
         $spy = new SpyListener();
         (new EventFacade())->subscribe($spy);
-        $subscriberCount = $this->repository->count([]);
-
         $content = json_encode([
             "endpoint" => "https://updates.push.services.mozilla.com/wpush/v2/gAAAAABmSxoTx",
             "expirationTime" => "",
@@ -74,7 +78,7 @@ class PublisherControllerTest extends WebTestCase
 
         $this->assertJson($responseContent, "Response is not valid JSON: " . $responseContent);
 
-        /** @var array<string> */
+        /** @var array<string, mixed> */
         $array = json_decode($responseContent, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -93,6 +97,11 @@ class PublisherControllerTest extends WebTestCase
         $this->assertEquals(201, $responseCode);
         $this->assertStringContainsString('"ErrorCode":', $responseContent);
         $this->assertStringContainsString('"endpoint":', $responseContent);
+
+        if ($researchEndpoint === null) {
+            $this->fail("Subscriber not found for endpoint: " . $endpoint);
+        }
+
         $this->assertEquals($endpoint, $researchEndpoint->getEndpoint());
     }
 
